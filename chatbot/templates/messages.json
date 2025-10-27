@@ -1,0 +1,5 @@
+{
+  "greeting": "Hola 👋 Soy tu asistente de Kuzmanich Seguros 360. ¿Qué necesitás asegurar hoy? (Auto, Hogar, Vida, Salud, ART, Pyme, Retiro, Viaje)",
+  "fallback": "No te entendí bien. ¿Podés elegir un ramo? Auto / Hogar / Vida / Salud / ART / Pyme / Retiro / Viaje",
+  "consent": "¿Autorizás el uso de tus datos para cotizar y contactarte? (Sí/No)"
+}

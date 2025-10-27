@@ -1,0 +1,53 @@
+{
+  "name": "Lead Ingest Kuzmanich 360",
+  "nodes": [
+    {
+      "name": "Webhook In",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "lead-ingest",
+        "httpMethod": "POST"
+      }
+    },
+    {
+      "name": "Transform",
+      "type": "n8n-nodes-base.function",
+      "parameters": {
+        "functionCode": "return [{json:{...items[0].json}}];"
+      }
+    },
+    {
+      "name": "Google Sheets: Append",
+      "type": "n8n-nodes-base.googleSheets",
+      "parameters": {
+        "operation": "append",
+        "sheetId": "{{$env.SHEETS_LEADS_ID}}",
+        "range": "Leads!A:Z"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook In": {
+      "main": [
+        [
+          {
+            "node": "Transform",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Append",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
