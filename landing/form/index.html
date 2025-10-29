@@ -1,135 +1,190 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Kuzmanich Seguros 360 — Solicitud de Cotización</title>
+  <meta name="description" content="Cotizá seguros personales y empresariales con Kuzmanich Seguros 360. Respuesta rápida y asesoramiento profesional.">
   <style>
-    body {
-      font-family: 'Segoe UI', Roboto, Ubuntu, sans-serif;
-      background: linear-gradient(145deg, #0f172a, #1e293b);
-      color: #f8fafc;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+    :root{
+      --bg:#0f172a;         /* azul noche */
+      --panel:#111827;      /* panel oscuro */
+      --panel-2:#1f2937;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --brand:#3b82f6;      /* azul marca */
+      --brand-2:#60a5fa;
+      --ok:#22c55e;
+      --err:#ef4444;
+      --input:#0b1220;
+      --stroke:#233046;
+      --radius:18px;
     }
-
-    .card {
-      background: #1e293b;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-      padding: 32px;
-      width: 90%;
-      max-width: 500px;
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+      background: radial-gradient(1200px 600px at 20% -10%, #1e293b 0%, transparent 60%),
+                  radial-gradient(1000px 600px at 120% 20%, #0b1220 0%, transparent 60%),
+                  var(--bg);
+      color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+      padding:24px;
     }
-
-    h1 {
-      text-align: center;
-      color: #38bdf8;
-      margin-bottom: 10px;
+    .card{
+      width:100%; max-width:560px; background:linear-gradient(180deg,var(--panel),var(--panel-2));
+      border:1px solid var(--stroke); border-radius:var(--radius); padding:28px 24px 24px;
+      box-shadow:0 20px 50px rgba(0,0,0,.45);
     }
-
-    img {
-      display: block;
-      margin: 0 auto 20px;
-      width: 90px;
+    .header{
+      display:flex; gap:14px; align-items:center; margin-bottom:12px;
     }
-
-    label {
-      display: block;
-      margin-top: 16px;
-      font-size: 0.95em;
-      color: #cbd5e1;
+    .header img{
+      width:54px; height:54px; border-radius:12px; background:#0b1220; object-fit:contain;
+      border:1px solid var(--stroke);
     }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      background: #334155;
-      color: #f8fafc;
+    h1{font-size:1.35rem; margin:0; color:var(--brand-2)}
+    .sub{color:var(--muted); font-size:.95rem; margin:6px 0 18px}
+    .row{display:flex; gap:12px}
+    .row>.field{flex:1}
+    label{display:block; font-size:.9rem; color:#cbd5e1; margin:14px 0 6px}
+    input,select,textarea{
+      width:100%; padding:12px 12px; border-radius:12px; border:1px solid var(--stroke);
+      background:var(--input); color:var(--text); font-size:1rem; outline:none;
     }
-
-    button {
-      margin-top: 24px;
-      width: 100%;
-      background: #38bdf8;
-      color: #0f172a;
-      font-weight: bold;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1em;
-      transition: background 0.3s;
+    input:focus,select:focus,textarea:focus{border-color:var(--brand)}
+    .hint{font-size:.82rem; color:var(--muted); margin-top:6px}
+    .consent{display:flex; gap:10px; align-items:flex-start; margin-top:14px; font-size:.9rem; color:#cbd5e1}
+    .consent input{margin-top:3px}
+    button{
+      width:100%; margin-top:18px; padding:12px 14px; border:none; border-radius:12px;
+      background:linear-gradient(180deg,var(--brand),var(--brand-2)); color:white; font-weight:700;
+      cursor:pointer; transition:transform .05s ease;
     }
-
-    button:hover {
-      background: #0ea5e9;
-    }
-
-    .success {
-      margin-top: 20px;
-      text-align: center;
-      color: #4ade80;
-      display: none;
-    }
+    button:disabled{opacity:.55; cursor:not-allowed}
+    button:active{transform:translateY(1px)}
+    .msg{margin-top:12px; font-weight:600; display:none}
+    .msg.ok{color:var(--ok)}
+    .msg.err{color:var(--err)}
+    .foot{margin-top:12px; font-size:.8rem; color:var(--muted); text-align:center}
+    @media (max-width:520px){ .row{flex-direction:column} }
   </style>
 </head>
 <body>
-  <div class="card">
-    <img src="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png" alt="Kuzmanich Seguros 360 Logo">
-    <h1>Solicitud de Cotización</h1>
-    <form id="cotizacionForm">
-      <label>Nombre completo</label>
-      <input type="text" name="nombre" required>
+  <main class="card">
+    <div class="header">
+      <!-- Cambiá la ruta si tu logo está en otra carpeta -->
+      <img src="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png" alt="Logo Kuzmanich Seguros 360" onerror="this.style.display='none'">
+      <div>
+        <h1>Solicitud de cotización</h1>
+        <div class="sub">Atención profesional en seguros personales y empresariales.</div>
+      </div>
+    </div>
 
-      <label>Teléfono (con código de área)</label>
-      <input type="tel" name="telefono" required>
+    <form id="leadForm" novalidate>
+      <div class="row">
+        <div class="field">
+          <label>Nombre completo</label>
+          <input id="nombre" name="nombre" required placeholder="Ej: Martín Kuzmanich" autocomplete="name">
+        </div>
+        <div class="field">
+          <label>Teléfono (con código de área)</label>
+          <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9+()\-.\s]{7,}$">
+        </div>
+      </div>
 
       <label>Email</label>
-      <input type="email" name="email" required>
+      <input id="email" name="email" type="email" placeholder="tu@email.com" autocomplete="email">
+      <div class="hint">Usaremos tu email solo para enviarte tu propuesta. No hacemos spam.</div>
 
       <label>Ramo</label>
-      <select name="ramo" required>
-        <option value="">Seleccioná...</option>
+      <select id="ramo" name="ramo" required>
+        <option value="">Seleccioná…</option>
         <option value="retiro">Seguro de Retiro</option>
         <option value="vida">Vida</option>
         <option value="automotor">Automotor</option>
         <option value="hogar">Hogar</option>
-        <option value="empresa">Empresarial</option>
+        <option value="salud">Salud</option>
+        <option value="empresas">Empresas</option>
       </select>
 
-      <button type="submit">Enviar solicitud</button>
-      <div class="success" id="successMsg">✅ ¡Gracias! Recibimos tu solicitud.</div>
+      <!-- Campos ocultos para tracking -->
+      <input id="canal" type="hidden" value="instagram">
+      <input id="estado" type="hidden" value="nuevo">
+      <input id="asesor" type="hidden" value="auto">
+      <input id="origen" type="hidden" value="form">
+
+      <label>Comentarios (opcional)</label>
+      <textarea id="comentarios" name="comentarios" rows="3" placeholder="Contanos algo que debamos tener en cuenta"></textarea>
+
+      <label class="consent">
+        <input id="consent" type="checkbox" required>
+        <span>Acepto el uso de mis datos para recibir mi cotización y asesoramiento (Ley 25.326). <a href="#" style="color:#93c5fd;text-decoration:underline">Política de privacidad</a>.</span>
+      </label>
+
+      <button id="submitBtn" type="submit" disabled>Enviar solicitud</button>
+      <div id="msg" class="msg"></div>
     </form>
-  </div>
+
+    <div class="foot">Kuzmanich Seguros 360 · Atención personalizada</div>
+  </main>
 
   <script>
-    const form = document.getElementById('cotizacionForm');
-    const success = document.getElementById('successMsg');
+    // URL de tu webhook n8n (producción)
+    const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
+
+    const form  = document.getElementById('leadForm');
+    const msg   = document.getElementById('msg');
+    const btn   = document.getElementById('submitBtn');
+    const okTel = document.getElementById('telefono');
+    const okCons= document.getElementById('consent');
+
+    // Habilitar botón solo con consentimiento
+    okCons.addEventListener('change', () => { btn.disabled = !okCons.checked; });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const data = Object.fromEntries(new FormData(form).entries());
+      msg.style.display='none'; msg.className='msg';
 
-      const response = await fetch("https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+      // Validación suave
+      if (!form.checkValidity()) {
+        msg.textContent = "Revisá los campos requeridos.";
+        msg.classList.add('err'); msg.style.display='block';
+        return;
+      }
+      if (!/^[0-9+()\-.\s]{7,}$/.test(okTel.value.trim())) {
+        msg.textContent = "Ingresá un teléfono válido.";
+        msg.classList.add('err'); msg.style.display='block';
+        return;
+      }
 
-      if (response.ok) {
-        success.style.display = 'block';
-        form.reset();
-      } else {
-        alert('Hubo un problema, por favor intentá nuevamente.');
+      // Armar payload tal como espera n8n/Sheets
+      const payload = {
+        nombre:      document.getElementById('nombre').value.trim(),
+        telefono:    okTel.value.trim(),
+        email:       document.getElementById('email').value.trim(),
+        ramo:        document.getElementById('ramo').value,
+        canal:       document.getElementById('canal').value,
+        estado:      document.getElementById('estado').value,
+        asesor:      document.getElementById('asesor').value,
+        origen:      document.getElementById('origen').value,
+        comentarios: document.getElementById('comentarios').value.trim()
+      };
+
+      btn.disabled = true; btn.textContent = "Enviando…";
+      try {
+        const res = await fetch(URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        msg.textContent = "✅ ¡Gracias! Recibimos tu solicitud. Te contactaremos a la brevedad.";
+        msg.classList.add('ok'); msg.style.display='block';
+        form.reset(); btn.textContent = "Enviar solicitud"; btn.disabled = true; // vuelve a pedir consentimiento
+      } catch (err) {
+        msg.textContent = "No pudimos enviar tu solicitud. Intentá nuevamente.";
+        msg.classList.add('err'); msg.style.display='block';
+        btn.textContent = "Enviar solicitud"; btn.disabled = false;
+        console.error(err);
       }
     });
   </script>
