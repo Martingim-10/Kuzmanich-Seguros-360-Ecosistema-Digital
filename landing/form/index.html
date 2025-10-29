@@ -7,18 +7,9 @@
   <meta name="description" content="Cotizá seguros personales y empresariales con Kuzmanich Seguros 360. Respuesta rápida y asesoramiento profesional.">
   <style>
     :root{
-      --bg:#0f172a;
-      --panel:#111827;
-      --panel-2:#1f2937;
-      --text:#e5e7eb;
-      --muted:#94a3b8;
-      --brand:#3b82f6;
-      --brand-2:#60a5fa;
-      --ok:#22c55e;
-      --err:#ef4444;
-      --input:#0b1220;
-      --stroke:#233046;
-      --radius:18px;
+      --bg:#0f172a; --panel:#111827; --panel-2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
+      --brand:#3b82f6; --brand-2:#60a5fa; --ok:#22c55e; --err:#ef4444;
+      --input:#0b1220; --stroke:#233046; --radius:18px;
     }
     *{box-sizing:border-box}
     body{
@@ -84,7 +75,7 @@
         </div>
         <div class="field">
           <label>Teléfono (con código de área)</label>
-          <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9+()\-.\s]{7,}$">
+          <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9+()\\-.\\s]{7,}$">
         </div>
       </div>
 
@@ -134,11 +125,10 @@
       <div id="msg" class="msg"></div>
 
       <!-- Acciones post-envío Automotor -->
-<div id="autoActions" style="display:none; margin-top:10px">
-  <button type="button" id="btnWa" style="margin-top:8px">📲 Chatear ahora por WhatsApp</button>
-  <button type="button" id="btnCopy" style="margin-top:8px">📋 Copiar mensaje</button>
-</div>
-
+      <div id="autoActions" style="display:none; margin-top:10px">
+        <button type="button" id="btnWa" style="margin-top:8px">📲 Chatear ahora por WhatsApp</button>
+        <button type="button" id="btnCopy" style="margin-top:8px">📋 Copiar mensaje</button>
+      </div>
     </form>
 
     <div class="foot">Kuzmanich Seguros 360 · Atención personalizada</div>
@@ -147,9 +137,9 @@
   <script>
     const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
 
-    // 🟦 NÚMEROS (solo dígitos)
-    const SANCOR_WA_NUMBER = "5493493668558";   // número del cotizador SanCor
-    const TU_WA_NUMBER     = "5492804641495";   // tu número/puente registrado
+    // 🔢 NÚMEROS (solo dígitos). Obligatorio TU_WA_NUMBER.
+    const SANCOR_WA_NUMBER = "54XXXXXXXXXX";   // opcional, por si lo usamos luego
+    const TU_WA_NUMBER     = "54YYYYYYYYYY";   // TU número/puente registrado en SanCor
 
     const form   = document.getElementById('leadForm');
     const msg    = document.getElementById('msg');
@@ -163,14 +153,17 @@
     const btnWa       = document.getElementById('btnWa');
     const btnCopy     = document.getElementById('btnCopy');
 
+    // Mostrar/ocultar campos Automotor
     ramoSel.addEventListener('change', () => {
       const isAuto = ramoSel.value === 'automotor';
       autoFields.style.display  = isAuto ? 'block' : 'none';
       autoActions.style.display = 'none';
     });
 
+    // Habilitar botón solo con consentimiento
     okCons.addEventListener('change', () => { btn.disabled = !okCons.checked; });
 
+    // Arma el texto “IA SanCor”
     function buildSanCorText() {
       const mmv  = (document.getElementById('auto_mm')?.value || '').trim();
       const anio = (document.getElementById('auto_anio')?.value || '').trim();
@@ -181,6 +174,7 @@
       return `https://wa.me/${toNumber}?text=${encodeURIComponent(text)}`;
     }
 
+    // Envía SIEMPRE a n8n/Sheets (incluye automotor si corresponde)
     async function logLead(payload) {
       const res = await fetch(URL, {
         method: "POST",
@@ -194,17 +188,32 @@
       e.preventDefault();
       msg.style.display='none'; msg.className='msg';
 
+      // Validación base
       if (!form.checkValidity()) {
         msg.textContent = "Revisá los campos requeridos.";
         msg.classList.add('err'); msg.style.display='block';
         return;
       }
-      if (!/^[0-9+()\-.\s]{7,}$/.test(okTel.value.trim())) {
+      if (!/^[0-9+()\\-.\\s]{7,}$/.test(okTel.value.trim())) {
         msg.textContent = "Ingresá un teléfono válido.";
         msg.classList.add('err'); msg.style.display='block';
         return;
       }
 
+      // Si es Automotor → esos 3 campos son obligatorios
+      let auto_mmv = "", auto_anio = "", auto_dni = "";
+      if (ramoSel.value === 'automotor') {
+        auto_mmv  = (document.getElementById('auto_mm')?.value || '').trim();
+        auto_anio = (document.getElementById('auto_anio')?.value || '').trim();
+        auto_dni  = (document.getElementById('auto_dni')?.value || '').trim();
+        if (!auto_mmv || !auto_anio || !auto_dni) {
+          msg.textContent = "Para Automotor completá Marca/Modelo/Versión, Año y DNI.";
+          msg.classList.add('err'); msg.style.display='block';
+          return;
+        }
+      }
+
+      // Payload FINAL (esto va a Sheets siempre)
       const payload = {
         nombre: document.getElementById('nombre').value.trim(),
         telefono: okTel.value.trim(),
@@ -214,43 +223,61 @@
         estado: document.getElementById('estado').value,
         asesor: document.getElementById('asesor').value,
         origen: document.getElementById('origen').value,
-        comentarios: document.getElementById('comentarios').value.trim()
+        comentarios: document.getElementById('comentarios').value.trim(),
+        auto_mmv, auto_anio, auto_dni  // quedarán vacíos si no es automotor
       };
-
-      if (ramoSel.value === 'automotor') {
-        payload.auto_mmv  = (document.getElementById('auto_mm')?.value || '').trim();
-        payload.auto_anio = (document.getElementById('auto_anio')?.value || '').trim();
-        payload.auto_dni  = (document.getElementById('auto_dni')?.value || '').trim();
-      }
 
       btn.disabled = true; btn.textContent = "Enviando…";
       try {
+        // 1) Registrar SIEMPRE en Sheets (con o sin WhatsApp)
         await logLead(payload);
+
+        // 2) Feedback visible
         msg.textContent = "✅ ¡Gracias! Recibimos tu solicitud.";
         msg.classList.add('ok'); msg.style.display='block';
 
+        // 3) Si es Automotor → mostrar puente a tu WhatsApp
         if (ramoSel.value === 'automotor') {
           autoActions.style.display = 'block';
+
+          // Abrir TU WhatsApp con el mensaje listo para reenviar a SanCor
           btnWa.onclick = () => {
-            if (!/^\d+$/.test(SANCOR_WA_NUMBER) || !/^\d+$/.test(TU_WA_NUMBER)) {
-              alert("Configurá los números de SanCor y del puente en el código.");
+            if (!/^\d+$/.test(TU_WA_NUMBER)) {
+              alert("Configurá TU_WA_NUMBER (tu WhatsApp) en el código.");
               return;
             }
-            const text = `Quiero cotizar un [Marca, Modelo y Versión] del año [Año de producción], para el DNI [número de DNI del cliente tomador].\n\nSugerencia:\n${buildSanCorText()}`;
-            window.open(waLink(SANCOR_WA_NUMBER, text), "_blank");
+            const nombre = document.getElementById('nombre').value.trim();
+            const tel    = document.getElementById('telefono').value.trim();
+            const email  = document.getElementById('email').value.trim();
+
+            const textoParaAsesor =
+`Hola, soy *${nombre}*.
+Quiero cotizar *Automotor*.
+
+• Teléfono: ${tel}
+• Email: ${email}
+• Vehículo: ${auto_mmv}
+• Año: ${auto_anio}
+• DNI tomador: ${auto_dni}
+
+(Enviá este formato a la IA de SanCor:)
+"${buildSanCorText()}"`;
+
+            window.open(waLink(TU_WA_NUMBER, textoParaAsesor), "_blank");
           };
+
+          // Copiar mensaje sugerido para IA SanCor
           btnCopy.onclick = async () => {
             const text = buildSanCorText();
-            try {
-              await navigator.clipboard.writeText(text);
-              alert("Mensaje copiado. Pegalo en WhatsApp y enviá desde tu número registrado.");
-            } catch {
-              alert("No se pudo copiar automáticamente. Seleccioná y copiá manualmente:\n\n" + text);
-            }
+            try { await navigator.clipboard.writeText(text);
+              alert("Mensaje copiado. Pegalo en WhatsApp (chat con SanCor) y enviá.");
+            } catch { alert("No se pudo copiar automáticamente. Texto:\n\n" + text); }
           };
         }
 
+        // Reset visual (vuelve a pedir consentimiento)
         form.reset(); btn.textContent = "Enviar solicitud"; btn.disabled = true;
+        autoFields.style.display = 'none';
       } catch (err) {
         msg.textContent = "No pudimos enviar tu solicitud. Intentá nuevamente.";
         msg.classList.add('err'); msg.style.display='block';
