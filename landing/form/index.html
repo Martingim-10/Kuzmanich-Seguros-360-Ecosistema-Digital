@@ -69,4 +69,194 @@
 <body>
   <main class="card">
     <div class="header">
-      <img src="https://martingim-10.gith
+      <img src="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png" alt="Logo Kuzmanich Seguros 360" onerror="this.style.display='none'">
+      <div>
+        <h1>Solicitud de cotización</h1>
+        <div class="sub">Atención profesional en seguros personales y empresariales.</div>
+      </div>
+    </div>
+
+    <form id="leadForm" novalidate>
+      <div class="row">
+        <div class="field">
+          <label>Nombre completo</label>
+          <input id="nombre" name="nombre" required placeholder="Ej: Martín Kuzmanich" autocomplete="name">
+        </div>
+        <div class="field">
+          <label>Teléfono (con código de área)</label>
+          <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9+()\-.\s]{7,}$">
+        </div>
+      </div>
+
+      <label>Email</label>
+      <input id="email" name="email" type="email" placeholder="tu@email.com" autocomplete="email">
+      <div class="hint">Usaremos tu email solo para enviarte tu propuesta. No hacemos spam.</div>
+
+      <label>Ramo</label>
+      <select id="ramo" name="ramo" required>
+        <option value="">Seleccioná…</option>
+        <option value="retiro">Seguro de Retiro</option>
+        <option value="vida">Vida</option>
+        <option value="automotor">Automotor</option>
+        <option value="hogar">Hogar</option>
+        <option value="salud">Salud</option>
+        <option value="empresas">Empresas</option>
+      </select>
+
+      <!-- Campos AUTOMOTOR -->
+      <div id="autoFields" style="display:none; margin-top:8px">
+        <label>Marca, Modelo y Versión</label>
+        <input id="auto_mm" placeholder="Ej: Toyota Etios XLS">
+
+        <label>Año de producción</label>
+        <input id="auto_anio" inputmode="numeric" placeholder="Ej: 2020">
+
+        <label>DNI del tomador</label>
+        <input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
+        <div class="hint">Estos datos son necesarios para la IA de SanCor.</div>
+      </div>
+
+      <!-- Tracking -->
+      <input id="canal" type="hidden" value="instagram">
+      <input id="estado" type="hidden" value="nuevo">
+      <input id="asesor" type="hidden" value="auto">
+      <input id="origen" type="hidden" value="form">
+
+      <label>Comentarios (opcional)</label>
+      <textarea id="comentarios" name="comentarios" rows="3" placeholder="Contanos algo que debamos tener en cuenta"></textarea>
+
+      <label class="consent">
+        <input id="consent" type="checkbox" required>
+        <span>Acepto el uso de mis datos para recibir mi cotización y asesoramiento (Ley 25.326). <a href="#" style="color:#93c5fd;text-decoration:underline">Política de privacidad</a>.</span>
+      </label>
+
+      <button id="submitBtn" type="submit" disabled>Enviar solicitud</button>
+      <div id="msg" class="msg"></div>
+
+      <!-- Acciones post-envío Automotor -->
+      <div id="autoActions" style="display:none; margin-top:10px">
+        <button type="button" id="btnWa" style="margin-top:8px">📲 Enviar a SanCor desde mi WhatsApp</button>
+        <button type="button" id="btnCopy" style="margin-top:8px">📋 Copiar mensaje</button>
+      </div>
+    </form>
+
+    <div class="foot">Kuzmanich Seguros 360 · Atención personalizada</div>
+  </main>
+
+  <script>
+    const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
+
+    // 🟦 NÚMEROS (solo dígitos)
+    const SANCOR_WA_NUMBER = "54XXXXXXXXXX";   // número del cotizador SanCor
+    const TU_WA_NUMBER     = "54YYYYYYYYYY";   // tu número/puente registrado
+
+    const form   = document.getElementById('leadForm');
+    const msg    = document.getElementById('msg');
+    const btn    = document.getElementById('submitBtn');
+    const okTel  = document.getElementById('telefono');
+    const okCons = document.getElementById('consent');
+
+    const ramoSel     = document.getElementById('ramo');
+    const autoFields  = document.getElementById('autoFields');
+    const autoActions = document.getElementById('autoActions');
+    const btnWa       = document.getElementById('btnWa');
+    const btnCopy     = document.getElementById('btnCopy');
+
+    ramoSel.addEventListener('change', () => {
+      const isAuto = ramoSel.value === 'automotor';
+      autoFields.style.display  = isAuto ? 'block' : 'none';
+      autoActions.style.display = 'none';
+    });
+
+    okCons.addEventListener('change', () => { btn.disabled = !okCons.checked; });
+
+    function buildSanCorText() {
+      const mmv  = (document.getElementById('auto_mm')?.value || '').trim();
+      const anio = (document.getElementById('auto_anio')?.value || '').trim();
+      const dni  = (document.getElementById('auto_dni')?.value || '').trim();
+      return `Quiero cotizar un ${mmv} del año ${anio}, para el DNI ${dni}.`;
+    }
+    function waLink(toNumber, text) {
+      return `https://wa.me/${toNumber}?text=${encodeURIComponent(text)}`;
+    }
+
+    async function logLead(payload) {
+      const res = await fetch(URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.style.display='none'; msg.className='msg';
+
+      if (!form.checkValidity()) {
+        msg.textContent = "Revisá los campos requeridos.";
+        msg.classList.add('err'); msg.style.display='block';
+        return;
+      }
+      if (!/^[0-9+()\-.\s]{7,}$/.test(okTel.value.trim())) {
+        msg.textContent = "Ingresá un teléfono válido.";
+        msg.classList.add('err'); msg.style.display='block';
+        return;
+      }
+
+      const payload = {
+        nombre: document.getElementById('nombre').value.trim(),
+        telefono: okTel.value.trim(),
+        email: document.getElementById('email').value.trim(),
+        ramo: ramoSel.value,
+        canal: document.getElementById('canal').value,
+        estado: document.getElementById('estado').value,
+        asesor: document.getElementById('asesor').value,
+        origen: document.getElementById('origen').value,
+        comentarios: document.getElementById('comentarios').value.trim()
+      };
+
+      if (ramoSel.value === 'automotor') {
+        payload.auto_mmv  = (document.getElementById('auto_mm')?.value || '').trim();
+        payload.auto_anio = (document.getElementById('auto_anio')?.value || '').trim();
+        payload.auto_dni  = (document.getElementById('auto_dni')?.value || '').trim();
+      }
+
+      btn.disabled = true; btn.textContent = "Enviando…";
+      try {
+        await logLead(payload);
+        msg.textContent = "✅ ¡Gracias! Recibimos tu solicitud.";
+        msg.classList.add('ok'); msg.style.display='block';
+
+        if (ramoSel.value === 'automotor') {
+          autoActions.style.display = 'block';
+          btnWa.onclick = () => {
+            if (!/^\d+$/.test(SANCOR_WA_NUMBER) || !/^\d+$/.test(TU_WA_NUMBER)) {
+              alert("Configurá los números de SanCor y del puente en el código.");
+              return;
+            }
+            const text = `Quiero cotizar un [Marca, Modelo y Versión] del año [Año de producción], para el DNI [número de DNI del cliente tomador].\n\nSugerencia:\n${buildSanCorText()}`;
+            window.open(waLink(SANCOR_WA_NUMBER, text), "_blank");
+          };
+          btnCopy.onclick = async () => {
+            const text = buildSanCorText();
+            try {
+              await navigator.clipboard.writeText(text);
+              alert("Mensaje copiado. Pegalo en WhatsApp y enviá desde tu número registrado.");
+            } catch {
+              alert("No se pudo copiar automáticamente. Seleccioná y copiá manualmente:\n\n" + text);
+            }
+          };
+        }
+
+        form.reset(); btn.textContent = "Enviar solicitud"; btn.disabled = true;
+      } catch (err) {
+        msg.textContent = "No pudimos enviar tu solicitud. Intentá nuevamente.";
+        msg.classList.add('err'); msg.style.display='block';
+        btn.textContent = "Enviar solicitud"; btn.disabled = false;
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
