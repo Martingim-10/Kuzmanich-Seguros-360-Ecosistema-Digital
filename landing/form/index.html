@@ -1,138 +1,135 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Kuzmanich Seguros 360 – Solicitud de Cotización</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuzmanich Seguros 360 — Solicitud de Cotización</title>
   <style>
     body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu;
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 24px;
-      background: #121826;
-      color: #f0f4f8;
+      font-family: 'Segoe UI', Roboto, Ubuntu, sans-serif;
+      background: linear-gradient(145deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
-    h1 {
-      font-size: 1.6rem;
-      margin-bottom: 16px;
-      color: #0056FF;
-    }
+
     .card {
-      background: #1E2433;
-      border: 1px solid #2E374E;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      background: #1e293b;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      padding: 32px;
+      width: 90%;
+      max-width: 500px;
     }
+
+    h1 {
+      text-align: center;
+      color: #38bdf8;
+      margin-bottom: 10px;
+    }
+
+    img {
+      display: block;
+      margin: 0 auto 20px;
+      width: 90px;
+    }
+
     label {
       display: block;
-      margin: 14px 0 6px;
-      font-weight: 500;
+      margin-top: 16px;
+      font-size: 0.95em;
+      color: #cbd5e1;
     }
-    input, select, button, textarea {
+
+    input, select {
       width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #2E374E;
-      background: #141A2B;
-      color: #f0f4f8;
-      font-size: 1rem;
-    }
-    button {
-      margin-top: 20px;
-      background: #0056FF;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 8px;
       border: none;
-      color: #fff;
-      font-weight: 600;
+      outline: none;
+      background: #334155;
+      color: #f8fafc;
+    }
+
+    button {
+      margin-top: 24px;
+      width: 100%;
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: bold;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
+      font-size: 1em;
+      transition: background 0.3s;
     }
-    .hint {
-      font-size: .87rem;
-      color: #94A3B8;
-      margin-bottom: 12px;
+
+    button:hover {
+      background: #0ea5e9;
     }
-    .ok {
-      margin-top: 12px;
-      color: #22c55e;
-      font-weight: 500;
-    }
-    .err {
-      margin-top: 12px;
-      color: #ef4444;
-      font-weight: 500;
+
+    .success {
+      margin-top: 20px;
+      text-align: center;
+      color: #4ade80;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>Solicitud de Cotización</h1>
-  <p class="hint">Completá tus datos y un asesor de Kuzmanich Seguros 360 se contactará a la brevedad.</p>
   <div class="card">
-    <form id="leadForm">
+    <img src="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png" alt="Kuzmanich Seguros 360 Logo">
+    <h1>Solicitud de Cotización</h1>
+    <form id="cotizacionForm">
       <label>Nombre completo</label>
-      <input id="nombre" required placeholder="Tu nombre"/>
+      <input type="text" name="nombre" required>
 
       <label>Teléfono (con código de área)</label>
-      <input id="telefono" required placeholder="+54 9 351 ..."/>
+      <input type="tel" name="telefono" required>
 
-      <label>Email (opcional)</label>
-      <input id="email" type="email" placeholder="tu@email.com"/>
+      <label>Email</label>
+      <input type="email" name="email" required>
 
       <label>Ramo</label>
-      <select id="ramo" required>
-        <option value="retiro">Retiro</option>
-        <option value="auto">Automotor</option>
+      <select name="ramo" required>
+        <option value="">Seleccioná...</option>
+        <option value="retiro">Seguro de Retiro</option>
         <option value="vida">Vida</option>
+        <option value="automotor">Automotor</option>
         <option value="hogar">Hogar</option>
-        <option value="salud">Salud</option>
-        <option value="empresas">Empresas</option>
+        <option value="empresa">Empresarial</option>
       </select>
 
-      <input id="canal" type="hidden" value="instagram">
-      <input id="estado" type="hidden" value="nuevo">
-      <input id="asesor" type="hidden" value="auto">
-      <input id="origen" type="hidden" value="formulario">
-
       <button type="submit">Enviar solicitud</button>
-      <div id="msg"></div>
+      <div class="success" id="successMsg">✅ ¡Gracias! Recibimos tu solicitud.</div>
     </form>
   </div>
 
   <script>
-    const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
+    const form = document.getElementById('cotizacionForm');
+    const success = document.getElementById('successMsg');
 
-    document.getElementById('leadForm').addEventListener('submit', async (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const payload = {
-        nombre: document.getElementById('nombre').value.trim(),
-        telefono: document.getElementById('telefono').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        ramo: document.getElementById('ramo').value,
-        canal: document.getElementById('canal').value,
-        estado: document.getElementById('estado').value,
-        asesor: document.getElementById('asesor').value,
-        origen: document.getElementById('origen').value,
-        comentarios: ""
-      };
+      const data = Object.fromEntries(new FormData(form).entries());
 
-      const msg = document.getElementById('msg');
-      msg.className = "";
-      msg.textContent = "Enviando…";
+      const response = await fetch("https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
 
-      try {
-        const res = await fetch(URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error("Error HTTP " + res.status);
-        msg.textContent = "¡Gracias! Recibimos tu solicitud. Te contactaremos pronto.";
-        msg.className = "ok";
-        e.target.reset();
-      } catch (err) {
-        msg.textContent = "No pudimos enviar tu solicitud. Intentá nuevamente.";
-        msg.className = "err";
-        console.error(err);
+      if (response.ok) {
+        success.style.display = 'block';
+        form.reset();
+      } else {
+        alert('Hubo un problema, por favor intentá nuevamente.');
       }
     });
   </script>
