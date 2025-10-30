@@ -75,7 +75,8 @@
         </div>
         <div class="field">
           <label>Teléfono (con código de área)</label>
-          <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9+()\\-.\\s]{7,}$">
+          <!-- Validación simple: al menos 7 dígitos -->
+          <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9\\s()+.-]{7,}$">
         </div>
       </div>
 
@@ -137,9 +138,8 @@
   <script>
     const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
 
-    // 🔢 NÚMEROS (solo dígitos). Obligatorio TU_WA_NUMBER.
-    const SANCOR_WA_NUMBER = "5493493668558";   // opcional, por si lo usamos luego
-    const TU_WA_NUMBER     = "5492804641495";   // TU número/puente registrado en SanCor
+    // 🔢 NÚMERO OBLIGATORIO (solo dígitos, con país) → TU WhatsApp puente
+    const TU_WA_NUMBER = "54YYYYYYYYYY";
 
     const form   = document.getElementById('leadForm');
     const msg    = document.getElementById('msg');
@@ -154,16 +154,21 @@
     const btnCopy     = document.getElementById('btnCopy');
 
     // Mostrar/ocultar campos Automotor
-    ramoSel.addEventListener('change', () => {
+    function updateAutoFields(){
       const isAuto = ramoSel.value === 'automotor';
       autoFields.style.display  = isAuto ? 'block' : 'none';
       autoActions.style.display = 'none';
-    });
+    }
+    ramoSel.addEventListener('change', updateAutoFields);
 
-    // Habilitar botón solo con consentimiento
-    okCons.addEventListener('change', () => { btn.disabled = !okCons.checked; });
+    // Habilitar botón con consentimiento
+    function toggleSubmit(){ btn.disabled = !okCons.checked; }
+    okCons.addEventListener('change', toggleSubmit);
+    // Forzar estado inicial correcto por si el navegador recuerda el checkbox
+    toggleSubmit();
+    updateAutoFields();
 
-    // Arma el texto “IA SanCor”
+    // Texto para IA SanCor
     function buildSanCorText() {
       const mmv  = (document.getElementById('auto_mm')?.value || '').trim();
       const anio = (document.getElementById('auto_anio')?.value || '').trim();
@@ -174,7 +179,7 @@
       return `https://wa.me/${toNumber}?text=${encodeURIComponent(text)}`;
     }
 
-    // Envía SIEMPRE a n8n/Sheets (incluye automotor si corresponde)
+    // Envío a n8n/Sheets
     async function logLead(payload) {
       const res = await fetch(URL, {
         method: "POST",
@@ -194,8 +199,9 @@
         msg.classList.add('err'); msg.style.display='block';
         return;
       }
-      if (!/^[0-9+()\\-.\\s]{7,}$/.test(okTel.value.trim())) {
-        msg.textContent = "Ingresá un teléfono válido.";
+      // Validación de teléfono simple: al menos 7 dígitos
+      if (!(/\d{7,}/.test(okTel.value))) {
+        msg.textContent = "Ingresá un teléfono válido (mínimo 7 dígitos).";
         msg.classList.add('err'); msg.style.display='block';
         return;
       }
@@ -213,7 +219,7 @@
         }
       }
 
-      // Payload FINAL (esto va a Sheets siempre)
+      // Payload FINAL (va a Sheets siempre)
       const payload = {
         nombre: document.getElementById('nombre').value.trim(),
         telefono: okTel.value.trim(),
@@ -224,23 +230,20 @@
         asesor: document.getElementById('asesor').value,
         origen: document.getElementById('origen').value,
         comentarios: document.getElementById('comentarios').value.trim(),
-        auto_mmv, auto_anio, auto_dni  // quedarán vacíos si no es automotor
+        auto_mmv, auto_anio, auto_dni  // quedan vacíos si no es automotor
       };
 
       btn.disabled = true; btn.textContent = "Enviando…";
       try {
-        // 1) Registrar SIEMPRE en Sheets (con o sin WhatsApp)
         await logLead(payload);
 
-        // 2) Feedback visible
         msg.textContent = "✅ ¡Gracias! Recibimos tu solicitud.";
         msg.classList.add('ok'); msg.style.display='block';
 
-        // 3) Si es Automotor → mostrar puente a tu WhatsApp
         if (ramoSel.value === 'automotor') {
           autoActions.style.display = 'block';
 
-          // Abrir TU WhatsApp con el mensaje listo para reenviar a SanCor
+          // Abrir TU WhatsApp con el mensaje listo
           btnWa.onclick = () => {
             if (!/^\d+$/.test(TU_WA_NUMBER)) {
               alert("Configurá TU_WA_NUMBER (tu WhatsApp) en el código.");
@@ -277,7 +280,7 @@ Quiero cotizar *Automotor*.
 
         // Reset visual (vuelve a pedir consentimiento)
         form.reset(); btn.textContent = "Enviar solicitud"; btn.disabled = true;
-        autoFields.style.display = 'none';
+        updateAutoFields();
       } catch (err) {
         msg.textContent = "No pudimos enviar tu solicitud. Intentá nuevamente.";
         msg.classList.add('err'); msg.style.display='block';
