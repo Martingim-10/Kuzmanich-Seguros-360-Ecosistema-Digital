@@ -75,7 +75,6 @@
         </div>
         <div class="field">
           <label>Teléfono (con código de área)</label>
-          <!-- Validación simple: al menos 7 dígitos -->
           <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9\\s()+.-]{7,}$">
         </div>
       </div>
@@ -138,7 +137,7 @@
   <script>
     const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
 
-    // 🔢 NÚMERO OBLIGATORIO (solo dígitos, con país) → TU WhatsApp puente
+    // 🔢 TU WhatsApp puente (solo dígitos, con país). Ej: 5493511234567
     const TU_WA_NUMBER = "54YYYYYYYYYY";
 
     const form   = document.getElementById('leadForm');
@@ -157,18 +156,17 @@
     function updateAutoFields(){
       const isAuto = ramoSel.value === 'automotor';
       autoFields.style.display  = isAuto ? 'block' : 'none';
-      autoActions.style.display = 'none';
+      // NO ocultamos autoActions acá para no tapar el botón luego del envío
     }
     ramoSel.addEventListener('change', updateAutoFields);
 
     // Habilitar botón con consentimiento
     function toggleSubmit(){ btn.disabled = !okCons.checked; }
     okCons.addEventListener('change', toggleSubmit);
-    // Forzar estado inicial correcto por si el navegador recuerda el checkbox
-    toggleSubmit();
-    updateAutoFields();
+    toggleSubmit();         // estado inicial
+    updateAutoFields();     // estado inicial
 
-    // Texto para IA SanCor
+    // Texto sugerido para IA SanCor
     function buildSanCorText() {
       const mmv  = (document.getElementById('auto_mm')?.value || '').trim();
       const anio = (document.getElementById('auto_anio')?.value || '').trim();
@@ -199,16 +197,17 @@
         msg.classList.add('err'); msg.style.display='block';
         return;
       }
-      // Validación de teléfono simple: al menos 7 dígitos
+      // Teléfono: mínimo 7 dígitos
       if (!(/\d{7,}/.test(okTel.value))) {
         msg.textContent = "Ingresá un teléfono válido (mínimo 7 dígitos).";
         msg.classList.add('err'); msg.style.display='block';
         return;
       }
 
-      // Si es Automotor → esos 3 campos son obligatorios
+      // Si es Automotor → obligatorios
       let auto_mmv = "", auto_anio = "", auto_dni = "";
-      if (ramoSel.value === 'automotor') {
+      const isAuto = ramoSel.value === 'automotor';
+      if (isAuto) {
         auto_mmv  = (document.getElementById('auto_mm')?.value || '').trim();
         auto_anio = (document.getElementById('auto_anio')?.value || '').trim();
         auto_dni  = (document.getElementById('auto_dni')?.value || '').trim();
@@ -219,7 +218,7 @@
         }
       }
 
-      // Payload FINAL (va a Sheets siempre)
+      // Payload FINAL (va a Sheets SIEMPRE)
       const payload = {
         nombre: document.getElementById('nombre').value.trim(),
         telefono: okTel.value.trim(),
@@ -230,7 +229,7 @@
         asesor: document.getElementById('asesor').value,
         origen: document.getElementById('origen').value,
         comentarios: document.getElementById('comentarios').value.trim(),
-        auto_mmv, auto_anio, auto_dni  // quedan vacíos si no es automotor
+        auto_mmv, auto_anio, auto_dni
       };
 
       btn.disabled = true; btn.textContent = "Enviando…";
@@ -240,10 +239,11 @@
         msg.textContent = "✅ ¡Gracias! Recibimos tu solicitud.";
         msg.classList.add('ok'); msg.style.display='block';
 
-        if (ramoSel.value === 'automotor') {
+        if (isAuto) {
+          // 🔒 NO reseteamos si es Automotor (así conservás los datos)
           autoActions.style.display = 'block';
 
-          // Abrir TU WhatsApp con el mensaje listo
+          // WhatsApp a TU línea con todo armado
           btnWa.onclick = () => {
             if (!/^\d+$/.test(TU_WA_NUMBER)) {
               alert("Configurá TU_WA_NUMBER (tu WhatsApp) en el código.");
@@ -269,23 +269,24 @@ Quiero cotizar *Automotor*.
             window.open(waLink(TU_WA_NUMBER, textoParaAsesor), "_blank");
           };
 
-          // Copiar mensaje sugerido para IA SanCor
+          // Copiar mensaje sugerido
           btnCopy.onclick = async () => {
             const text = buildSanCorText();
             try { await navigator.clipboard.writeText(text);
               alert("Mensaje copiado. Pegalo en WhatsApp (chat con SanCor) y enviá.");
             } catch { alert("No se pudo copiar automáticamente. Texto:\n\n" + text); }
           };
+        } else {
+          // Otros ramos → reset normal
+          form.reset(); toggleSubmit(); updateAutoFields();
         }
 
-        // Reset visual (vuelve a pedir consentimiento)
-        form.reset(); btn.textContent = "Enviar solicitud"; btn.disabled = true;
-        updateAutoFields();
+        btn.textContent = "Enviar solicitud"; btn.disabled = !okCons.checked;
       } catch (err) {
-        msg.textContent = "No pudimos enviar tu solicitud. Intentá nuevamente.";
+        console.error(err);
+        msg.textContent = "No pudimos enviar tu solicitud. Verificá conexión o que el flujo esté activo.";
         msg.classList.add('err'); msg.style.display='block';
         btn.textContent = "Enviar solicitud"; btn.disabled = false;
-        console.error(err);
       }
     });
   </script>
