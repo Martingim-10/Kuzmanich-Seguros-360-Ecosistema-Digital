@@ -1,222 +1,349 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Kuzmanich Seguros 360 – Solicitud de Cotización</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu;
-      max-width: 720px; margin: 0 auto; padding: 24px;
-      background: #121826; color: #f0f4f8;
-    }
-    h1 { font-size: 1.6rem; color: #0056FF; margin-bottom: 16px; }
-    .card {
-      background: #1E2433; border: 1px solid #2E374E;
-      border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-    }
-    label { display:block; margin-top:10px; font-weight:600; }
-    input, select, textarea {
-      width:100%; margin-top:4px; padding:10px;
-      border-radius:8px; border:none; background:#2A3248; color:#fff;
-      font-size:0.95rem;
-    }
-    input:disabled, select:disabled { opacity:.6; }
-    button {
-      background:#0056FF; color:#fff; border:none;
-      padding:12px 18px; border-radius:8px; margin-top:18px;
-      cursor:pointer; font-size:1rem; width:100%;
-    }
-    button:hover { background:#0a67ff; }
-    .hint { font-size:0.8rem; color:#b0b8c8; margin-top:4px; }
-    .ok { color:#00c853; font-weight:600; }
-    .row { display:flex; gap:12px; }
-    .row .field { flex:1; }
-    .footer { text-align:center; margin-top:24px; font-size:0.85rem; color:#99a; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kuzmanich Seguros 360 – Cotización Automotor</title>
+<style>
+  :root{
+    --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --stroke:#233046;
+    --text:#e5e7eb; --muted:#94a3b8; --brand:#3b82f6; --ok:#22c55e; --err:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);
+       font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;display:flex;justify-content:center;align-items:flex-start;padding:24px}
+  .wrap{width:100%;max-width:760px}
+  h1{margin:0 0 8px;color:#93c5fd;font-size:1.45rem}
+  .sub{color:var(--muted);margin-bottom:16px}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+        border-radius:16px;box-shadow:0 18px 40px rgba(0,0,0,.45);padding:16px}
+  .steps{display:flex;gap:6px;margin:6px 0 14px}
+  .step{flex:1;height:6px;border-radius:6px;background:#1e293b;position:relative;overflow:hidden}
+  .step.active::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--brand),#60a5fa)}
+  label{display:block;margin:10px 0 6px;color:#cbd5e1;font-weight:600}
+  input,select,textarea{
+    width:100%;padding:11px;border-radius:10px;border:1px solid var(--stroke);background:#0b1220;color:var(--text);outline:none
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--brand)}
+  .row{display:flex;gap:10px} .row>.f{flex:1}
+  .muted{font-size:.86rem;color:var(--muted);margin-top:4px}
+  .actions{display:flex;gap:10px;margin-top:16px}
+  .btn{flex:1;padding:12px;border:none;border-radius:10px;cursor:pointer;font-weight:700}
+  .btn.primary{background:linear-gradient(180deg,var(--brand),#60a5fa);color:#fff}
+  .btn.secondary{background:#1f2937;color:#e5e7eb;border:1px solid var(--stroke)}
+  .msg{margin-top:10px;display:none;font-weight:600}
+  .msg.ok{color:var(--ok)} .msg.err{color:var(--err)}
+  .hidden{display:none}
+  .hintbox{border:1px dashed var(--stroke);padding:10px;border-radius:10px;margin-top:10px}
+  .footer{color:var(--muted);text-align:center;margin-top:10px;font-size:.88rem}
+</style>
 </head>
 <body>
+<div class="wrap">
+  <h1>Cotizá tu Seguro Automotor</h1>
+  <div class="sub">Paso a paso, como en el cotizador de Sancor, pero con nuestra atención personalizada.</div>
 
-  <h1>Solicitud de Cotización</h1>
-  <form id="cotizaForm" class="card">
-    <label>Nombre completo</label>
-    <input id="nombre" required>
-
-    <label>Teléfono</label>
-    <input id="telefono" type="tel" placeholder="+549..." required>
-
-    <label>Email</label>
-    <input id="email" type="email" placeholder="tu@email.com" required>
-
-    <label>Ramo</label>
-    <select id="ramo" required>
-      <option value="">Seleccioná...</option>
-      <option value="automotor">Automotor</option>
-      <option value="retiro">Retiro</option>
-      <option value="vida">Vida</option>
-      <option value="hogar">Hogar</option>
-    </select>
-
-    <!-- CAMPOS AUTOMOTOR -->
-    <div id="autoFields" style="display:none; margin-top:8px">
-      <div class="row">
-        <div class="field">
-          <label>Año</label>
-          <select id="auto_anio" required><option value="">Seleccioná...</option></select>
-        </div>
-        <div class="field">
-          <label>Marca</label>
-          <select id="auto_marca" required disabled><option value="">Seleccioná...</option></select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="field">
-          <label>Modelo</label>
-          <select id="auto_modelo" required disabled><option value="">Seleccioná...</option></select>
-        </div>
-        <div class="field">
-          <label>Motor</label>
-          <select id="auto_motor" required disabled><option value="">Seleccioná...</option></select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="field">
-          <label>Transmisión</label>
-          <select id="auto_transmision" required disabled><option value="">Seleccioná...</option></select>
-        </div>
-        <div class="field">
-          <label>Versión</label>
-          <select id="auto_version" required disabled><option value="">Seleccioná...</option></select>
-        </div>
-      </div>
-      <label>DNI del tomador</label>
-      <input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
+  <div class="card">
+    <div class="steps">
+      <div class="step" id="s1"></div>
+      <div class="step" id="s2"></div>
+      <div class="step" id="s3"></div>
+      <div class="step" id="s4"></div>
     </div>
 
-    <label>Comentarios (opcional)</label>
-    <textarea id="comentarios" rows="2"></textarea>
+    <form id="form">
+      <!-- PASO 1: Datos del vehículo -->
+      <div id="p1">
+        <div class="row">
+          <div class="f">
+            <label>Año</label>
+            <select id="auto_anio"></select>
+          </div>
+          <div class="f">
+            <label>Marca (escribí para filtrar)</label>
+            <input list="list_marca" id="auto_marca_input" placeholder="Ej: Toyota">
+            <datalist id="list_marca"></datalist>
+          </div>
+        </div>
 
-    <div style="margin-top:10px;">
-      <input id="acepta" type="checkbox" required>
-      Acepto el uso de mis datos para recibir mi cotización y asesoramiento (Ley 25.326).
-    </div>
+        <div class="row">
+          <div class="f">
+            <label>Modelo</label>
+            <input list="list_modelo" id="auto_modelo_input" placeholder="Ej: Corolla">
+            <datalist id="list_modelo"></datalist>
+          </div>
+          <div class="f">
+            <label>Motorización</label>
+            <select id="auto_motor" disabled><option value="">Seleccioná…</option></select>
+          </div>
+        </div>
 
-    <button type="submit">Enviar solicitud</button>
-    <p id="okMsg" class="ok" style="display:none;">¡Gracias! Recibimos tu solicitud.</p>
+        <div class="row">
+          <div class="f">
+            <label>Transmisión</label>
+            <select id="auto_transmision" disabled><option value="">Seleccioná…</option></select>
+          </div>
+          <div class="f">
+            <label>Versión / Equipamiento</label>
+            <select id="auto_version" disabled><option value="">Seleccioná…</option></select>
+          </div>
+        </div>
 
-    <button id="btnWsp" type="button" style="display:none; background:#2b73ff;">Enviar a SanCor desde mi WhatsApp</button>
-  </form>
+        <!-- Fallback manual -->
+        <div id="manualBox" class="hintbox hidden">
+          <div class="muted">¿No aparece en la lista? Completalo manualmente:</div>
+          <div class="row">
+            <div class="f"><label>Marca</label><input id="m_marca" placeholder="Ej: Toyota"></div>
+            <div class="f"><label>Modelo</label><input id="m_modelo" placeholder="Ej: Corolla"></div>
+          </div>
+          <div class="row">
+            <div class="f"><label>Motor</label><input id="m_motor" placeholder="Ej: 1.8 Hybrid"></div>
+            <div class="f"><label>Transmisión</label><input id="m_trans" placeholder="Ej: CVT"></div>
+          </div>
+          <label>Versión</label><input id="m_ver" placeholder="Ej: SEG">
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn primary" id="next1">Continuar</button>
+        </div>
+      </div>
+
+      <!-- PASO 2: DNI -->
+      <div id="p2" class="hidden">
+        <label>DNI del tomador</label>
+        <input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
+        <div class="muted">Estos datos son necesarios para cotizar correctamente.</div>
+
+        <div class="actions">
+          <button type="button" class="btn secondary" id="back2">Atrás</button>
+          <button type="button" class="btn primary" id="next2">Continuar</button>
+        </div>
+      </div>
+
+      <!-- PASO 3: Datos de contacto -->
+      <div id="p3" class="hidden">
+        <div class="row">
+          <div class="f"><label>Nombre completo</label><input id="nombre" required></div>
+          <div class="f"><label>Teléfono</label><input id="telefono" type="tel" placeholder="+54 9 ..." required></div>
+        </div>
+        <label>Email</label><input id="email" type="email" placeholder="tu@email.com">
+        <label>Comentarios (opcional)</label><textarea id="comentarios" rows="2"></textarea>
+
+        <label style="margin-top:10px">
+          <input id="acepta" type="checkbox"> Acepto el uso de mis datos para recibir mi cotización (Ley 25.326).
+        </label>
+
+        <div class="actions">
+          <button type="button" class="btn secondary" id="back3">Atrás</button>
+          <button type="button" class="btn primary" id="next3">Continuar</button>
+        </div>
+      </div>
+
+      <!-- PASO 4: Envío -->
+      <div id="p4" class="hidden">
+        <div class="muted">Revisá y enviá tu solicitud. Guardaremos tu lead y te abrimos WhatsApp con el mensaje listo para la IA de Sancor.</div>
+        <div class="actions">
+          <button type="button" class="btn secondary" id="back4">Atrás</button>
+          <button type="submit" class="btn primary" id="sendBtn">Enviar solicitud</button>
+        </div>
+        <div id="msg" class="msg"></div>
+        <div class="actions">
+          <button type="button" class="btn" id="btnWa" style="display:none;background:#2563eb;">📲 Enviar por WhatsApp</button>
+          <button type="button" class="btn secondary" id="btnCopy" style="display:none;">📋 Copiar mensaje</button>
+        </div>
+      </div>
+
+      <!-- Hidden tracking -->
+      <input type="hidden" id="ramo" value="automotor">
+      <input type="hidden" id="canal" value="instagram">
+      <input type="hidden" id="estado" value="nuevo">
+      <input type="hidden" id="asesor" value="auto">
+      <input type="hidden" id="origen" value="form">
+    </form>
+  </div>
 
   <div class="footer">Kuzmanich Seguros 360 · Atención personalizada</div>
+</div>
 
 <script>
+/** ====== CONFIG ====== **/
+const WEBHOOK_URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
+const WSP_NUMBER  = "5493511234567"; // <--- PONÉ TU NÚMERO AQUÍ (solo dígitos)
+
+/** ====== UI helpers ====== **/
+const stepBars = [document.getElementById('s1'),document.getElementById('s2'),document.getElementById('s3'),document.getElementById('s4')];
+function setStep(n){ stepBars.forEach((b,i)=>b.classList.toggle('active', i<=n-1));
+  document.getElementById('p1').classList.toggle('hidden', n!==1);
+  document.getElementById('p2').classList.toggle('hidden', n!==2);
+  document.getElementById('p3').classList.toggle('hidden', n!==3);
+  document.getElementById('p4').classList.toggle('hidden', n!==4);
+}
+setStep(1);
+
+/** ====== Catalogo (vehiculos.json) + Años fijos ====== **/
 let VEHICLES = [];
+const YEARS = Array.from({length: 2025-2010+1},(_,i)=>2010+i).reverse();
 
-async function loadCatalog() {
-  try {
-    const res = await fetch("./data/vehiculos.json", { cache:"no-store" });
-    VEHICLES = await res.json();
-  } catch(e) {
-    console.error("Error cargando catálogo:", e);
-  }
-}
+const selYear = document.getElementById('auto_anio');
+const inpMarca = document.getElementById('auto_marca_input');
+const listMarca = document.getElementById('list_marca');
+const inpModelo = document.getElementById('auto_modelo_input');
+const listModelo = document.getElementById('list_modelo');
+const selMotor = document.getElementById('auto_motor');
+const selTrans = document.getElementById('auto_transmision');
+const selVer   = document.getElementById('auto_version');
+const manualBox = document.getElementById('manualBox');
 
-function uniq(a){return [...new Set(a)]}
-function fill(sel, arr, ph="Seleccioná...") {
-  sel.innerHTML = "";
-  const o0=document.createElement("option");o0.value="";o0.textContent=ph;sel.appendChild(o0);
-  arr.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o);});
-  sel.disabled = arr.length===0;
-}
+function fillYears(){ selYear.innerHTML=""; YEARS.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;selYear.appendChild(o);}); }
 
-// Selectors
-const ramoSel=document.getElementById("ramo");
-const autoFields=document.getElementById("autoFields");
-const selAnio=document.getElementById("auto_anio");
-const selMarca=document.getElementById("auto_marca");
-const selModelo=document.getElementById("auto_modelo");
-const selMotor=document.getElementById("auto_motor");
-const selTrans=document.getElementById("auto_transmision");
-const selVer=document.getElementById("auto_version");
+function uniq(a){ return [...new Set(a)] }
+function fillDatalist(datalist, arr){ datalist.innerHTML=""; arr.forEach(v=>{ const o=document.createElement('option'); o.value=v; datalist.appendChild(o); }); }
+function fillSelect(sel,arr,ph="Seleccioná…"){ sel.innerHTML=""; const o0=document.createElement('option'); o0.value=""; o0.textContent=ph; sel.appendChild(o0); arr.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);}); sel.disabled = arr.length===0; }
 
-// Mostrar campos automotor
-ramoSel.addEventListener("change",()=>{
-  autoFields.style.display = ramoSel.value==="automotor" ? "block" : "none";
-});
-
-// Carga dinámica
-selAnio.addEventListener("change",()=>{
-  const y=+selAnio.value;
-  const brands=uniq(VEHICLES.filter(v=>v.year===y).map(v=>v.brand)).sort();
-  fill(selMarca,brands);
-  fill(selModelo,[]);fill(selMotor,[]);fill(selTrans,[]);fill(selVer,[]);
-});
-selMarca.addEventListener("change",()=>{
-  const y=+selAnio.value,b=selMarca.value;
-  const models=uniq(VEHICLES.filter(v=>v.year===y&&v.brand===b).map(v=>v.model)).sort();
-  fill(selModelo,models);
-  fill(selMotor,[]);fill(selTrans,[]);fill(selVer,[]);
-});
-selModelo.addEventListener("change",()=>{
-  const y=+selAnio.value,b=selMarca.value,m=selModelo.value;
-  const engines=VEHICLES.filter(v=>v.year===y&&v.brand===b&&v.model===m).flatMap(v=>v.engines||[]);
-  fill(selMotor,uniq(engines.map(e=>e.name)));fill(selTrans,[]);fill(selVer,[]);
-});
-selMotor.addEventListener("change",()=>{
-  const y=+selAnio.value,b=selMarca.value,m=selModelo.value,em=selMotor.value;
-  const eng=VEHICLES.find(v=>v.year===y&&v.brand===b&&v.model===m)?.engines?.find(e=>e.name===em);
-  fill(selTrans,eng?eng.transmissions.map(t=>t.name):[]);
-  fill(selVer,[]);
-});
-selTrans.addEventListener("change",()=>{
-  const y=+selAnio.value,b=selMarca.value,m=selModelo.value,em=selMotor.value,tr=selTrans.value;
-  const eng=VEHICLES.find(v=>v.year===y&&v.brand===b&&v.model===m)?.engines?.find(e=>e.name===em);
-  const vers=eng?(eng.transmissions.find(t=>t.name===tr)?.versions||[]):[];
-  fill(selVer,vers);
-});
-
-(async()=>{await loadCatalog();fill(selAnio,uniq(VEHICLES.map(v=>v.year)).sort((a,b)=>b-a));})();
-
-// Envío del formulario
-const form=document.getElementById("cotizaForm");
-const okMsg=document.getElementById("okMsg");
-const btnWsp=document.getElementById("btnWsp");
-
-form.addEventListener("submit",async(e)=>{
-  e.preventDefault();
-  const data={
-    nombre:form.nombre.value,
-    telefono:form.telefono.value,
-    email:form.email.value,
-    ramo:form.ramo.value,
-    comentarios:form.comentarios.value,
-    auto_anio:selAnio.value,
-    auto_marca:selMarca.value,
-    auto_modelo:selModelo.value,
-    auto_motor:selMotor.value,
-    auto_transmision:selTrans.value,
-    auto_version:selVer.value,
-    auto_dni:document.getElementById("auto_dni").value
-  };
+async function loadCatalog(){
   try{
-    await fetch("https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(data)
-    });
-    okMsg.style.display="block";
-    btnWsp.style.display="block";
+    const r = await fetch("./data/vehiculos.json",{cache:"no-store"});
+    VEHICLES = await r.json();
+  }catch(e){ console.warn("No se pudo cargar vehiculos.json", e); VEHICLES=[]; }
+}
+fillYears();
+
+/** ====== Cascada ====== **/
+function toggleManual(){
+  const y=+selYear.value;
+  const hasBrand = VEHICLES.some(v=>v.year===y);
+  const brand = inpMarca.value.trim();
+  const hasModel = VEHICLES.some(v=>v.year===y && v.brand===brand);
+  manualBox.classList.toggle('hidden', hasBrand && hasModel);
+}
+
+selYear.addEventListener('change',()=>{
+  const y=+selYear.value;
+  const brands=uniq(VEHICLES.filter(v=>v.year===y).map(v=>v.brand)).sort();
+  fillDatalist(listMarca, brands);
+  inpMarca.value=""; inpModelo.value="";
+  fillDatalist(listModelo, []);
+  fillSelect(selMotor, []); fillSelect(selTrans, []); fillSelect(selVer, []);
+  toggleManual();
+});
+
+inpMarca.addEventListener('input',()=>{
+  const y=+selYear.value, b=inpMarca.value.trim();
+  const models=uniq(VEHICLES.filter(v=>v.year===y && v.brand===b).map(v=>v.model)).sort();
+  fillDatalist(listModelo, models);
+  inpModelo.value="";
+  fillSelect(selMotor, []); fillSelect(selTrans, []); fillSelect(selVer, []);
+  toggleManual();
+});
+
+inpModelo.addEventListener('input',()=>{
+  const y=+selYear.value, b=inpMarca.value.trim(), m=inpModelo.value.trim();
+  const engines = VEHICLES.filter(v=>v.year===y && v.brand===b && v.model===m).flatMap(v=>v.engines||[]);
+  fillSelect(selMotor, uniq(engines.map(e=>e.name)));
+  fillSelect(selTrans, []); fillSelect(selVer, []);
+  toggleManual();
+});
+
+selMotor.addEventListener('change',()=>{
+  const y=+selYear.value, b=inpMarca.value.trim(), m=inpModelo.value.trim(), em=selMotor.value;
+  const eng=VEHICLES.find(v=>v.year===y && v.brand===b && v.model===m)?.engines?.find(e=>e.name===em);
+  fillSelect(selTrans, eng ? eng.transmissions.map(t=>t.name) : []);
+  fillSelect(selVer, []);
+});
+selTrans.addEventListener('change',()=>{
+  const y=+selYear.value, b=inpMarca.value.trim(), m=inpModelo.value.trim(), em=selMotor.value, tr=selTrans.value;
+  const eng=VEHICLES.find(v=>v.year===y && v.brand===b && v.model===m)?.engines?.find(e=>e.name===em);
+  const vers=eng ? (eng.transmissions.find(t=>t.name===tr)?.versions || []) : [];
+  fillSelect(selVer, vers.length?vers:["Base","Otra"]);
+});
+
+/** ====== Paso a paso ====== **/
+document.getElementById('next1').addEventListener('click',()=>{
+  // valida que haya al menos marca y modelo (de catálogo o manual)
+  const ok = (inpMarca.value.trim() && inpModelo.value.trim()) || (document.getElementById('m_marca').value.trim() && document.getElementById('m_modelo').value.trim());
+  if(!ok){ alert("Completá al menos Marca y Modelo (o usá el modo manual)."); return; }
+  setStep(2);
+});
+document.getElementById('back2').addEventListener('click',()=>setStep(1));
+document.getElementById('next2').addEventListener('click',()=>{
+  if(!document.getElementById('auto_dni').value.trim()){ alert("Ingresá el DNI del tomador."); return; }
+  setStep(3);
+});
+document.getElementById('back3').addEventListener('click',()=>setStep(2));
+document.getElementById('next3').addEventListener('click',()=>{
+  if(!document.getElementById('acepta').checked){ alert("Aceptá el uso de datos para continuar."); return; }
+  setStep(4);
+});
+document.getElementById('back4').addEventListener('click',()=>setStep(3));
+
+/** ====== Envío + WhatsApp ====== **/
+const form = document.getElementById('form');
+const msg = document.getElementById('msg');
+const btnWa = document.getElementById('btnWa');
+const btnCopy = document.getElementById('btnCopy');
+
+function chosenOrManual(){
+  return {
+    marca:  inpMarca.value.trim() || document.getElementById('m_marca').value.trim(),
+    modelo: inpModelo.value.trim()|| document.getElementById('m_modelo').value.trim(),
+    motor:  selMotor.value || document.getElementById('m_motor').value.trim(),
+    trans:  selTrans.value || document.getElementById('m_trans').value.trim(),
+    ver:    selVer.value   || document.getElementById('m_ver').value.trim()
+  };
+}
+function buildText(){
+  const {marca,modelo,motor,trans,ver} = chosenOrManual();
+  const anio = selYear.value; const dni = document.getElementById('auto_dni').value.trim();
+  return `Quiero cotizar un ${marca} ${modelo}${ver?(' '+ver):''}${motor?(' '+motor):''}${trans?(' '+trans):''} del año ${anio}, para el DNI ${dni}.`;
+}
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const {marca,modelo,motor,trans,ver} = chosenOrManual();
+  const payload = {
+    nombre: document.getElementById('nombre').value.trim(),
+    telefono: document.getElementById('telefono').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    ramo: document.getElementById('ramo').value,
+    comentarios: document.getElementById('comentarios').value.trim(),
+    canal: document.getElementById('canal').value,
+    estado: document.getElementById('estado').value,
+    asesor: document.getElementById('asesor').value,
+    origen: document.getElementById('origen').value,
+    auto_anio: selYear.value,
+    auto_marca: marca,
+    auto_modelo: modelo,
+    auto_motor: motor,
+    auto_transmision: trans,
+    auto_version: ver,
+    auto_dni: document.getElementById('auto_dni').value.trim(),
+    auto_mmv: [marca,modelo,ver,motor,trans].filter(Boolean).join(" ")
+  };
+  msg.style.display="none"; msg.className="msg";
+  try{
+    await fetch(WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    msg.textContent="✅ ¡Gracias! Recibimos tu solicitud.";
+    msg.classList.add('ok'); msg.style.display="block";
+    btnWa.style.display="inline-block";
+    btnCopy.style.display="inline-block";
   }catch(err){
-    alert("Error al enviar: "+err.message);
+    msg.textContent="No pudimos enviar tu solicitud. Revisá tu conexión o que el flujo esté activo.";
+    msg.classList.add('err'); msg.style.display="block";
   }
 });
 
-// Enviar mensaje de WhatsApp
-btnWsp.addEventListener("click",()=>{
-  const txt=`Quiero cotizar un ${selMarca.value} ${selModelo.value} ${selVersion?.value||""} del año ${selAnio.value}, para el DNI ${document.getElementById("auto_dni").value}.`;
-  const wspURL=`https://wa.me/5492804641495?text=${encodeURIComponent(txt)}`;
-  window.open(wspURL,"_blank");
+btnWa.addEventListener('click',()=>{
+  const wsp=`https://wa.me/${WSP_NUMBER}?text=${encodeURIComponent(buildText())}`;
+  window.open(wsp,"_blank");
 });
+btnCopy.addEventListener('click', async ()=>{
+  const t = buildText();
+  try{ await navigator.clipboard.writeText(t); alert("Mensaje copiado. Pegalo en WhatsApp y enviá."); }
+  catch{ prompt("Copiá el mensaje:", t); }
+});
+
+/** Init **/
+(async ()=>{ await loadCatalog(); })();
 </script>
 </body>
 </html>
