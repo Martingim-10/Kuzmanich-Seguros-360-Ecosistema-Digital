@@ -1,349 +1,257 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kuzmanich Seguros 360 – Cotización Automotor</title>
-<style>
-  :root{
-    --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --stroke:#233046;
-    --text:#e5e7eb; --muted:#94a3b8; --brand:#3b82f6; --ok:#22c55e; --err:#ef4444;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);
-       font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;display:flex;justify-content:center;align-items:flex-start;padding:24px}
-  .wrap{width:100%;max-width:760px}
-  h1{margin:0 0 8px;color:#93c5fd;font-size:1.45rem}
-  .sub{color:var(--muted);margin-bottom:16px}
-  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
-        border-radius:16px;box-shadow:0 18px 40px rgba(0,0,0,.45);padding:16px}
-  .steps{display:flex;gap:6px;margin:6px 0 14px}
-  .step{flex:1;height:6px;border-radius:6px;background:#1e293b;position:relative;overflow:hidden}
-  .step.active::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--brand),#60a5fa)}
-  label{display:block;margin:10px 0 6px;color:#cbd5e1;font-weight:600}
-  input,select,textarea{
-    width:100%;padding:11px;border-radius:10px;border:1px solid var(--stroke);background:#0b1220;color:var(--text);outline:none
-  }
-  input:focus,select:focus,textarea:focus{border-color:var(--brand)}
-  .row{display:flex;gap:10px} .row>.f{flex:1}
-  .muted{font-size:.86rem;color:var(--muted);margin-top:4px}
-  .actions{display:flex;gap:10px;margin-top:16px}
-  .btn{flex:1;padding:12px;border:none;border-radius:10px;cursor:pointer;font-weight:700}
-  .btn.primary{background:linear-gradient(180deg,var(--brand),#60a5fa);color:#fff}
-  .btn.secondary{background:#1f2937;color:#e5e7eb;border:1px solid var(--stroke)}
-  .msg{margin-top:10px;display:none;font-weight:600}
-  .msg.ok{color:var(--ok)} .msg.err{color:var(--err)}
-  .hidden{display:none}
-  .hintbox{border:1px dashed var(--stroke);padding:10px;border-radius:10px;margin-top:10px}
-  .footer{color:var(--muted);text-align:center;margin-top:10px;font-size:.88rem}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kuzmanich Seguros 360 — Cotizá en minutos</title>
+  <meta name="description" content="Formulario optimizado: envía tus datos al CRM (n8n) y abre WhatsApp con el mensaje prellenado para continuar la atención." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#0e1429;
+      --muted:#9fb0d0;
+      --text:#e7ecf5;
+      --brand:#22c55e;
+      --brand-600:#16a34a;
+      --line:rgba(255,255,255,.12);
+      --shadow:0 30px 80px rgba(2,6,23,.45);
+      --error:#ef4444;
+      --ok:#10b981;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial; 
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #0f1a3c 0%, transparent 60%),
+        radial-gradient(1000px 500px at 90% 110%, #0a122c 0%, transparent 60%),
+        linear-gradient(180deg,#0a0f22, var(--bg));
+      min-height:100svh; display:grid; grid-template-rows:auto 1fr auto;
+    }
+    header{padding:22px; text-align:center; border-bottom:1px solid var(--line); background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.0));}
+    header .brand{font-weight:700; letter-spacing:.2px}
+    header .tag{color:var(--muted); font-size:.95rem}
+    .wrap{width:100%; max-width:900px; margin:32px auto; padding:0 18px}
+    .hero{text-align:center; margin-bottom:18px}
+    .hero h1{margin:0 0 8px; font-size:clamp(1.4rem,1.1rem + 1.6vw,2rem)}
+    .hero p{margin:0; color:var(--muted)}
+    .grid{display:grid; grid-template-columns:1fr; gap:18px}
+    @media(min-width:880px){.grid{grid-template-columns:3fr 2fr}}
+    .card{background:var(--panel); border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow)}
+    .card .body{padding:22px}
+    form{display:grid; grid-template-columns:1fr; gap:14px}
+    .row{display:grid; grid-template-columns:1fr; gap:14px}
+    @media(min-width:720px){.row{grid-template-columns:1fr 1fr}}
+    label{display:block; font-size:.92rem; color:var(--muted); margin-bottom:6px}
+    .field{position:relative}
+    input, select, textarea{width:100%; background:#0a0f22; color:var(--text); border:1px solid var(--line); border-radius:12px; padding:12px 14px; outline:none; transition:border .2s, box-shadow .2s;}
+    input:focus, select:focus, textarea:focus{border-color:rgba(34,197,94,.6); box-shadow:0 0 0 3px rgba(34,197,94,.15)}
+    .hint{font-size:.9rem; color:var(--muted)}
+    .actions{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:2px}
+    button{appearance:none; border:0; cursor:pointer; font-weight:600; letter-spacing:.2px; padding:12px 18px; border-radius:12px; background:var(--brand); color:#05220f; transition:transform .2s, filter .2s}
+    button:hover{transform:translateY(-1px)}
+    button:disabled{filter:grayscale(.6); cursor:not-allowed}
+    .ghost{background:transparent; color:var(--text); border:1px solid var(--line)}
+    .status{min-height:22px; font-size:.95rem}
+    .ok{color:var(--ok)} .err{color:var(--error)}
+    .hp{position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden}
+    .badge{display:inline-flex; align-items:center; gap:8px; font-size:.92rem; color:var(--muted)}
+    .badge i{width:8px; height:8px; border-radius:50%; background:var(--brand)}
+    .aside ul{list-style:none; padding:0; margin:0; display:grid; gap:10px}
+    .aside li{display:flex; align-items:flex-start; gap:10px; color:var(--muted)}
+    .aside li i{width:8px; height:8px; margin-top:8px; border-radius:50%; background:var(--brand)}
+    footer{text-align:center; color:var(--muted); padding:18px; border-top:1px solid var(--line)}
+    a{color:var(--brand)}
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Cotizá tu Seguro Automotor</h1>
-  <div class="sub">Paso a paso, como en el cotizador de Sancor, pero con nuestra atención personalizada.</div>
+  <header>
+    <div class="wrap">
+      <div class="brand">Kuzmanich Seguros 360</div>
+      <div class="tag">Asesoramiento integral — Cotizá en minutos</div>
+    </div>
+  </header>
 
-  <div class="card">
-    <div class="steps">
-      <div class="step" id="s1"></div>
-      <div class="step" id="s2"></div>
-      <div class="step" id="s3"></div>
-      <div class="step" id="s4"></div>
+  <main class="wrap">
+    <div class="hero">
+      <h1>Solicitá tu cotización</h1>
+      <p>Completá tus datos. Te respondemos por WhatsApp y registramos tu consulta en nuestro CRM.</p>
     </div>
 
-    <form id="form">
-      <!-- PASO 1: Datos del vehículo -->
-      <div id="p1">
-        <div class="row">
-          <div class="f">
-            <label>Año</label>
-            <select id="auto_anio"></select>
-          </div>
-          <div class="f">
-            <label>Marca (escribí para filtrar)</label>
-            <input list="list_marca" id="auto_marca_input" placeholder="Ej: Toyota">
-            <datalist id="list_marca"></datalist>
-          </div>
+    <div class="grid">
+      <section class="card">
+        <div class="body">
+          <div class="badge"><i></i> Conexión segura a CRM (n8n + Google Sheets)</div>
+          <form id="leadForm" novalidate>
+            <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" />
+
+            <div class="row">
+              <div class="field">
+                <label for="nombre">Nombre y apellido</label>
+                <input id="nombre" name="nombre" type="text" placeholder="Juan Pérez" required />
+              </div>
+              <div class="field">
+                <label for="dni">DNI</label>
+                <input id="dni" name="dni" type="text" placeholder="Ej: 32123456" required />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="telefono">Teléfono (WhatsApp)</label>
+                <input id="telefono" name="telefono" type="tel" inputmode="tel" placeholder="11 5555 5555" required />
+              </div>
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="juan@mail.com" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="ramo">Ramo</label>
+              <select id="ramo" name="ramo" required>
+                <option value="" selected disabled>Elegí una opción</option>
+                <option>Automotor</option>
+                <option>Hogar</option>
+                <option>Vida</option>
+                <option>Retiro</option>
+                <option>Salud</option>
+                <option>ART</option>
+                <option>Otros</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="detalle">Detalle (marca, modelo y año)</label>
+              <input id="detalle" name="detalle" type="text" placeholder="Toyota Etios XLS 2022" />
+            </div>
+
+            <div class="field">
+              <label for="mensaje">Mensaje (opcional)</label>
+              <textarea id="mensaje" name="mensaje" rows="3" placeholder="Contanos algo más si querés…"></textarea>
+            </div>
+
+            <label class="hint"><input type="checkbox" id="consent" required /> Acepto ser contactad@ por WhatsApp / email</label>
+
+            <div class="actions">
+              <button id="submitBtn" type="submit">Enviar y abrir WhatsApp</button>
+              <button class="ghost" type="reset">Limpiar</button>
+              <span id="status" class="status" aria-live="polite"></span>
+            </div>
+
+            <input type="hidden" id="utm_source" name="utm_source" />
+            <input type="hidden" id="utm_medium" name="utm_medium" />
+            <input type="hidden" id="utm_campaign" name="utm_campaign" />
+          </form>
         </div>
+      </section>
 
-        <div class="row">
-          <div class="f">
-            <label>Modelo</label>
-            <input list="list_modelo" id="auto_modelo_input" placeholder="Ej: Corolla">
-            <datalist id="list_modelo"></datalist>
-          </div>
-          <div class="f">
-            <label>Motorización</label>
-            <select id="auto_motor" disabled><option value="">Seleccioná…</option></select>
-          </div>
+      <aside class="card aside">
+        <div class="body">
+          <h3 style="margin-top:0">¿Por qué con nosotros?</h3>
+          <ul>
+            <li><i></i> Productores oficiales. Cotizamos con la compañía número 1 del mercado.</li>
+            <li><i></i> Respuesta ágil por WhatsApp. Sin vueltas.</li>
+            <li><i></i> Tus datos quedan protegidos. Uso exclusivo para tu cotización.</li>
+          </ul>
+          <p class="hint" style="margin-top:12px">Al enviar aceptás nuestros <a href="#" rel="nofollow">Términos</a> y <a href="#" rel="nofollow">Privacidad</a>.</p>
         </div>
+      </aside>
+    </div>
+  </main>
 
-        <div class="row">
-          <div class="f">
-            <label>Transmisión</label>
-            <select id="auto_transmision" disabled><option value="">Seleccioná…</option></select>
-          </div>
-          <div class="f">
-            <label>Versión / Equipamiento</label>
-            <select id="auto_version" disabled><option value="">Seleccioná…</option></select>
-          </div>
-        </div>
+  <footer>
+    © Kuzmanich Seguros 360 — Todos los derechos reservados
+  </footer>
 
-        <!-- Fallback manual -->
-        <div id="manualBox" class="hintbox hidden">
-          <div class="muted">¿No aparece en la lista? Completalo manualmente:</div>
-          <div class="row">
-            <div class="f"><label>Marca</label><input id="m_marca" placeholder="Ej: Toyota"></div>
-            <div class="f"><label>Modelo</label><input id="m_modelo" placeholder="Ej: Corolla"></div>
-          </div>
-          <div class="row">
-            <div class="f"><label>Motor</label><input id="m_motor" placeholder="Ej: 1.8 Hybrid"></div>
-            <div class="f"><label>Transmisión</label><input id="m_trans" placeholder="Ej: CVT"></div>
-          </div>
-          <label>Versión</label><input id="m_ver" placeholder="Ej: SEG">
-        </div>
+  <script>
+    const N8N_WEBHOOK_URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
+    const PRODUCER_WSP = "5492804641495";
 
-        <div class="actions">
-          <button type="button" class="btn primary" id="next1">Continuar</button>
-        </div>
-      </div>
+    const enc = (s) => encodeURIComponent(String(s ?? '').trim());
+    const onlyDigits = (s) => String(s ?? '').replace(/\D+/g,'');
 
-      <!-- PASO 2: DNI -->
-      <div id="p2" class="hidden">
-        <label>DNI del tomador</label>
-        <input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
-        <div class="muted">Estos datos son necesarios para cotizar correctamente.</div>
+    function fetchWithTimeout(url, options = {}, timeoutMs = 5000){
+      const ctrl = new AbortController();
+      const id = setTimeout(() => ctrl.abort(), timeoutMs);
+      return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(id));
+    }
 
-        <div class="actions">
-          <button type="button" class="btn secondary" id="back2">Atrás</button>
-          <button type="button" class="btn primary" id="next2">Continuar</button>
-        </div>
-      </div>
+    function buildWaText(d){
+      const parts = [
+        'Hola, quiero una cotización:',
+        `• Nombre: ${d.nombre}`,
+        `• DNI: ${d.dni}`,
+        `• Teléfono: ${d.telefono}`,
+        d.email ? `• Email: ${d.email}` : null,
+        `• Ramo: ${d.ramo}`,
+        d.detalle ? `• Detalle: ${d.detalle}` : null,
+        d.mensaje ? `• Mensaje: ${d.mensaje}` : null,
+        '— Enviado desde el formulario web'
+      ].filter(Boolean).join('\n');
+      return enc(parts);
+    }
 
-      <!-- PASO 3: Datos de contacto -->
-      <div id="p3" class="hidden">
-        <div class="row">
-          <div class="f"><label>Nombre completo</label><input id="nombre" required></div>
-          <div class="f"><label>Teléfono</label><input id="telefono" type="tel" placeholder="+54 9 ..." required></div>
-        </div>
-        <label>Email</label><input id="email" type="email" placeholder="tu@email.com">
-        <label>Comentarios (opcional)</label><textarea id="comentarios" rows="2"></textarea>
+    (function setUTMs(){
+      const p = new URLSearchParams(location.search);
+      for (const k of ['utm_source','utm_medium','utm_campaign']){
+        const v = p.get(k); if (v) document.getElementById(k).value = v;
+      }
+    })();
 
-        <label style="margin-top:10px">
-          <input id="acepta" type="checkbox"> Acepto el uso de mis datos para recibir mi cotización (Ley 25.326).
-        </label>
+    const form = document.getElementById('leadForm');
+    const statusEl = document.getElementById('status');
+    const submitBtn = document.getElementById('submitBtn');
 
-        <div class="actions">
-          <button type="button" class="btn secondary" id="back3">Atrás</button>
-          <button type="button" class="btn primary" id="next3">Continuar</button>
-        </div>
-      </div>
-
-      <!-- PASO 4: Envío -->
-      <div id="p4" class="hidden">
-        <div class="muted">Revisá y enviá tu solicitud. Guardaremos tu lead y te abrimos WhatsApp con el mensaje listo para la IA de Sancor.</div>
-        <div class="actions">
-          <button type="button" class="btn secondary" id="back4">Atrás</button>
-          <button type="submit" class="btn primary" id="sendBtn">Enviar solicitud</button>
-        </div>
-        <div id="msg" class="msg"></div>
-        <div class="actions">
-          <button type="button" class="btn" id="btnWa" style="display:none;background:#2563eb;">📲 Enviar por WhatsApp</button>
-          <button type="button" class="btn secondary" id="btnCopy" style="display:none;">📋 Copiar mensaje</button>
-        </div>
-      </div>
-
-      <!-- Hidden tracking -->
-      <input type="hidden" id="ramo" value="automotor">
-      <input type="hidden" id="canal" value="instagram">
-      <input type="hidden" id="estado" value="nuevo">
-      <input type="hidden" id="asesor" value="auto">
-      <input type="hidden" id="origen" value="form">
-    </form>
-  </div>
-
-  <div class="footer">Kuzmanich Seguros 360 · Atención personalizada</div>
-</div>
-
-<script>
-/** ====== CONFIG ====== **/
-const WEBHOOK_URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
-const WSP_NUMBER  = "5493511234567"; // <--- PONÉ TU NÚMERO AQUÍ (solo dígitos)
-
-/** ====== UI helpers ====== **/
-const stepBars = [document.getElementById('s1'),document.getElementById('s2'),document.getElementById('s3'),document.getElementById('s4')];
-function setStep(n){ stepBars.forEach((b,i)=>b.classList.toggle('active', i<=n-1));
-  document.getElementById('p1').classList.toggle('hidden', n!==1);
-  document.getElementById('p2').classList.toggle('hidden', n!==2);
-  document.getElementById('p3').classList.toggle('hidden', n!==3);
-  document.getElementById('p4').classList.toggle('hidden', n!==4);
-}
-setStep(1);
-
-/** ====== Catalogo (vehiculos.json) + Años fijos ====== **/
-let VEHICLES = [];
-const YEARS = Array.from({length: 2025-2010+1},(_,i)=>2010+i).reverse();
-
-const selYear = document.getElementById('auto_anio');
-const inpMarca = document.getElementById('auto_marca_input');
-const listMarca = document.getElementById('list_marca');
-const inpModelo = document.getElementById('auto_modelo_input');
-const listModelo = document.getElementById('list_modelo');
-const selMotor = document.getElementById('auto_motor');
-const selTrans = document.getElementById('auto_transmision');
-const selVer   = document.getElementById('auto_version');
-const manualBox = document.getElementById('manualBox');
-
-function fillYears(){ selYear.innerHTML=""; YEARS.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;selYear.appendChild(o);}); }
-
-function uniq(a){ return [...new Set(a)] }
-function fillDatalist(datalist, arr){ datalist.innerHTML=""; arr.forEach(v=>{ const o=document.createElement('option'); o.value=v; datalist.appendChild(o); }); }
-function fillSelect(sel,arr,ph="Seleccioná…"){ sel.innerHTML=""; const o0=document.createElement('option'); o0.value=""; o0.textContent=ph; sel.appendChild(o0); arr.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);}); sel.disabled = arr.length===0; }
-
-async function loadCatalog(){
-  try{
-    const r = await fetch("./data/vehiculos.json",{cache:"no-store"});
-    VEHICLES = await r.json();
-  }catch(e){ console.warn("No se pudo cargar vehiculos.json", e); VEHICLES=[]; }
-}
-fillYears();
-
-/** ====== Cascada ====== **/
-function toggleManual(){
-  const y=+selYear.value;
-  const hasBrand = VEHICLES.some(v=>v.year===y);
-  const brand = inpMarca.value.trim();
-  const hasModel = VEHICLES.some(v=>v.year===y && v.brand===brand);
-  manualBox.classList.toggle('hidden', hasBrand && hasModel);
-}
-
-selYear.addEventListener('change',()=>{
-  const y=+selYear.value;
-  const brands=uniq(VEHICLES.filter(v=>v.year===y).map(v=>v.brand)).sort();
-  fillDatalist(listMarca, brands);
-  inpMarca.value=""; inpModelo.value="";
-  fillDatalist(listModelo, []);
-  fillSelect(selMotor, []); fillSelect(selTrans, []); fillSelect(selVer, []);
-  toggleManual();
-});
-
-inpMarca.addEventListener('input',()=>{
-  const y=+selYear.value, b=inpMarca.value.trim();
-  const models=uniq(VEHICLES.filter(v=>v.year===y && v.brand===b).map(v=>v.model)).sort();
-  fillDatalist(listModelo, models);
-  inpModelo.value="";
-  fillSelect(selMotor, []); fillSelect(selTrans, []); fillSelect(selVer, []);
-  toggleManual();
-});
-
-inpModelo.addEventListener('input',()=>{
-  const y=+selYear.value, b=inpMarca.value.trim(), m=inpModelo.value.trim();
-  const engines = VEHICLES.filter(v=>v.year===y && v.brand===b && v.model===m).flatMap(v=>v.engines||[]);
-  fillSelect(selMotor, uniq(engines.map(e=>e.name)));
-  fillSelect(selTrans, []); fillSelect(selVer, []);
-  toggleManual();
-});
-
-selMotor.addEventListener('change',()=>{
-  const y=+selYear.value, b=inpMarca.value.trim(), m=inpModelo.value.trim(), em=selMotor.value;
-  const eng=VEHICLES.find(v=>v.year===y && v.brand===b && v.model===m)?.engines?.find(e=>e.name===em);
-  fillSelect(selTrans, eng ? eng.transmissions.map(t=>t.name) : []);
-  fillSelect(selVer, []);
-});
-selTrans.addEventListener('change',()=>{
-  const y=+selYear.value, b=inpMarca.value.trim(), m=inpModelo.value.trim(), em=selMotor.value, tr=selTrans.value;
-  const eng=VEHICLES.find(v=>v.year===y && v.brand===b && v.model===m)?.engines?.find(e=>e.name===em);
-  const vers=eng ? (eng.transmissions.find(t=>t.name===tr)?.versions || []) : [];
-  fillSelect(selVer, vers.length?vers:["Base","Otra"]);
-});
-
-/** ====== Paso a paso ====== **/
-document.getElementById('next1').addEventListener('click',()=>{
-  // valida que haya al menos marca y modelo (de catálogo o manual)
-  const ok = (inpMarca.value.trim() && inpModelo.value.trim()) || (document.getElementById('m_marca').value.trim() && document.getElementById('m_modelo').value.trim());
-  if(!ok){ alert("Completá al menos Marca y Modelo (o usá el modo manual)."); return; }
-  setStep(2);
-});
-document.getElementById('back2').addEventListener('click',()=>setStep(1));
-document.getElementById('next2').addEventListener('click',()=>{
-  if(!document.getElementById('auto_dni').value.trim()){ alert("Ingresá el DNI del tomador."); return; }
-  setStep(3);
-});
-document.getElementById('back3').addEventListener('click',()=>setStep(2));
-document.getElementById('next3').addEventListener('click',()=>{
-  if(!document.getElementById('acepta').checked){ alert("Aceptá el uso de datos para continuar."); return; }
-  setStep(4);
-});
-document.getElementById('back4').addEventListener('click',()=>setStep(3));
-
-/** ====== Envío + WhatsApp ====== **/
-const form = document.getElementById('form');
-const msg = document.getElementById('msg');
-const btnWa = document.getElementById('btnWa');
-const btnCopy = document.getElementById('btnCopy');
-
-function chosenOrManual(){
-  return {
-    marca:  inpMarca.value.trim() || document.getElementById('m_marca').value.trim(),
-    modelo: inpModelo.value.trim()|| document.getElementById('m_modelo').value.trim(),
-    motor:  selMotor.value || document.getElementById('m_motor').value.trim(),
-    trans:  selTrans.value || document.getElementById('m_trans').value.trim(),
-    ver:    selVer.value   || document.getElementById('m_ver').value.trim()
-  };
-}
-function buildText(){
-  const {marca,modelo,motor,trans,ver} = chosenOrManual();
-  const anio = selYear.value; const dni = document.getElementById('auto_dni').value.trim();
-  return `Quiero cotizar un ${marca} ${modelo}${ver?(' '+ver):''}${motor?(' '+motor):''}${trans?(' '+trans):''} del año ${anio}, para el DNI ${dni}.`;
-}
-
-form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const {marca,modelo,motor,trans,ver} = chosenOrManual();
-  const payload = {
-    nombre: document.getElementById('nombre').value.trim(),
-    telefono: document.getElementById('telefono').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    ramo: document.getElementById('ramo').value,
-    comentarios: document.getElementById('comentarios').value.trim(),
-    canal: document.getElementById('canal').value,
-    estado: document.getElementById('estado').value,
-    asesor: document.getElementById('asesor').value,
-    origen: document.getElementById('origen').value,
-    auto_anio: selYear.value,
-    auto_marca: marca,
-    auto_modelo: modelo,
-    auto_motor: motor,
-    auto_transmision: trans,
-    auto_version: ver,
-    auto_dni: document.getElementById('auto_dni').value.trim(),
-    auto_mmv: [marca,modelo,ver,motor,trans].filter(Boolean).join(" ")
-  };
-  msg.style.display="none"; msg.className="msg";
-  try{
-    await fetch(WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
-    msg.textContent="✅ ¡Gracias! Recibimos tu solicitud.";
-    msg.classList.add('ok'); msg.style.display="block";
-    btnWa.style.display="inline-block";
-    btnCopy.style.display="inline-block";
-  }catch(err){
-    msg.textContent="No pudimos enviar tu solicitud. Revisá tu conexión o que el flujo esté activo.";
-    msg.classList.add('err'); msg.style.display="block";
-  }
-});
-
-btnWa.addEventListener('click',()=>{
-  const wsp=`https://wa.me/${WSP_NUMBER}?text=${encodeURIComponent(buildText())}`;
-  window.open(wsp,"_blank");
-});
-btnCopy.addEventListener('click', async ()=>{
-  const t = buildText();
-  try{ await navigator.clipboard.writeText(t); alert("Mensaje copiado. Pegalo en WhatsApp y enviá."); }
-  catch{ prompt("Copiá el mensaje:", t); }
-});
-
-/** Init **/
-(async ()=>{ await loadCatalog(); })();
-</script>
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusEl.textContent = '';
+      if (form.company && form.company.value) {
+        statusEl.textContent = 'Detectamos actividad inusual. Volvé a intentar.';
+        statusEl.className = 'status err';
+        return;
+      }
+      if (!form.checkValidity()){
+        statusEl.textContent = 'Revisá los campos requeridos.';
+        statusEl.className = 'status err';
+        return;
+      }
+      const telefonoDigits = onlyDigits(form.telefono.value);
+      const payload = {
+        nombre: form.nombre.value.trim(),
+        dni: form.dni.value.trim(),
+        telefono: telefonoDigits,
+        email: form.email.value.trim(),
+        ramo: form.ramo.value,
+        detalle: form.detalle.value.trim(),
+        mensaje: form.mensaje.value.trim(),
+        utm_source: document.getElementById('utm_source').value,
+        utm_medium: document.getElementById('utm_medium').value,
+        utm_campaign: document.getElementById('utm_campaign').value,
+        source: location.hostname || 'local',
+        timestamp: new Date().toISOString()
+      };
+      submitBtn.disabled = true; submitBtn.textContent = 'Enviando…';
+      let delivered = false;
+      try {
+        const res = await fetchWithTimeout(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }, 6000);
+        delivered = true;
+        if (res && res.type !== 'opaque') delivered = res.ok;
+      } catch (err) { console.warn('No se pudo confirmar el webhook:', err); }
+      const waText = buildWaText(payload);
+      const waURL = `https://wa.me/${PRODUCER_WSP}?text=${waText}`;
+      if (delivered){ statusEl.textContent = '¡Perfecto! Registramos tu consulta. Abriendo WhatsApp…'; statusEl.className = 'status ok'; }
+      else { statusEl.textContent = 'No pudimos confirmar el envío al CRM, pero abrimos WhatsApp para continuar.'; statusEl.className = 'status err'; }
+      window.open(waURL, '_blank');
+      setTimeout(()=>{ submitBtn.disabled = false; submitBtn.textContent = 'Enviar y abrir WhatsApp'; }, 2200);
+    });
+  </script>
 </body>
 </html>
