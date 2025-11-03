@@ -1,256 +1,293 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kuzmanich Seguros 360 — Cotizá en minutos</title>
-  <meta name="description" content="Formulario optimizado: envía tus datos al CRM (n8n) y abre WhatsApp con el mensaje prellenado para continuar la atención." />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kuzmanich Seguros 360 — Solicitud de Cotización</title>
+  <meta name="description" content="Cotizá seguros personales y empresariales con Kuzmanich Seguros 360. Respuesta rápida y asesoramiento profesional.">
   <style>
     :root{
-      --bg:#0b1020;
-      --panel:#0e1429;
-      --muted:#9fb0d0;
-      --text:#e7ecf5;
-      --brand:#22c55e;
-      --brand-600:#16a34a;
-      --line:rgba(255,255,255,.12);
-      --shadow:0 30px 80px rgba(2,6,23,.45);
-      --error:#ef4444;
-      --ok:#10b981;
+      --bg:#0f172a; --panel:#111827; --panel-2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
+      --brand:#3b82f6; --brand-2:#60a5fa; --ok:#22c55e; --err:#ef4444;
+      --input:#0b1220; --stroke:#233046; --radius:18px;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
-      margin:0; font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial; 
-      color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 10% -10%, #0f1a3c 0%, transparent 60%),
-        radial-gradient(1000px 500px at 90% 110%, #0a122c 0%, transparent 60%),
-        linear-gradient(180deg,#0a0f22, var(--bg));
-      min-height:100svh; display:grid; grid-template-rows:auto 1fr auto;
+      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+      background: radial-gradient(1200px 600px at 20% -10%, #1e293b 0%, transparent 60%),
+                  radial-gradient(1000px 600px at 120% 20%, #0b1220 0%, transparent 60%),
+                  var(--bg);
+      color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+      padding:24px;
     }
-    header{padding:22px; text-align:center; border-bottom:1px solid var(--line); background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.0));}
-    header .brand{font-weight:700; letter-spacing:.2px}
-    header .tag{color:var(--muted); font-size:.95rem}
-    .wrap{width:100%; max-width:900px; margin:32px auto; padding:0 18px}
-    .hero{text-align:center; margin-bottom:18px}
-    .hero h1{margin:0 0 8px; font-size:clamp(1.4rem,1.1rem + 1.6vw,2rem)}
-    .hero p{margin:0; color:var(--muted)}
-    .grid{display:grid; grid-template-columns:1fr; gap:18px}
-    @media(min-width:880px){.grid{grid-template-columns:3fr 2fr}}
-    .card{background:var(--panel); border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow)}
-    .card .body{padding:22px}
-    form{display:grid; grid-template-columns:1fr; gap:14px}
-    .row{display:grid; grid-template-columns:1fr; gap:14px}
-    @media(min-width:720px){.row{grid-template-columns:1fr 1fr}}
-    label{display:block; font-size:.92rem; color:var(--muted); margin-bottom:6px}
-    .field{position:relative}
-    input, select, textarea{width:100%; background:#0a0f22; color:var(--text); border:1px solid var(--line); border-radius:12px; padding:12px 14px; outline:none; transition:border .2s, box-shadow .2s;}
-    input:focus, select:focus, textarea:focus{border-color:rgba(34,197,94,.6); box-shadow:0 0 0 3px rgba(34,197,94,.15)}
-    .hint{font-size:.9rem; color:var(--muted)}
-    .actions{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:2px}
-    button{appearance:none; border:0; cursor:pointer; font-weight:600; letter-spacing:.2px; padding:12px 18px; border-radius:12px; background:var(--brand); color:#05220f; transition:transform .2s, filter .2s}
-    button:hover{transform:translateY(-1px)}
-    button:disabled{filter:grayscale(.6); cursor:not-allowed}
-    .ghost{background:transparent; color:var(--text); border:1px solid var(--line)}
-    .status{min-height:22px; font-size:.95rem}
-    .ok{color:var(--ok)} .err{color:var(--error)}
-    .hp{position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden}
-    .badge{display:inline-flex; align-items:center; gap:8px; font-size:.92rem; color:var(--muted)}
-    .badge i{width:8px; height:8px; border-radius:50%; background:var(--brand)}
-    .aside ul{list-style:none; padding:0; margin:0; display:grid; gap:10px}
-    .aside li{display:flex; align-items:flex-start; gap:10px; color:var(--muted)}
-    .aside li i{width:8px; height:8px; margin-top:8px; border-radius:50%; background:var(--brand)}
-    footer{text-align:center; color:var(--muted); padding:18px; border-top:1px solid var(--line)}
-    a{color:var(--brand)}
+    .card{
+      width:100%; max-width:560px; background:linear-gradient(180deg,var(--panel),var(--panel-2));
+      border:1px solid var(--stroke); border-radius:var(--radius); padding:28px 24px 24px;
+      box-shadow:0 20px 50px rgba(0,0,0,.45);
+    }
+    .header{display:flex; gap:14px; align-items:center; margin-bottom:12px;}
+    .header img{
+      width:54px; height:54px; border-radius:12px; background:#0b1220; object-fit:contain;
+      border:1px solid var(--stroke);
+    }
+    h1{font-size:1.35rem; margin:0; color:var(--brand-2)}
+    .sub{color:var(--muted); font-size:.95rem; margin:6px 0 18px}
+    .row{display:flex; gap:12px}
+    .row>.field{flex:1}
+    label{display:block; font-size:.9rem; color:#cbd5e1; margin:14px 0 6px}
+    input,select,textarea{
+      width:100%; padding:12px 12px; border-radius:12px; border:1px solid var(--stroke);
+      background:var(--input); color:var(--text); font-size:1rem; outline:none;
+    }
+    input:focus,select:focus,textarea:focus{border-color:var(--brand)}
+    .hint{font-size:.82rem; color:var(--muted); margin-top:6px}
+    .consent{display:flex; gap:10px; align-items:flex-start; margin-top:14px; font-size:.9rem; color:#cbd5e1}
+    .consent input{margin-top:3px}
+    button{
+      width:100%; margin-top:18px; padding:12px 14px; border:none; border-radius:12px;
+      background:linear-gradient(180deg,var(--brand),var(--brand-2)); color:white; font-weight:700;
+      cursor:pointer; transition:transform .05s ease;
+    }
+    button:disabled{opacity:.55; cursor:not-allowed}
+    button:active{transform:translateY(1px)}
+    .msg{margin-top:12px; font-weight:600; display:none}
+    .msg.ok{color:var(--ok)}
+    .msg.err{color:var(--err)}
+    .foot{margin-top:12px; font-size:.8rem; color:var(--muted); text-align:center}
+    @media (max-width:520px){ .row{flex-direction:column} }
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap">
-      <div class="brand">Kuzmanich Seguros 360</div>
-      <div class="tag">Asesoramiento integral — Cotizá en minutos</div>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <div class="hero">
-      <h1>Solicitá tu cotización</h1>
-      <p>Completá tus datos. Te respondemos por WhatsApp y registramos tu consulta en nuestro CRM.</p>
+  <main class="card">
+    <div class="header">
+      <img src="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png" alt="Logo Kuzmanich Seguros 360" onerror="this.style.display='none'">
+      <div>
+        <h1>Solicitud de cotización</h1>
+        <div class="sub">Atención profesional en seguros personales y empresariales.</div>
+      </div>
     </div>
 
-    <div class="grid">
-      <section class="card">
-        <div class="body">
-          <div class="badge"><i></i> Conexión segura a CRM (n8n + Google Sheets)</div>
-          <form id="leadForm" novalidate>
-            <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" />
-
-            <div class="row">
-              <div class="field">
-                <label for="nombre">Nombre y apellido</label>
-                <input id="nombre" name="nombre" type="text" placeholder="Juan Pérez" required />
-              </div>
-              <div class="field">
-                <label for="dni">DNI</label>
-                <input id="dni" name="dni" type="text" placeholder="Ej: 32123456" required />
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="field">
-                <label for="telefono">Teléfono (WhatsApp)</label>
-                <input id="telefono" name="telefono" type="tel" inputmode="tel" placeholder="11 5555 5555" required />
-              </div>
-              <div class="field">
-                <label for="email">Email</label>
-                <input id="email" name="email" type="email" placeholder="juan@mail.com" />
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="ramo">Ramo</label>
-              <select id="ramo" name="ramo" required>
-                <option value="" selected disabled>Elegí una opción</option>
-                <option>Automotor</option>
-                <option>Hogar</option>
-                <option>Vida</option>
-                <option>Retiro</option>
-                <option>Salud</option>
-                <option>ART</option>
-                <option>Otros</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="detalle">Detalle (marca, modelo y año)</label>
-              <input id="detalle" name="detalle" type="text" placeholder="Toyota Etios XLS 2022" />
-            </div>
-
-            <div class="field">
-              <label for="mensaje">Mensaje (opcional)</label>
-              <textarea id="mensaje" name="mensaje" rows="3" placeholder="Contanos algo más si querés…"></textarea>
-            </div>
-
-            <label class="hint"><input type="checkbox" id="consent" required /> Acepto ser contactad@ por WhatsApp / email</label>
-
-            <div class="actions">
-              <button id="submitBtn" type="submit">Enviar y abrir WhatsApp</button>
-              <button class="ghost" type="reset">Limpiar</button>
-              <span id="status" class="status" aria-live="polite"></span>
-            </div>
-
-            <input type="hidden" id="utm_source" name="utm_source" />
-            <input type="hidden" id="utm_medium" name="utm_medium" />
-            <input type="hidden" id="utm_campaign" name="utm_campaign" />
-          </form>
+    <form id="leadForm" novalidate>
+      <div class="row">
+        <div class="field">
+          <label>Nombre completo</label>
+          <input id="nombre" name="nombre" required placeholder="Ej: Martín Kuzmanich" autocomplete="name">
         </div>
-      </section>
-
-      <aside class="card aside">
-        <div class="body">
-          <h3 style="margin-top:0">¿Por qué con nosotros?</h3>
-          <ul>
-            <li><i></i> Productores oficiales. Cotizamos con la compañía número 1 del mercado.</li>
-            <li><i></i> Respuesta ágil por WhatsApp. Sin vueltas.</li>
-            <li><i></i> Tus datos quedan protegidos. Uso exclusivo para tu cotización.</li>
-          </ul>
-          <p class="hint" style="margin-top:12px">Al enviar aceptás nuestros <a href="#" rel="nofollow">Términos</a> y <a href="#" rel="nofollow">Privacidad</a>.</p>
+        <div class="field">
+          <label>Teléfono (con código de área)</label>
+          <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9\\s()+.-]{7,}$">
         </div>
-      </aside>
-    </div>
+      </div>
+
+      <label>Email</label>
+      <input id="email" name="email" type="email" placeholder="tu@email.com" autocomplete="email">
+      <div class="hint">Usaremos tu email solo para enviarte tu propuesta. No hacemos spam.</div>
+
+      <label>Ramo</label>
+      <select id="ramo" name="ramo" required>
+        <option value="">Seleccioná…</option>
+        <option value="retiro">Seguro de Retiro</option>
+        <option value="vida">Vida</option>
+        <option value="automotor">Automotor</option>
+        <option value="hogar">Hogar</option>
+        <option value="salud">Salud</option>
+        <option value="empresas">Empresas</option>
+      </select>
+
+      <!-- Campos AUTOMOTOR -->
+      <div id="autoFields" style="display:none; margin-top:8px">
+        <label>Marca, Modelo y Versión</label>
+        <input id="auto_mm" placeholder="Ej: Toyota Etios XLS">
+
+        <label>Año de producción</label>
+        <input id="auto_anio" inputmode="numeric" placeholder="Ej: 2020">
+
+        <label>DNI del tomador</label>
+        <input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
+        <div class="hint">Estos datos son necesarios para la IA de SanCor.</div>
+      </div>
+
+      <!-- Tracking -->
+      <input id="canal" type="hidden" value="instagram">
+      <input id="estado" type="hidden" value="nuevo">
+      <input id="asesor" type="hidden" value="auto">
+      <input id="origen" type="hidden" value="form">
+
+      <label>Comentarios (opcional)</label>
+      <textarea id="comentarios" name="comentarios" rows="3" placeholder="Contanos algo que debamos tener en cuenta"></textarea>
+
+      <label class="consent">
+        <input id="consent" type="checkbox" required>
+        <span>Acepto el uso de mis datos para recibir mi cotización y asesoramiento (Ley 25.326). <a href="#" style="color:#93c5fd;text-decoration:underline">Política de privacidad</a>.</span>
+      </label>
+
+      <button id="submitBtn" type="submit" disabled>Enviar solicitud</button>
+      <div id="msg" class="msg"></div>
+
+      <!-- Acciones post-envío Automotor -->
+      <div id="autoActions" style="display:none; margin-top:10px">
+        <button type="button" id="btnWa" style="margin-top:8px">📲 Chatear ahora por WhatsApp</button>
+        <button type="button" id="btnCopy" style="margin-top:8px">📋 Copiar mensaje</button>
+      </div>
+    </form>
+
+    <div class="foot">Kuzmanich Seguros 360 · Atención personalizada</div>
   </main>
 
-  <footer>
-    © Kuzmanich Seguros 360 — Todos los derechos reservados
-  </footer>
-
   <script>
-    const N8N_WEBHOOK_URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
-    const PRODUCER_WSP = "5492804641495";
+    const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
 
-    const enc = (s) => encodeURIComponent(String(s ?? '').trim());
-    const onlyDigits = (s) => String(s ?? '').replace(/\D+/g,'');
+    // 🔢 TU WhatsApp puente (solo dígitos, con país). Ej: 5493511234567
+    const TU_WA_NUMBER = "5492804641495";
 
-    function fetchWithTimeout(url, options = {}, timeoutMs = 5000){
-      const ctrl = new AbortController();
-      const id = setTimeout(() => ctrl.abort(), timeoutMs);
-      return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(id));
+    const form   = document.getElementById('leadForm');
+    const msg    = document.getElementById('msg');
+    const btn    = document.getElementById('submitBtn');
+    const okTel  = document.getElementById('telefono');
+    const okCons = document.getElementById('consent');
+
+    const ramoSel     = document.getElementById('ramo');
+    const autoFields  = document.getElementById('autoFields');
+    const autoActions = document.getElementById('autoActions');
+    const btnWa       = document.getElementById('btnWa');
+    const btnCopy     = document.getElementById('btnCopy');
+
+    // Mostrar/ocultar campos Automotor
+    function updateAutoFields(){
+      const isAuto = ramoSel.value === 'automotor';
+      autoFields.style.display  = isAuto ? 'block' : 'none';
+      // NO ocultamos autoActions acá para no tapar el botón luego del envío
+    }
+    ramoSel.addEventListener('change', updateAutoFields);
+
+    // Habilitar botón con consentimiento
+    function toggleSubmit(){ btn.disabled = !okCons.checked; }
+    okCons.addEventListener('change', toggleSubmit);
+    toggleSubmit();         // estado inicial
+    updateAutoFields();     // estado inicial
+
+    // Texto sugerido para IA SanCor
+    function buildSanCorText() {
+      const mmv  = (document.getElementById('auto_mm')?.value || '').trim();
+      const anio = (document.getElementById('auto_anio')?.value || '').trim();
+      const dni  = (document.getElementById('auto_dni')?.value || '').trim();
+      return `Quiero cotizar un ${mmv} del año ${anio}, para el DNI ${dni}.`;
+    }
+    function waLink(toNumber, text) {
+      return `https://wa.me/${toNumber}?text=${encodeURIComponent(text)}`;
     }
 
-    function buildWaText(d){
-      const parts = [
-        'Hola, quiero una cotización:',
-        `• Nombre: ${d.nombre}`,
-        `• DNI: ${d.dni}`,
-        `• Teléfono: ${d.telefono}`,
-        d.email ? `• Email: ${d.email}` : null,
-        `• Ramo: ${d.ramo}`,
-        d.detalle ? `• Detalle: ${d.detalle}` : null,
-        d.mensaje ? `• Mensaje: ${d.mensaje}` : null,
-        '— Enviado desde el formulario web'
-      ].filter(Boolean).join('\n');
-      return enc(parts);
+    // Envío a n8n/Sheets
+    async function logLead(payload) {
+      const res = await fetch(URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
     }
-
-    (function setUTMs(){
-      const p = new URLSearchParams(location.search);
-      for (const k of ['utm_source','utm_medium','utm_campaign']){
-        const v = p.get(k); if (v) document.getElementById(k).value = v;
-      }
-    })();
-
-    const form = document.getElementById('leadForm');
-    const statusEl = document.getElementById('status');
-    const submitBtn = document.getElementById('submitBtn');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      statusEl.textContent = '';
-      if (form.company && form.company.value) {
-        statusEl.textContent = 'Detectamos actividad inusual. Volvé a intentar.';
-        statusEl.className = 'status err';
+      msg.style.display='none'; msg.className='msg';
+
+      // Validación base
+      if (!form.checkValidity()) {
+        msg.textContent = "Revisá los campos requeridos.";
+        msg.classList.add('err'); msg.style.display='block';
         return;
       }
-      if (!form.checkValidity()){
-        statusEl.textContent = 'Revisá los campos requeridos.';
-        statusEl.className = 'status err';
+      // Teléfono: mínimo 7 dígitos
+      if (!(/\d{7,}/.test(okTel.value))) {
+        msg.textContent = "Ingresá un teléfono válido (mínimo 7 dígitos).";
+        msg.classList.add('err'); msg.style.display='block';
         return;
       }
-      const telefonoDigits = onlyDigits(form.telefono.value);
+
+      // Si es Automotor → obligatorios
+      let auto_mmv = "", auto_anio = "", auto_dni = "";
+      const isAuto = ramoSel.value === 'automotor';
+      if (isAuto) {
+        auto_mmv  = (document.getElementById('auto_mm')?.value || '').trim();
+        auto_anio = (document.getElementById('auto_anio')?.value || '').trim();
+        auto_dni  = (document.getElementById('auto_dni')?.value || '').trim();
+        if (!auto_mmv || !auto_anio || !auto_dni) {
+          msg.textContent = "Para Automotor completá Marca/Modelo/Versión, Año y DNI.";
+          msg.classList.add('err'); msg.style.display='block';
+          return;
+        }
+      }
+
+      // Payload FINAL (va a Sheets SIEMPRE)
       const payload = {
-        nombre: form.nombre.value.trim(),
-        dni: form.dni.value.trim(),
-        telefono: telefonoDigits,
-        email: form.email.value.trim(),
-        ramo: form.ramo.value,
-        detalle: form.detalle.value.trim(),
-        mensaje: form.mensaje.value.trim(),
-        utm_source: document.getElementById('utm_source').value,
-        utm_medium: document.getElementById('utm_medium').value,
-        utm_campaign: document.getElementById('utm_campaign').value,
-        source: location.hostname || 'local',
-        timestamp: new Date().toISOString()
+        nombre: document.getElementById('nombre').value.trim(),
+        telefono: okTel.value.trim(),
+        email: document.getElementById('email').value.trim(),
+        ramo: ramoSel.value,
+        canal: document.getElementById('canal').value,
+        estado: document.getElementById('estado').value,
+        asesor: document.getElementById('asesor').value,
+        origen: document.getElementById('origen').value,
+        comentarios: document.getElementById('comentarios').value.trim(),
+        auto_mmv, auto_anio, auto_dni
       };
-      submitBtn.disabled = true; submitBtn.textContent = 'Enviando…';
-      let delivered = false;
+
+      btn.disabled = true; btn.textContent = "Enviando…";
       try {
-        const res = await fetchWithTimeout(N8N_WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        }, 6000);
-        delivered = true;
-        if (res && res.type !== 'opaque') delivered = res.ok;
-      } catch (err) { console.warn('No se pudo confirmar el webhook:', err); }
-      const waText = buildWaText(payload);
-      const waURL = `https://wa.me/${PRODUCER_WSP}?text=${waText}`;
-      if (delivered){ statusEl.textContent = '¡Perfecto! Registramos tu consulta. Abriendo WhatsApp…'; statusEl.className = 'status ok'; }
-      else { statusEl.textContent = 'No pudimos confirmar el envío al CRM, pero abrimos WhatsApp para continuar.'; statusEl.className = 'status err'; }
-      window.open(waURL, '_blank');
-      setTimeout(()=>{ submitBtn.disabled = false; submitBtn.textContent = 'Enviar y abrir WhatsApp'; }, 2200);
+        await logLead(payload);
+
+        msg.textContent = "✅ ¡Gracias! Recibimos tu solicitud.";
+        msg.classList.add('ok'); msg.style.display='block';
+
+        if (isAuto) {
+          // 🔒 NO reseteamos si es Automotor (así conservás los datos)
+          autoActions.style.display = 'block';
+
+          // WhatsApp a TU línea con todo armado
+          btnWa.onclick = () => {
+            if (!/^\d+$/.test(TU_WA_NUMBER)) {
+              alert("Configurá TU_WA_NUMBER (tu WhatsApp) en el código.");
+              return;
+            }
+            const nombre = document.getElementById('nombre').value.trim();
+            const tel    = document.getElementById('telefono').value.trim();
+            const email  = document.getElementById('email').value.trim();
+
+            const textoParaAsesor =
+`Hola, soy *${nombre}*.
+Quiero cotizar *Automotor*.
+
+• Teléfono: ${tel}
+• Email: ${email}
+• Vehículo: ${auto_mmv}
+• Año: ${auto_anio}
+• DNI tomador: ${auto_dni}
+
+(Enviá este formato a la IA de SanCor:)
+"${buildSanCorText()}"`;
+
+            window.open(waLink(TU_WA_NUMBER, textoParaAsesor), "_blank");
+          };
+
+          // Copiar mensaje sugerido
+          btnCopy.onclick = async () => {
+            const text = buildSanCorText();
+            try { await navigator.clipboard.writeText(text);
+              alert("Mensaje copiado. Pegalo en WhatsApp (chat con SanCor) y enviá.");
+            } catch { alert("No se pudo copiar automáticamente. Texto:\n\n" + text); }
+          };
+        } else {
+          // Otros ramos → reset normal
+          form.reset(); toggleSubmit(); updateAutoFields();
+        }
+
+        btn.textContent = "Enviar solicitud"; btn.disabled = !okCons.checked;
+      } catch (err) {
+        console.error(err);
+        msg.textContent = "No pudimos enviar tu solicitud. Verificá conexión o que el flujo esté activo.";
+        msg.classList.add('err'); msg.style.display='block';
+        btn.textContent = "Enviar solicitud"; btn.disabled = false;
+      }
     });
   </script>
 </body>
