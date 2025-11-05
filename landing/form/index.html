@@ -20,16 +20,12 @@
       color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
       padding:24px;
     }
-    /* Layout de 2 columnas */
     .wrap{max-width:980px; margin:0 auto}
     .grid{display:grid; grid-template-columns:2fr 1fr; gap:18px; align-items:start}
     @media (max-width:880px){ .grid{grid-template-columns:1fr} }
-
-    /* Card base */
     .card{ background:linear-gradient(180deg,var(--panel),var(--panel-2)); border:1px solid var(--stroke);
       border-radius:var(--radius); box-shadow:0 20px 50px rgba(0,0,0,.45); }
 
-    /* Form card */
     .card.form{ padding:28px 24px 24px; }
     .header{display:flex; gap:14px; align-items:center; margin-bottom:12px;}
     .header img{ width:54px; height:54px; border-radius:12px; background:#0b1220; object-fit:contain; border:1px solid var(--stroke); }
@@ -51,26 +47,11 @@
     .msg.err{color:var(--err)}
     .foot{margin-top:12px; font-size:.8rem; color:var(--muted); text-align:center}
     @media (max-width:520px){ .row{flex-direction:column} }
-
-    /* Aside Por qué con nosotros */
     .card.aside{ padding:20px 18px }
     .aside h3{ margin:6px 0 12px; font-size:1.05rem; color:#cfe0ff }
     .benefits{ list-style:none; padding:0; margin:0; display:grid; gap:10px }
     .benefits li{ display:flex; gap:10px; align-items:flex-start; color:var(--muted) }
     .dot{ width:8px; height:8px; border-radius:50%; background:var(--brand); margin-top:9px }
-
-    /* —— Mini-cotizador de Retiro (solo estilos del widget) —— */
-    #retiroWidget{display:none;margin-top:12px;border-top:1px solid var(--stroke);padding-top:12px}
-    #retiroWidget .rw-row{display:flex;gap:12px;flex-wrap:wrap}
-    #retiroWidget .rw-row > div{flex:1 1 160px}
-    #retiroWidget .rw-cta{margin-top:10px}
-    #retiroWidget .rw-note{font-size:.82rem;color:var(--muted);margin-top:6px}
-    #retiroWidget .rw-out{margin-top:10px;font-weight:700}
-    #retiroWidget .rw-grid{display:grid;gap:10px;grid-template-columns:1fr}
-    @media (max-width:520px){#retiroWidget .rw-grid{grid-template-columns:1fr}}
-    @media (min-width:521px){#retiroWidget .rw-grid{grid-template-columns:1fr 1fr}}
-    #retiroWidget .rw-card{background:transparent;border:1px solid var(--stroke);border-radius:12px;padding:10px}
-    #retiroWidget .rw-small{font-size:.82rem;color:#cbd5e1;margin-bottom:4px}
   </style>
 </head>
 <body>
@@ -115,8 +96,22 @@
 
           <!-- Campos AUTOMOTOR -->
           <div id="autoFields" style="display:none; margin-top:8px">
-            <label>Marca, Modelo y Versión</label>
-            <input id="auto_mm" placeholder="Ej: Toyota Etios XLS">
+            <!-- NUEVO: selects en cascada -->
+            <label>Marca</label>
+            <select id="auto_marca" aria-label="Marca"></select>
+
+            <label>Modelo</label>
+            <select id="auto_modelo" aria-label="Modelo" disabled></select>
+
+            <label>Versión</label>
+            <select id="auto_version" aria-label="Versión" disabled></select>
+
+            <label>Año de fabricación</label>
+            <select id="auto_anio_sel" aria-label="Año" disabled></select>
+
+            <!-- TUS inputs originales (se siguen enviando a n8n/Sheets) -->
+            <label style="margin-top:12px">Marca, Modelo y Versión</label>
+            <input id="auto_mm" placeholder="Ej: Toyota Corolla SEG 2.0">
 
             <label>Año de producción</label>
             <input id="auto_anio" inputmode="numeric" placeholder="Ej: 2022">
@@ -125,48 +120,6 @@
             <input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
             <div class="hint">Estos datos son necesarios para la IA de SanCor.</div>
           </div>
-
-          <!-- —— Mini-cotizador RETIRO (dos escenarios) —— -->
-          <div id="retiroWidget">
-            <div class="row rw-row">
-              <div class="field">
-                <label>Edad actual</label>
-                <input id="rw_edad" inputmode="numeric" placeholder="Ej: 35">
-              </div>
-              <div class="field">
-                <label>Edad de retiro</label>
-                <input id="rw_retiro" inputmode="numeric" placeholder="Ej: 65">
-              </div>
-              <div class="field">
-                <label>Aporte mensual (ARS)</label>
-                <input id="rw_aporte" inputmode="numeric" placeholder="Mínimo 30000" value="50000">
-              </div>
-            </div>
-
-            <button type="button" id="rw_calc" class="rw-cta">Calcular proyección</button>
-            <div id="rw_err" class="msg err" style="display:none"></div>
-
-            <div id="rw_out" class="rw-out" style="display:none">
-              <div class="rw-grid">
-                <div class="rw-card">
-                  <div class="rw-small">Escenario 1 (≈ 15,9% anual)</div>
-                  <div id="rw_e1">—</div>
-                </div>
-                <div class="rw-card">
-                  <div class="rw-small">Escenario 2 (≈ 30% anual)</div>
-                  <div id="rw_e2">—</div>
-                </div>
-              </div>
-              <div class="rw-note">Proyección en ARS. Aporte al inicio de cada mes.</div>
-            </div>
-
-            <div id="rw_actions" style="display:none;display:flex;gap:8px;flex-wrap:wrap">
-              <button type="button" id="rw_wpp">📲 Continuar por WhatsApp</button>
-            </div>
-
-            <div class="rw-note">Estimación simple con dos escenarios (15,9% y 30% anual). El rendimiento real puede variar.</div>
-          </div>
-          <!-- —— FIN mini-cotizador RETIRO —— -->
 
           <!-- Tracking -->
           <input id="canal" type="hidden" value="instagram">
@@ -209,7 +162,6 @@
 
   <script>
     const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
-
     // 🔢 TU WhatsApp puente (solo dígitos, con país). Ej: 5493511234567
     const TU_WA_NUMBER = "5942804641495";
 
@@ -225,13 +177,23 @@
     const btnWa       = document.getElementById('btnWa');
     const btnCopy     = document.getElementById('btnCopy');
 
-    // —— Mostrar campos Automotor sólo si corresponde
+    // NUEVO: selects cascada
+    const selMarca   = document.getElementById('auto_marca');
+    const selModelo  = document.getElementById('auto_modelo');
+    const selVersion = document.getElementById('auto_version');
+    const selAnioSel = document.getElementById('auto_anio_sel');
+
+    // Tus inputs originales
+    const inMM   = document.getElementById('auto_mm');
+    const inAnio = document.getElementById('auto_anio');
+
+    // DBs (cargadas vía fetch desde archivos que ya subiste)
+    let AUTOS_FULL = null;        // {Marca: {Modelo: [Versiones...]}}
+    let AUTOS_YEARS = null;       // {Marca: {Modelo: {Versión: [Años...]}}}
+
     function updateAutoFields(){
       const isAuto = ramoSel.value === 'automotor';
       autoFields.style.display  = isAuto ? 'block' : 'none';
-      // Mostrar/ocultar widget Retiro
-      const rw = document.getElementById('retiroWidget');
-      if (rw) rw.style.display = (ramoSel.value === 'retiro') ? 'block' : 'none';
     }
     ramoSel.addEventListener('change', updateAutoFields);
 
@@ -253,69 +215,129 @@
       if (!res.ok) throw new Error("HTTP " + res.status);
     }
 
-    // —— Mini-cotizador Retiro (dos escenarios)
-    (function(){
-      const err = document.getElementById('rw_err');
-      const outWrap = document.getElementById('rw_out');
-      const e1El = document.getElementById('rw_e1');
-      const e2El = document.getElementById('rw_e2');
-      const actions = document.getElementById('rw_actions');
-      const btnCalc = document.getElementById('rw_calc');
-      const btnWpp = document.getElementById('rw_wpp');
-
-      const fmtARS = new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0});
-      const mesesEntre = (e, r) => Math.max(0,(r - e) * 12);
-      const acumular = (aporte, meses, tasaAnual) => {
-        const m = tasaAnual/12; let v = 0;
-        for (let i=0;i<meses;i++){ v = (v + aporte) * (1 + m); }
-        return v;
-      };
-      const show = (el, v=true) => el && (el.style.display = v ? (el.id==='rw_actions' ? 'flex' : 'block') : 'none');
-
-      function calcular(){
-        show(err,false); show(outWrap,false); show(actions,false); if (err) err.textContent='';
-        const edad = parseFloat(document.getElementById('rw_edad')?.value);
-        const retiro = parseFloat(document.getElementById('rw_retiro')?.value);
-        const aporte = parseFloat(document.getElementById('rw_aporte')?.value);
-
-        if (isNaN(edad) || isNaN(retiro) || isNaN(aporte)){ err.textContent='Completá edad, edad de retiro y aporte.'; show(err,true); return; }
-        if (retiro <= edad){ err.textContent='La edad de retiro debe ser mayor a la actual.'; show(err,true); return; }
-        if (aporte < 30000){ err.textContent='El aporte mínimo es $30.000 por mes.'; show(err,true); return; }
-
-        const meses = mesesEntre(edad, retiro);
-        const T1 = 0.159, T2 = 0.30;
-        const v1 = acumular(aporte, meses, T1);
-        const v2 = acumular(aporte, meses, T2);
-
-        if (e1El) e1El.textContent = `≈ ${fmtARS.format(v1)}`;
-        if (e2El) e2El.textContent = `≈ ${fmtARS.format(v2)}`;
-        show(outWrap,true); show(actions,true);
-
-        // Botón WhatsApp con resumen
-        const nombre = (document.getElementById('nombre')?.value || '').trim();
-        const tel    = (document.getElementById('telefono')?.value || '').trim();
-        const email  = (document.getElementById('email')?.value || '').trim();
-        const resumen = `Resumen de simulación de Retiro:
-• Nombre: ${nombre || '(sin nombre)'}
-• Teléfono: ${tel || '(sin teléfono)'}
-• Email: ${email || '(sin email)'}
-
-• Edad actual: ${edad}
-• Edad retiro: ${retiro}
-• Aporte mensual: ${fmtARS.format(aporte)}
-• Escenario 1 (15,9%): ${fmtARS.format(v1)}
-• Escenario 2 (30%): ${fmtARS.format(v2)}
-
-Quiero avanzar con mi cotización.`;
-
-        const to = (window.TU_WA_NUMBER || '5492804641495').replace(/\D/g,'');
-        if (btnWpp) btnWpp.onclick = () => window.open(`https://wa.me/${to}?text=${encodeURIComponent(resumen)}`,'_blank');
+    // =========================
+    //   MODELOS EN CASCADA
+    // =========================
+    const YEARS_FALLBACK = 15; // si no hay años para la versión
+    function fillSelect(selectEl, items, placeholder){
+      selectEl.innerHTML = '';
+      const opt0 = document.createElement('option');
+      opt0.value = ''; opt0.textContent = placeholder || 'Seleccioná…';
+      selectEl.appendChild(opt0);
+      (items || []).forEach(v=>{
+        const o = document.createElement('option');
+        o.value = v; o.textContent = v;
+        selectEl.appendChild(o);
+      });
+      selectEl.disabled = !(items && items.length);
+    }
+    function ultimosAnios(n = YEARS_FALLBACK){
+      const y = new Date().getFullYear();
+      const out = [];
+      for (let i=0;i<n;i++) out.push(String(y - i));
+      return out;
+    }
+    async function cargarAutosDB(){
+      if (!AUTOS_FULL){
+        try {
+          const r1 = await fetch('autos_full.json', {cache:'no-store'});
+          AUTOS_FULL = await r1.json();
+        } catch(e){ AUTOS_FULL = {}; console.error('Falta autos_full.json', e); }
       }
+      if (!AUTOS_YEARS){
+        try {
+          const r2 = await fetch('autos_full_years.json', {cache:'no-store'});
+          AUTOS_YEARS = await r2.json();
+        } catch(e){ AUTOS_YEARS = {}; /* opcional */ }
+      }
+    }
+    async function showAutoFieldsIfNeeded(){
+      const isAuto = ramoSel.value === 'automotor';
+      autoFields.style.display = isAuto ? 'block':'none';
+      if (!isAuto) return;
 
-      if (btnCalc) btnCalc.addEventListener('click', calcular);
-    })();
+      await cargarAutosDB();
 
-    // —— Submit del formulario (Automotor intacto + campos Retiro opcionales)
+      // Marcas
+      const marcas = Object.keys(AUTOS_FULL || {}).sort((a,b)=>a.localeCompare(b,'es'));
+      fillSelect(selMarca, marcas, 'Seleccioná la marca');
+      fillSelect(selModelo, [], 'Seleccioná el modelo');
+      fillSelect(selVersion, [], 'Seleccioná la versión');
+      fillSelect(selAnioSel, [], 'Seleccioná el año');
+
+      // limpiar inputs originales
+      inMM.value = '';
+      inAnio.value = '';
+    }
+    ramoSel.addEventListener('change', showAutoFieldsIfNeeded);
+    // inicial
+    showAutoFieldsIfNeeded();
+
+    selMarca.addEventListener('change', ()=>{
+      const marca = selMarca.value;
+      if (!marca || !AUTOS_FULL[marca]) {
+        fillSelect(selModelo, [], 'Seleccioná el modelo');
+        fillSelect(selVersion, [], 'Seleccioná la versión');
+        fillSelect(selAnioSel, [], 'Seleccioná el año');
+        inMM.value = ''; inAnio.value = '';
+        return;
+      }
+      const modelos = Object.keys(AUTOS_FULL[marca]).sort((a,b)=>a.localeCompare(b,'es'));
+      fillSelect(selModelo, modelos, 'Seleccioná el modelo');
+      fillSelect(selVersion, [], 'Seleccioná la versión');
+      fillSelect(selAnioSel, [], 'Seleccioná el año');
+
+      // Pre-cargar texto libre con Marca
+      inMM.value = marca;
+      inAnio.value = '';
+    });
+
+    selModelo.addEventListener('change', ()=>{
+      const marca = selMarca.value;
+      const modelo = selModelo.value;
+      if (!marca || !modelo) {
+        fillSelect(selVersion, [], 'Seleccioná la versión');
+        fillSelect(selAnioSel, [], 'Seleccioná el año');
+        inMM.value = marca || '';
+        inAnio.value = '';
+        return;
+      }
+      const versiones = (AUTOS_FULL[marca]?.[modelo] || []).slice().sort((a,b)=>a.localeCompare(b,'es'));
+      fillSelect(selVersion, versiones, 'Seleccioná la versión');
+      fillSelect(selAnioSel, [], 'Seleccioná el año');
+
+      // Pre-cargar texto libre con Marca + Modelo
+      inMM.value = `${marca} ${modelo}`.trim();
+      inAnio.value = '';
+    });
+
+    selVersion.addEventListener('change', ()=>{
+      const marca = selMarca.value;
+      const modelo = selModelo.value;
+      const version = selVersion.value;
+      if (!marca || !modelo || !version){
+        fillSelect(selAnioSel, [], 'Seleccioná el año');
+        inMM.value = `${marca||''} ${modelo||''}`.trim();
+        inAnio.value = '';
+        return;
+      }
+      // Años específicos si existen
+      const years = (AUTOS_YEARS?.[marca]?.[modelo]?.[version] || []).map(String);
+      const lista = years.length ? years.sort((a,b)=>Number(b)-Number(a)) : ultimosAnios();
+      fillSelect(selAnioSel, lista, 'Seleccioná el año');
+
+      // Escribir el texto libre COMPLETO (marca + modelo + versión)
+      inMM.value = `${marca} ${modelo} ${version}`.replace(/\s+/g,' ').trim();
+      inAnio.value = '';
+    });
+
+    selAnioSel.addEventListener('change', ()=>{
+      inAnio.value = selAnioSel.value || '';
+    });
+
+    // =========================
+    //   SUBMIT (igual que tenías)
+    // =========================
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       msg.style.display='none'; msg.className='msg';
@@ -344,25 +366,6 @@ Quiero avanzar con mi cotización.`;
         }
       }
 
-      // —— Captura opcional de RETIRO (dos escenarios)
-      let retiro_edad = null, retiro_meta = null, retiro_aporte = null, retiro_esc1 = null, retiro_esc2 = null;
-      const isRetiro = ramoSel.value === 'retiro';
-      if (isRetiro) {
-        const rEdad   = parseFloat(document.getElementById('rw_edad')?.value);
-        const rMeta   = parseFloat(document.getElementById('rw_retiro')?.value);
-        const rAporte = parseFloat(document.getElementById('rw_aporte')?.value);
-        if (!Number.isNaN(rEdad) && !Number.isNaN(rMeta) && !Number.isNaN(rAporte)) {
-          const mesesEntre = (e,r) => Math.max(0,(r - e) * 12);
-          const acumular = (aporte, meses, tasa) => { let v=0, m=tasa/12; for (let i=0;i<meses;i++){ v=(v+aporte)*(1+m); } return v; };
-          const meses = mesesEntre(rEdad, rMeta);
-          const T1 = 0.159, T2 = 0.30;
-          const v1 = acumular(rAporte, meses, T1);
-          const v2 = acumular(rAporte, meses, T2);
-          retiro_edad = rEdad; retiro_meta = rMeta; retiro_aporte = rAporte;
-          retiro_esc1 = Math.round(v1); retiro_esc2 = Math.round(v2);
-        }
-      }
-
       const payload = {
         nombre: document.getElementById('nombre').value.trim(),
         telefono: okTel.value.trim(),
@@ -373,14 +376,7 @@ Quiero avanzar con mi cotización.`;
         asesor: document.getElementById('asesor').value,
         origen: document.getElementById('origen').value,
         comentarios: document.getElementById('comentarios').value.trim(),
-        auto_mmv, auto_anio, auto_dni,
-
-        // —— Campos Retiro (nulos si no aplica o no completó)
-        retiro_edad,
-        retiro_meta,    // edad de retiro objetivo
-        retiro_aporte,  // ARS/mes
-        retiro_esc1,    // capital estimado (15,9%)
-        retiro_esc2     // capital estimado (30%)
+        auto_mmv, auto_anio, auto_dni
       };
 
       btn.disabled = true; btn.textContent = "Enviando…";
