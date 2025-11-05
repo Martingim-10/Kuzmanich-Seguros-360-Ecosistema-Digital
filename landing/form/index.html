@@ -58,6 +58,19 @@
     .benefits{ list-style:none; padding:0; margin:0; display:grid; gap:10px }
     .benefits li{ display:flex; gap:10px; align-items:flex-start; color:var(--muted) }
     .dot{ width:8px; height:8px; border-radius:50%; background:var(--brand); margin-top:9px }
+
+    /* —— Mini-cotizador de Retiro (solo estilos del widget) —— */
+    #retiroWidget{display:none;margin-top:12px;border-top:1px solid var(--stroke);padding-top:12px}
+    #retiroWidget .rw-row{display:flex;gap:12px;flex-wrap:wrap}
+    #retiroWidget .rw-row > div{flex:1 1 160px}
+    #retiroWidget .rw-cta{margin-top:10px}
+    #retiroWidget .rw-note{font-size:.82rem;color:var(--muted);margin-top:6px}
+    #retiroWidget .rw-out{margin-top:10px;font-weight:700}
+    #retiroWidget .rw-grid{display:grid;gap:10px;grid-template-columns:1fr}
+    @media (max-width:520px){#retiroWidget .rw-grid{grid-template-columns:1fr}}
+    @media (min-width:521px){#retiroWidget .rw-grid{grid-template-columns:1fr 1fr}}
+    #retiroWidget .rw-card{background:transparent;border:1px solid var(--stroke);border-radius:12px;padding:10px}
+    #retiroWidget .rw-small{font-size:.82rem;color:#cbd5e1;margin-bottom:4px}
   </style>
 </head>
 <body>
@@ -112,6 +125,48 @@
             <input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
             <div class="hint">Estos datos son necesarios para la IA de SanCor.</div>
           </div>
+
+          <!-- —— Mini-cotizador RETIRO (dos escenarios) —— -->
+          <div id="retiroWidget">
+            <div class="row rw-row">
+              <div class="field">
+                <label>Edad actual</label>
+                <input id="rw_edad" inputmode="numeric" placeholder="Ej: 35">
+              </div>
+              <div class="field">
+                <label>Edad de retiro</label>
+                <input id="rw_retiro" inputmode="numeric" placeholder="Ej: 65">
+              </div>
+              <div class="field">
+                <label>Aporte mensual (ARS)</label>
+                <input id="rw_aporte" inputmode="numeric" placeholder="Mínimo 30000" value="50000">
+              </div>
+            </div>
+
+            <button type="button" id="rw_calc" class="rw-cta">Calcular proyección</button>
+            <div id="rw_err" class="msg err" style="display:none"></div>
+
+            <div id="rw_out" class="rw-out" style="display:none">
+              <div class="rw-grid">
+                <div class="rw-card">
+                  <div class="rw-small">Escenario 1 (≈ 15,9% anual)</div>
+                  <div id="rw_e1">—</div>
+                </div>
+                <div class="rw-card">
+                  <div class="rw-small">Escenario 2 (≈ 30% anual)</div>
+                  <div id="rw_e2">—</div>
+                </div>
+              </div>
+              <div class="rw-note">Proyección en ARS. Aporte al inicio de cada mes.</div>
+            </div>
+
+            <div id="rw_actions" style="display:none;display:flex;gap:8px;flex-wrap:wrap">
+              <button type="button" id="rw_wpp">📲 Continuar por WhatsApp</button>
+            </div>
+
+            <div class="rw-note">Estimación simple con dos escenarios (15,9% y 30% anual). El rendimiento real puede variar.</div>
+          </div>
+          <!-- —— FIN mini-cotizador RETIRO —— -->
 
           <!-- Tracking -->
           <input id="canal" type="hidden" value="instagram">
@@ -170,9 +225,13 @@
     const btnWa       = document.getElementById('btnWa');
     const btnCopy     = document.getElementById('btnCopy');
 
+    // —— Mostrar campos Automotor sólo si corresponde
     function updateAutoFields(){
       const isAuto = ramoSel.value === 'automotor';
       autoFields.style.display  = isAuto ? 'block' : 'none';
+      // Mostrar/ocultar widget Retiro
+      const rw = document.getElementById('retiroWidget');
+      if (rw) rw.style.display = (ramoSel.value === 'retiro') ? 'block' : 'none';
     }
     ramoSel.addEventListener('change', updateAutoFields);
 
@@ -194,6 +253,69 @@
       if (!res.ok) throw new Error("HTTP " + res.status);
     }
 
+    // —— Mini-cotizador Retiro (dos escenarios)
+    (function(){
+      const err = document.getElementById('rw_err');
+      const outWrap = document.getElementById('rw_out');
+      const e1El = document.getElementById('rw_e1');
+      const e2El = document.getElementById('rw_e2');
+      const actions = document.getElementById('rw_actions');
+      const btnCalc = document.getElementById('rw_calc');
+      const btnWpp = document.getElementById('rw_wpp');
+
+      const fmtARS = new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0});
+      const mesesEntre = (e, r) => Math.max(0,(r - e) * 12);
+      const acumular = (aporte, meses, tasaAnual) => {
+        const m = tasaAnual/12; let v = 0;
+        for (let i=0;i<meses;i++){ v = (v + aporte) * (1 + m); }
+        return v;
+      };
+      const show = (el, v=true) => el && (el.style.display = v ? (el.id==='rw_actions' ? 'flex' : 'block') : 'none');
+
+      function calcular(){
+        show(err,false); show(outWrap,false); show(actions,false); if (err) err.textContent='';
+        const edad = parseFloat(document.getElementById('rw_edad')?.value);
+        const retiro = parseFloat(document.getElementById('rw_retiro')?.value);
+        const aporte = parseFloat(document.getElementById('rw_aporte')?.value);
+
+        if (isNaN(edad) || isNaN(retiro) || isNaN(aporte)){ err.textContent='Completá edad, edad de retiro y aporte.'; show(err,true); return; }
+        if (retiro <= edad){ err.textContent='La edad de retiro debe ser mayor a la actual.'; show(err,true); return; }
+        if (aporte < 30000){ err.textContent='El aporte mínimo es $30.000 por mes.'; show(err,true); return; }
+
+        const meses = mesesEntre(edad, retiro);
+        const T1 = 0.159, T2 = 0.30;
+        const v1 = acumular(aporte, meses, T1);
+        const v2 = acumular(aporte, meses, T2);
+
+        if (e1El) e1El.textContent = `≈ ${fmtARS.format(v1)}`;
+        if (e2El) e2El.textContent = `≈ ${fmtARS.format(v2)}`;
+        show(outWrap,true); show(actions,true);
+
+        // Botón WhatsApp con resumen
+        const nombre = (document.getElementById('nombre')?.value || '').trim();
+        const tel    = (document.getElementById('telefono')?.value || '').trim();
+        const email  = (document.getElementById('email')?.value || '').trim();
+        const resumen = `Resumen de simulación de Retiro:
+• Nombre: ${nombre || '(sin nombre)'}
+• Teléfono: ${tel || '(sin teléfono)'}
+• Email: ${email || '(sin email)'}
+
+• Edad actual: ${edad}
+• Edad retiro: ${retiro}
+• Aporte mensual: ${fmtARS.format(aporte)}
+• Escenario 1 (15,9%): ${fmtARS.format(v1)}
+• Escenario 2 (30%): ${fmtARS.format(v2)}
+
+Quiero avanzar con mi cotización.`;
+
+        const to = (window.TU_WA_NUMBER || '5492804641495').replace(/\D/g,'');
+        if (btnWpp) btnWpp.onclick = () => window.open(`https://wa.me/${to}?text=${encodeURIComponent(resumen)}`,'_blank');
+      }
+
+      if (btnCalc) btnCalc.addEventListener('click', calcular);
+    })();
+
+    // —— Submit del formulario (Automotor intacto + campos Retiro opcionales)
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       msg.style.display='none'; msg.className='msg';
@@ -222,6 +344,25 @@
         }
       }
 
+      // —— Captura opcional de RETIRO (dos escenarios)
+      let retiro_edad = null, retiro_meta = null, retiro_aporte = null, retiro_esc1 = null, retiro_esc2 = null;
+      const isRetiro = ramoSel.value === 'retiro';
+      if (isRetiro) {
+        const rEdad   = parseFloat(document.getElementById('rw_edad')?.value);
+        const rMeta   = parseFloat(document.getElementById('rw_retiro')?.value);
+        const rAporte = parseFloat(document.getElementById('rw_aporte')?.value);
+        if (!Number.isNaN(rEdad) && !Number.isNaN(rMeta) && !Number.isNaN(rAporte)) {
+          const mesesEntre = (e,r) => Math.max(0,(r - e) * 12);
+          const acumular = (aporte, meses, tasa) => { let v=0, m=tasa/12; for (let i=0;i<meses;i++){ v=(v+aporte)*(1+m); } return v; };
+          const meses = mesesEntre(rEdad, rMeta);
+          const T1 = 0.159, T2 = 0.30;
+          const v1 = acumular(rAporte, meses, T1);
+          const v2 = acumular(rAporte, meses, T2);
+          retiro_edad = rEdad; retiro_meta = rMeta; retiro_aporte = rAporte;
+          retiro_esc1 = Math.round(v1); retiro_esc2 = Math.round(v2);
+        }
+      }
+
       const payload = {
         nombre: document.getElementById('nombre').value.trim(),
         telefono: okTel.value.trim(),
@@ -232,7 +373,14 @@
         asesor: document.getElementById('asesor').value,
         origen: document.getElementById('origen').value,
         comentarios: document.getElementById('comentarios').value.trim(),
-        auto_mmv, auto_anio, auto_dni
+        auto_mmv, auto_anio, auto_dni,
+
+        // —— Campos Retiro (nulos si no aplica o no completó)
+        retiro_edad,
+        retiro_meta,    // edad de retiro objetivo
+        retiro_aporte,  // ARS/mes
+        retiro_esc1,    // capital estimado (15,9%)
+        retiro_esc2     // capital estimado (30%)
       };
 
       btn.disabled = true; btn.textContent = "Enviando…";
@@ -270,206 +418,5 @@
       }
     });
   </script>
-
-  <!-- === AÑADIDO: Dialogflow Messenger (CX) + trigger cuando Ramo = "retiro" === -->
-  <!-- 1) Bootstrap del web component -->
-  <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
-
-  <!-- 2) Componente del chat (usa tus IDs reales) -->
-  <df-messenger
-    project-id="chatbotprevencionretiro"
-    agent-id="27aae0fd-56e8-43e5-9f7c-5ffc6f132462"
-    language-code="es"
-    chat-title="Asesor Retiro"
-    chat-icon="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png">
-  </df-messenger>
-
-  <!-- 3) Gatillo: abrir chat + enviar texto cuando elijan "retiro" -->
-  <script>
-    (function(){
-      const onDfReady = (cb) => {
-        if (window.customElements?.get('df-messenger')) return cb();
-        window.addEventListener('dfMessengerLoaded', cb, { once: true });
-      };
-
-      function startRetiro(message = 'Quiero cotizar retiro') {
-        const df = document.querySelector('df-messenger');
-        if (!df) return;
-        df.setAttribute('chat-open','true');
-        df.renderCustomText(message);
-        // Si preferís evento en CX: creá el Event Handler y usa:
-        // df.renderCustomText('/event:start_retiro');
-      }
-
-      onDfReady(() => {
-        const selectRamo = document.getElementById('ramo');
-        if (!selectRamo) return;
-
-        // Disparo al cambiar a "retiro"
-        selectRamo.addEventListener('change', (e) => {
-          if (String(e.target.value).toLowerCase() === 'retiro') {
-            setTimeout(startRetiro, 200);
-          }
-        });
-
-        // Por si ya viene seleccionado al cargar
-        if (String(selectRamo.value).toLowerCase() === 'retiro') {
-          setTimeout(startRetiro, 200);
-        }
-      });
-    })();
-  </script>
-  <!-- === FIN AÑADIDO === -->
-  <!-- === B) Mini-cotizador de Retiro con 2 escenarios (15,9% y 30%) + WhatsApp === -->
-<style>
-  #retiroWidget{display:none;margin-top:10px;border-top:1px solid #233046;padding-top:12px}
-  #retiroWidget .rw-row{display:flex;gap:12px;flex-wrap:wrap}
-  #retiroWidget .rw-row > div{flex:1 1 160px}
-  #retiroWidget label{margin:8px 0 6px}
-  #retiroWidget .rw-cta{margin-top:10px}
-  #retiroWidget .rw-note{font-size:.82rem;color:#94a3b8;margin-top:6px}
-  #retiroWidget .rw-out{margin-top:10px;font-weight:700}
-  #retiroWidget .rw-grid{display:grid;gap:10px;grid-template-columns:1fr}
-  @media (min-width:680px){#retiroWidget .rw-grid{grid-template-columns:1fr 1fr}}
-  #retiroWidget .rw-card{background:transparent;border:1px solid #233046;border-radius:12px;padding:10px}
-  #retiroWidget .rw-small{font-size:.82rem;color:#94a3b8;margin-bottom:4px}
-</style>
-
-<div id="retiroWidget" class="card" style="background:transparent;border:none;box-shadow:none">
-  <div class="rw-row">
-    <div>
-      <label>Edad actual</label>
-      <input id="rw_edad" inputmode="numeric" placeholder="Ej: 35">
-    </div>
-    <div>
-      <label>Edad de retiro</label>
-      <input id="rw_retiro" inputmode="numeric" placeholder="Ej: 65">
-    </div>
-    <div>
-      <label>Aporte mensual (ARS)</label>
-      <input id="rw_aporte" inputmode="numeric" placeholder="Mínimo 30000" value="50000">
-    </div>
-  </div>
-
-  <button type="button" id="rw_calc" class="rw-cta" style="padding:10px 12px;border-radius:10px;background:linear-gradient(180deg,#3b82f6,#60a5fa);color:#fff;border:none;cursor:pointer">
-    Calcular proyección
-  </button>
-
-  <div id="rw_err" class="msg err" style="display:none"></div>
-
-  <div id="rw_out" class="rw-out" style="display:none">
-    <div class="rw-grid">
-      <div class="rw-card">
-        <div class="rw-small">Escenario 1 (≈ 15,9% anual)</div>
-        <div id="rw_e1">—</div>
-      </div>
-      <div class="rw-card">
-        <div class="rw-small">Escenario 2 (≈ 30% anual)</div>
-        <div id="rw_e2">—</div>
-      </div>
-    </div>
-    <div class="rw-note">Proyección en ARS. Aporte al inicio de cada mes.</div>
-  </div>
-
-  <div id="rw_actions" style="display:none;display:flex;gap:8px;flex-wrap:wrap">
-    <button type="button" id="rw_wpp" style="padding:10px 12px;border-radius:10px;border:none;background:#22c55e;color:#fff;cursor:pointer">
-      📲 Continuar por WhatsApp
-    </button>
-  </div>
-
-  <div class="rw-note">Estimación simple con dos escenarios (15,9% y 30% anual). El rendimiento real puede variar.</div>
-</div>
-
-<script>
-(function(){
-  const ramoSel = document.getElementById('ramo');
-  const w = document.getElementById('retiroWidget');
-  const err = document.getElementById('rw_err');
-  const outWrap = document.getElementById('rw_out');
-  const e1El = document.getElementById('rw_e1');
-  const e2El = document.getElementById('rw_e2');
-  const actions = document.getElementById('rw_actions');
-  const btnCalc = document.getElementById('rw_calc');
-  const btnWpp = document.getElementById('rw_wpp');
-
-  const fmtARS = new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0});
-
-  function mesesEntre(edadActual, edadRetiro){ return Math.max(0,(edadRetiro - edadActual) * 12); }
-  function acumular(aporte, meses, tasaAnual){
-    const r = tasaAnual/12; let valor = 0;
-    for (let i=0;i<meses;i++){ valor = (valor + aporte) * (1 + r); }
-    return valor;
-  }
-  function show(el, v=true){ el.style.display = v ? (el.id==='rw_actions' ? 'flex' : 'block') : 'none'; }
-
-  function calcular(){
-    show(err,false); show(outWrap,false); show(actions,false);
-    err.textContent = '';
-
-    const edad = parseFloat(document.getElementById('rw_edad').value);
-    const retiro = parseFloat(document.getElementById('rw_retiro').value);
-    const aporte = parseFloat(document.getElementById('rw_aporte').value);
-
-    if (isNaN(edad) || isNaN(retiro) || isNaN(aporte)){
-      err.textContent='Completá edad, edad de retiro y aporte.'; show(err,true); return;
-    }
-    if (retiro <= edad){
-      err.textContent='La edad de retiro debe ser mayor a la actual.'; show(err,true); return;
-    }
-    if (aporte < 30000){
-      err.textContent='El aporte mínimo es $30.000 por mes.'; show(err,true); return;
-    }
-
-    const meses = mesesEntre(edad, retiro);
-    const T1 = 0.159; // ≈ 15,9% anual
-    const T2 = 0.30;  // ≈ 30% anual
-
-    const v1 = acumular(aporte, meses, T1);
-    const v2 = acumular(aporte, meses, T2);
-
-    e1El.textContent = `≈ ${fmtARS.format(v1)}`;
-    e2El.textContent = `≈ ${fmtARS.format(v2)}`;
-    show(outWrap,true);
-    show(actions,true);
-
-    // Mensaje para WhatsApp — reutiliza TU_WA_NUMBER si está disponible en la página
-    const nombre = (document.getElementById('nombre')?.value || '').trim();
-    const tel    = (document.getElementById('telefono')?.value || '').trim();
-    const email  = (document.getElementById('email')?.value || '').trim();
-
-    const resumen = `Resumen de simulación de Retiro:
-• Nombre: ${nombre || '(sin nombre)'}
-• Teléfono: ${tel || '(sin teléfono)'}
-• Email: ${email || '(sin email)'}
-
-• Edad actual: ${edad}
-• Edad retiro: ${retiro}
-• Aporte mensual: ${fmtARS.format(aporte)}
-• Escenario 1 (15,9%): ${fmtARS.format(v1)}
-• Escenario 2 (30%): ${fmtARS.format(v2)}
-
-Quiero avanzar con mi cotización.`;
-
-    const to = (window.TU_WA_NUMBER || '5492804641495').replace(/\D/g,'');
-    btnWpp.onclick = () => {
-      window.open(`https://wa.me/${to}?text=${encodeURIComponent(resumen)}`,'_blank');
-    };
-  }
-
-  // Mostrar/ocultar widget según elección del ramo
-  if (ramoSel && w){
-    const toggle = () => { w.style.display = (String(ramoSel.value).toLowerCase() === 'retiro') ? 'block' : 'none'; };
-    ramoSel.addEventListener('change', toggle);
-    toggle(); // estado inicial
-  }
-
-  if (btnCalc) btnCalc.addEventListener('click', calcular);
-})();
-</script>
-<!-- === FIN B === -->
-
 </body>
 </html>
-   
-    
-   
