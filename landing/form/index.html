@@ -12,12 +12,14 @@
       --input:#0b1220; --stroke:#233046; --radius:18px;
     }
     *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;display:block;
+    body{
+      margin:0;min-height:100vh;display:block;
       background:radial-gradient(1200px 600px at 20% -10%,#1e293b 0%,transparent 60%),
                  radial-gradient(1000px 600px at 120% 20%,#0b1220 0%,transparent 60%),
                  var(--bg);
       color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
-      padding:24px;}
+      padding:24px;
+    }
     .wrap{max-width:980px;margin:0 auto}
     .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start}
     @media(max-width:880px){.grid{grid-template-columns:1fr}}
@@ -93,21 +95,27 @@
             <option value="empresas">Empresas</option>
           </select>
 
-          <!-- 🔹 NUEVO BLOQUE AUTOMOTOR -->
+          <!-- Campos AUTOMOTOR -->
           <div id="autoFields" style="display:none; margin-top:8px">
             <label>Marca</label>
-            <select id="marca" name="marca"></select>
+            <select id="auto_marca"><option value="">Seleccioná marca…</option></select>
 
             <label>Modelo</label>
-            <select id="modelo" name="modelo"></select>
+            <select id="auto_modelo" disabled><option value="">Seleccioná modelo…</option></select>
 
             <label>Versión</label>
-            <select id="version" name="version"></select>
+            <select id="auto_version" disabled><option value="">Seleccioná versión…</option></select>
 
-            <label>Año de fabricación</label>
-            <input id="auto_anio" placeholder="Ej: 2022">
+            <label>Marca, Modelo y Versión</label>
+            <input id="auto_mm" placeholder="Ej: Toyota Corolla 2.0 SEG CVT" readonly>
+
+            <label>Año de producción</label>
+            <input id="auto_anio" inputmode="numeric" placeholder="Ej: 2022">
+
+            <label>DNI del tomador</label>
+            <input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
+            <div class="hint">Estos datos son necesarios para la IA de SanCor.</div>
           </div>
-          <!-- 🔹 FIN NUEVO BLOQUE AUTOMOTOR -->
 
           <input id="canal" type="hidden" value="instagram">
           <input id="estado" type="hidden" value="nuevo">
@@ -143,56 +151,78 @@
     const form = document.getElementById('leadForm');
     const ramoSel = document.getElementById('ramo');
     const autoFields = document.getElementById('autoFields');
-    const marcaSel = document.getElementById('marca');
-    const modeloSel = document.getElementById('modelo');
-    const versionSel = document.getElementById('version');
+    const marcaSel = document.getElementById('auto_marca');
+    const modeloSel = document.getElementById('auto_modelo');
+    const versionSel = document.getElementById('auto_version');
+    const inputMMV = document.getElementById('auto_mm');
 
-    // Mostrar/Ocultar campos automotor
+    const AUTO_TREE_URL = "./Autos_arbol.json";
+    let AUTO_TREE = null;
+
+    // Mostrar campos automotor y cargar árbol
     ramoSel.addEventListener('change', () => {
-      autoFields.style.display = ramoSel.value === 'automotor' ? 'block' : 'none';
+      const isAuto = ramoSel.value === 'automotor';
+      autoFields.style.display = isAuto ? 'block' : 'none';
+      if (isAuto && !AUTO_TREE) cargarArbol();
     });
 
-    // Cargar marcas y modelos dinámicamente
-    let autosData = {};
-    fetch("autos_full.json")
-      .then(r => r.json())
-      .then(data => {
-        autosData = data;
-        marcaSel.innerHTML = "<option value=''>Seleccioná marca…</option>" +
-          Object.keys(data).sort().map(m => `<option value="${m}">${m}</option>`).join("");
-      });
+    async function cargarArbol() {
+      try {
+        const res = await fetch(AUTO_TREE_URL, { cache: 'no-store' });
+        AUTO_TREE = await res.json();
+        poblarMarcas();
+      } catch (e) {
+        console.error("Error al cargar Autos_arbol.json", e);
+      }
+    }
+
+    function poblarMarcas() {
+      const marcas = Object.keys(AUTO_TREE).sort();
+      marcaSel.innerHTML = "<option value=''>Seleccioná marca…</option>" +
+        marcas.map(m => `<option value="${m}">${m}</option>`).join("");
+      marcaSel.disabled = false;
+    }
 
     marcaSel.addEventListener('change', () => {
       const marca = marcaSel.value;
-      modeloSel.innerHTML = "<option value=''>Seleccioná modelo…</option>";
-      versionSel.innerHTML = "<option value=''>Seleccioná versión…</option>";
-      if (!marca || !autosData[marca]) return;
-      modeloSel.innerHTML += Object.keys(autosData[marca])
-        .sort()
-        .map(m => `<option value="${m}">${m}</option>`)
-        .join("");
+      if (!marca || !AUTO_TREE[marca]) return;
+      const modelos = Object.keys(AUTO_TREE[marca]).sort();
+      modeloSel.innerHTML = "<option value=''>Seleccioná modelo…</option>" +
+        modelos.map(m => `<option value='${m}'>${m}</option>`).join("");
+      modeloSel.disabled = false;
+      versionSel.disabled = true;
+      inputMMV.value = "";
     });
 
     modeloSel.addEventListener('change', () => {
       const marca = marcaSel.value;
       const modelo = modeloSel.value;
-      versionSel.innerHTML = "<option value=''>Seleccioná versión…</option>";
-      if (!marca || !modelo) return;
-      versionSel.innerHTML += autosData[marca][modelo]
-        .sort()
-        .map(v => `<option value="${v}">${v}</option>`)
-        .join("");
+      if (!modelo || !AUTO_TREE[marca][modelo]) return;
+      const versiones = AUTO_TREE[marca][modelo];
+      versionSel.innerHTML = "<option value=''>Seleccioná versión…</option>" +
+        versiones.map(v => `<option value='${v}'>${v}</option>`).join("");
+      versionSel.disabled = false;
+      inputMMV.value = "";
+    });
+
+    versionSel.addEventListener('change', () => {
+      const parts = [marcaSel.value, modeloSel.value, versionSel.value].filter(Boolean);
+      inputMMV.value = parts.join(" ");
     });
 
     form.addEventListener('submit', async e => {
       e.preventDefault();
       const payload = Object.fromEntries(new FormData(form).entries());
-      const res = await fetch(URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      alert(res.ok ? "✅ Solicitud enviada" : "❌ Error al enviar");
+      try {
+        const res = await fetch(URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        alert(res.ok ? "✅ Solicitud enviada" : "❌ Error al enviar");
+      } catch {
+        alert("❌ Error de conexión");
+      }
     });
   </script>
 </body>
