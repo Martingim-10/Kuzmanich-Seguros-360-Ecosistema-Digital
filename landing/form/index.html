@@ -1,134 +1,199 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Extrae jerarquía MARCA (C1) -> MODELO (C2) -> VERSIONES (resto) desde Autos.pdf
-- Lee todas las tablas con Tabula (lattice + stream)
-- Propaga Marca y Modelo por bloque
-- Conserva las versiones tal cual aparecen (sin deduplicar)
-- Detecta años (2011..2025) por versión si están en la fila
-Salida:
-  autos_full.json           {Marca: {Modelo: [Versiones...]}}
-  autos_full_years.json     {Marca: {Modelo: {Versión: [Años...]}}}
-"""
-
-import re, json
-from collections import defaultdict
-import pandas as pd
-import tabula
-
-PDF = "Autos.pdf"
-OUT1 = "autos_full.json"
-OUT2 = "autos_full_years.json"
-
-YEAR_MIN, YEAR_MAX = 2011, 2025
-YEAR_RE = re.compile(r"\b(20[1-2]\d)\b")
-
-# Filas que conviene ignorar
-SKIP_PATTERNS = [
-    r"Autos - Pick Ups - Todo Terreno - Utilitarios",
-    r"Visite Nuestro Sitio",
-    r"0\s*Km .*2011",
-    r"EN US\$",
-    r"Noviembre 20\d{2}",
-    r"0KM EN US\$",
-    r"Catálogo|Página \d+ de \d+",
-]
-
-def skip_text(s: str) -> bool:
-    s = (s or "").strip()
-    if not s:
-        return True
-    for p in SKIP_PATTERNS:
-        if re.search(p, s, re.IGNORECASE):
-            return True
-    return False
-
-def norm(s: str) -> str:
-    return re.sub(r"\s+", " ", (s or "").strip())
-
-def is_model_header(txt: str) -> bool:
-    """Modelo (columna 2) suele ser corto, sin comas, ni specs; 1-3 tokens, letras/números."""
-    if not txt: return False
-    if "," in txt: return False
-    tokens = txt.split()
-    return 1 <= len(tokens) <= 3 and all(re.match(r"^[A-Za-z0-9\-\+\/]+$", t) for t in tokens)
-
-def main():
-    # Leemos con lattice y stream para cubrir todos los layouts
-    frames = []
-    for mode in ("lattice", "stream"):
-        try:
-            dfs = tabula.read_pdf(PDF, pages="all", multiple_tables=True, **{mode: True})
-            for df in dfs or []:
-                if isinstance(df, pd.DataFrame) and df.shape[0] > 0:
-                    frames.append(df)
-        except Exception:
-            pass
-    if not frames:
-        raise SystemExit("No se detectaron tablas. Probá instalar Java o compartir otra muestra.")
-
-    # Unificamos filas normalizadas
-    rows = []
-    for df in frames:
-        df = df.copy()
-        df.columns = [f"C{i+1}" for i in range(df.shape[1])]
-        for _, r in df.iterrows():
-            vals = [norm(r.get(c, "")) for c in df.columns]
-            # si TODAS las celdas están vacías/ruido, salteamos
-            if all(skip_text(v) for v in vals):
-                continue
-            rows.append(vals)
-
-    # Armamos estructura jerárquica
-    autos = defaultdict(lambda: defaultdict(list))                    # Marca -> Modelo -> [Versiones]
-    autos_years = defaultdict(lambda: defaultdict(lambda: defaultdict(set)))
-    current_brand = None
-    current_model = None
-
-    for vals in rows:
-        c1 = vals[0] if len(vals) > 0 else ""
-        c2 = vals[1] if len(vals) > 1 else ""
-        tail = vals[2:] if len(vals) > 2 else []
-
-        # ¿Es fila de MARCA? (solo C1 con texto útil, C2 vacío o encabezado)
-        if c1 and not skip_text(c1) and (not c2 or re.fullmatch(r"(?i)(modelo|versi[oó]n.*|detalle.*)", c2 or "")):
-            current_brand = c1.title()
-            current_model = None
-            continue
-
-        # Si hay MARCA vigente, evaluamos MODELO y VERSIONES
-        if current_brand:
-            # ¿Es MODELO en C2?
-            if c2 and is_model_header(c2):
-                current_model = c2.upper()  # en muchos catálogos está en mayúsculas
-                continue
-
-            # Si ya tenemos marca y modelo, esta fila es una VERSIÓN (unimos C2 + resto)
-            if current_model:
-                raw = " ".join([c for c in [c2] + tail if c]).strip()
-                if not raw:
-                    continue
-                version = raw  # conservar tal cual
-                autos[current_brand][current_model].append(version)
-
-                # años si están
-                joined = " ".join(vals)
-                for y in YEAR_RE.findall(joined):
-                    y = int(y)
-                    if YEAR_MIN <= y <= YEAR_MAX:
-                        autos_years[current_brand][current_model][version].add(y)
-
-    # Serializar
-    out1 = {b: {m: list(vs) for m, vs in models.items()} for b, models in autos.items()}
-    out2 = {
-        b: {m: {v: sorted(list(ys)) for v, ys in vers.items()} for m, vers in models.items()}
-        for b, models in autos_years.items()
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kuzmanich Seguros 360 — Solicitud de Cotización</title>
+  <meta name="description" content="Cotizá seguros personales y empresariales con Kuzmanich Seguros 360. Respuesta rápida y asesoramiento profesional.">
+  <style>
+    :root{
+      --bg:#0f172a; --panel:#111827; --panel-2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
+      --brand:#3b82f6; --brand-2:#60a5fa; --ok:#22c55e; --err:#ef4444;
+      --input:#0b1220; --stroke:#233046; --radius:18px;
     }
-    with open(OUT1, "w", encoding="utf-8") as f:
-        json.dump(out1, f, ensure_ascii=False, indent=2)
-    with open(OUT2, "w", encoding="utf-8") as f:
-        json.dump(out2, f, ensure_ascii=False, indent=2)
-    print(f"Listo -> {OUT1}, {OUT2}")
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:block;
+      background:radial-gradient(1200px 600px at 20% -10%,#1e293b 0%,transparent 60%),
+                 radial-gradient(1000px 600px at 120% 20%,#0b1220 0%,transparent 60%),
+                 var(--bg);
+      color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+      padding:24px;}
+    .wrap{max-width:980px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+    .card{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--stroke);
+      border-radius:var(--radius);box-shadow:0 20px 50px rgba(0,0,0,.45);}
+    .card.form{padding:28px 24px 24px;}
+    .header{display:flex;gap:14px;align-items:center;margin-bottom:12px;}
+    .header img{width:54px;height:54px;border-radius:12px;background:#0b1220;object-fit:contain;border:1px solid var(--stroke);}
+    h1{font-size:1.35rem;margin:0;color:var(--brand-2)}
+    .sub{color:var(--muted);font-size:.95rem;margin:6px 0 18px}
+    .row{display:flex;gap:12px}
+    .row>.field{flex:1}
+    label{display:block;font-size:.9rem;color:#cbd5e1;margin:14px 0 6px}
+    input,select,textarea{width:100%;padding:12px 12px;border-radius:12px;border:1px solid var(--stroke);
+      background:var(--input);color:var(--text);font-size:1rem;outline:none;}
+    input:focus,select:focus,textarea:focus{border-color:var(--brand)}
+    .hint{font-size:.82rem;color:var(--muted);margin-top:6px}
+    .consent{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:.9rem;color:#cbd5e1}
+    .consent input{margin-top:3px}
+    button{width:100%;margin-top:18px;padding:12px 14px;border:none;border-radius:12px;
+      background:linear-gradient(180deg,var(--brand),var(--brand-2));color:white;font-weight:700;cursor:pointer;
+      transition:transform .05s ease;}
+    button:disabled{opacity:.55;cursor:not-allowed}
+    button:active{transform:translateY(1px)}
+    .msg{margin-top:12px;font-weight:600;display:none}
+    .msg.ok{color:var(--ok)}
+    .msg.err{color:var(--err)}
+    .foot{margin-top:12px;font-size:.8rem;color:var(--muted);text-align:center}
+    @media(max-width:520px){.row{flex-direction:column}}
+    .card.aside{padding:20px 18px}
+    .aside h3{margin:6px 0 12px;font-size:1.05rem;color:#cfe0ff}
+    .benefits{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+    .benefits li{display:flex;gap:10px;align-items:flex-start;color:var(--muted)}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--brand);margin-top:9px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="grid">
+      <main class="card form">
+        <div class="header">
+          <img src="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png" alt="Logo Kuzmanich Seguros 360">
+          <div>
+            <h1>Solicitud de cotización</h1>
+            <div class="sub">Atención profesional en seguros personales y empresariales.</div>
+          </div>
+        </div>
 
-if __name__ == "__main__":
-    main()
+        <form id="leadForm" novalidate>
+          <div class="row">
+            <div class="field">
+              <label>Nombre completo</label>
+              <input id="nombre" name="nombre" required placeholder="Ej: Martín Kuzmanich">
+            </div>
+            <div class="field">
+              <label>Teléfono (con código de área)</label>
+              <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000">
+            </div>
+          </div>
+
+          <label>Email</label>
+          <input id="email" name="email" type="email" placeholder="tu@email.com">
+          <div class="hint">Usaremos tu email solo para enviarte tu propuesta.</div>
+
+          <label>Ramo</label>
+          <select id="ramo" name="ramo" required>
+            <option value="">Seleccioná…</option>
+            <option value="retiro">Seguro de Retiro</option>
+            <option value="vida">Vida</option>
+            <option value="automotor">Automotor</option>
+            <option value="hogar">Hogar</option>
+            <option value="salud">Salud</option>
+            <option value="empresas">Empresas</option>
+          </select>
+
+          <!-- 🔹 NUEVO BLOQUE AUTOMOTOR -->
+          <div id="autoFields" style="display:none; margin-top:8px">
+            <label>Marca</label>
+            <select id="marca" name="marca"></select>
+
+            <label>Modelo</label>
+            <select id="modelo" name="modelo"></select>
+
+            <label>Versión</label>
+            <select id="version" name="version"></select>
+
+            <label>Año de fabricación</label>
+            <input id="auto_anio" placeholder="Ej: 2022">
+          </div>
+          <!-- 🔹 FIN NUEVO BLOQUE AUTOMOTOR -->
+
+          <input id="canal" type="hidden" value="instagram">
+          <input id="estado" type="hidden" value="nuevo">
+          <input id="asesor" type="hidden" value="auto">
+          <input id="origen" type="hidden" value="form">
+
+          <label class="consent">
+            <input id="consent" type="checkbox" required>
+            <span>Acepto el uso de mis datos según la Ley 25.326. <a href="#">Política de privacidad</a></span>
+          </label>
+
+          <button id="submitBtn" type="submit" disabled>Enviar solicitud</button>
+          <div id="msg" class="msg"></div>
+        </form>
+
+        <div class="foot">Kuzmanich Seguros 360 · Atención personalizada</div>
+      </main>
+
+      <aside class="card aside">
+        <h3>¿Por qué con nosotros?</h3>
+        <ul class="benefits">
+          <li><span class="dot"></span> Productores oficiales.</li>
+          <li><span class="dot"></span> Respuesta ágil por WhatsApp.</li>
+          <li><span class="dot"></span> Tus datos quedan protegidos.</li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
+
+    const form = document.getElementById('leadForm');
+    const ramoSel = document.getElementById('ramo');
+    const autoFields = document.getElementById('autoFields');
+    const marcaSel = document.getElementById('marca');
+    const modeloSel = document.getElementById('modelo');
+    const versionSel = document.getElementById('version');
+
+    // Mostrar/Ocultar campos automotor
+    ramoSel.addEventListener('change', () => {
+      autoFields.style.display = ramoSel.value === 'automotor' ? 'block' : 'none';
+    });
+
+    // Cargar marcas y modelos dinámicamente
+    let autosData = {};
+    fetch("autos_full.json")
+      .then(r => r.json())
+      .then(data => {
+        autosData = data;
+        marcaSel.innerHTML = "<option value=''>Seleccioná marca…</option>" +
+          Object.keys(data).sort().map(m => `<option value="${m}">${m}</option>`).join("");
+      });
+
+    marcaSel.addEventListener('change', () => {
+      const marca = marcaSel.value;
+      modeloSel.innerHTML = "<option value=''>Seleccioná modelo…</option>";
+      versionSel.innerHTML = "<option value=''>Seleccioná versión…</option>";
+      if (!marca || !autosData[marca]) return;
+      modeloSel.innerHTML += Object.keys(autosData[marca])
+        .sort()
+        .map(m => `<option value="${m}">${m}</option>`)
+        .join("");
+    });
+
+    modeloSel.addEventListener('change', () => {
+      const marca = marcaSel.value;
+      const modelo = modeloSel.value;
+      versionSel.innerHTML = "<option value=''>Seleccioná versión…</option>";
+      if (!marca || !modelo) return;
+      versionSel.innerHTML += autosData[marca][modelo]
+        .sort()
+        .map(v => `<option value="${v}">${v}</option>`)
+        .join("");
+    });
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const payload = Object.fromEntries(new FormData(form).entries());
+      const res = await fetch(URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      alert(res.ok ? "✅ Solicitud enviada" : "❌ Error al enviar");
+    });
+  </script>
+</body>
+</html>
