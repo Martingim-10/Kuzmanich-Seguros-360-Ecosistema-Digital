@@ -1,4 +1,5 @@
-<!doctype html>
+
+       <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
@@ -81,7 +82,7 @@
             </div>
             <div class="field">
               <label>Teléfono (con código de área)</label>
-              <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9\s()+.-]{7,}$">
+              <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9\\s()+.-]{7,}$">
             </div>
           </div>
 
@@ -203,7 +204,7 @@
         msg.classList.add('err'); msg.style.display='block';
         return;
       }
-      if (!(/\d{7,}/.test(okTel.value))) {
+      if (!(/\\d{7,}/.test(okTel.value))) {
         msg.textContent = "Ingresá un teléfono válido (mínimo 7 dígitos).";
         msg.classList.add('err'); msg.style.display='block';
         return;
@@ -245,7 +246,7 @@
         if (isAuto) {
           autoActions.style.display = 'block';
           btnWa.onclick = () => {
-            if (!/^\d+$/.test(TU_WA_NUMBER)) { alert("Configurá TU_WA_NUMBER (tu WhatsApp) en el código."); return; }
+            if (!/^\\d+$/.test(TU_WA_NUMBER)) { alert("Configurá TU_WA_NUMBER (tu WhatsApp) en el código."); return; }
             const nombre = document.getElementById('nombre').value.trim();
             const tel    = document.getElementById('telefono').value.trim();
             const email  = document.getElementById('email').value.trim();
@@ -270,5 +271,55 @@
       }
     });
   </script>
+
+  <!-- === AÑADIDOS: Dialogflow Messenger + disparador Retiro === -->
+  <!-- 1) Bootstrap de Dialogflow Messenger (CX) -->
+  <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+
+  <!-- 2) Componente del chat (ajusta chat-icon si querés) -->
+  <df-messenger
+    project-id="chatbotprevencionretiro"
+    agent-id="27aae0fd-56e8-43e5-9f7c-5ffc6f132462"
+    language-code="es"
+    chat-title="Retiro Seguro"
+    chat-icon="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png"
+  ></df-messenger>
+
+  <!-- 3) Gatillo: si eligen RETIRO en #ramo, abrir chat y enviar mensaje -->
+  <script>
+    (function () {
+      const onDfReady = (cb) => {
+        if (window.customElements?.get('df-messenger')) return cb();
+        window.addEventListener('dfMessengerLoaded', cb, { once: true });
+      };
+
+      const triggerRetiro = () => {
+        const df = document.querySelector('df-messenger');
+        if (!df) return;
+        df.setAttribute('chat-open', 'true');
+        // Opción por texto (debe matchear tu intent de Retiro)
+        df.renderCustomText('Quiero cotizar retiro');
+        // Opción por evento (si creás handler "start_retiro" en CX):
+        // df.renderCustomText('/event:start_retiro');
+      };
+
+      onDfReady(() => {
+        const select = document.getElementById('ramo');
+        if (!select) return;
+
+        select.addEventListener('change', (e) => {
+          if (String(e.target.value).toLowerCase() === 'retiro') {
+            setTimeout(triggerRetiro, 200);
+          }
+        });
+
+        // Por si la página carga con Retiro ya seleccionado
+        if (String(select.value).toLowerCase() === 'retiro') {
+          setTimeout(triggerRetiro, 200);
+        }
+      });
+    })();
+  </script>
+  <!-- === FIN AÑADIDOS === -->
 </body>
 </html>
