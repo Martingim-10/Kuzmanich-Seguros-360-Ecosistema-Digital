@@ -1,0 +1,1559 @@
+{
+  "Marrua": {
+    "C/S": [
+      "C/S"
+    ],
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Brera": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Gt": {
+    "Coupe": [
+      "Coupe"
+    ],
+    "Mito": [
+      "Mito"
+    ]
+  },
+  "Spider": {
+    "Cabrio": [
+      "Cabrio"
+    ]
+  },
+  "A3": {
+    "Cabrio": [
+      "Cabrio"
+    ]
+  },
+  "A4": {
+    "Avant": [
+      "Avant"
+    ]
+  },
+  "A5": {
+    "Sportback": [
+      "Sportback"
+    ],
+    "Coupe": [
+      "Coupe"
+    ],
+    "Cabrio": [
+      "Cabrio"
+    ]
+  },
+  "A7": {
+    "Sportback 3.0": [
+      "Sportback 3.0"
+    ]
+  },
+  "Allroad": {
+    "E-Tron": [
+      "E-Tron"
+    ]
+  },
+  "R8": {
+    "Coupe": [
+      "Coupe"
+    ],
+    "Spyder": [
+      "Spyder"
+    ]
+  },
+  "Rs3": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Rs7": {
+    "Sportback": [
+      "Sportback"
+    ]
+  },
+  "Rs Q8": {
+    "Sportback": [
+      "Sportback"
+    ],
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Tt": {
+    "Coupe": [
+      "Coupe"
+    ],
+    "Roadster": [
+      "Roadster"
+    ]
+  },
+  "Bmw": {
+    "Coupe": [
+      "Coupe"
+    ],
+    "Conv": [
+      "Conv"
+    ],
+    "218": [
+      "218 I"
+    ],
+    "220": [
+      "220 I"
+    ],
+    "235": [
+      "235 I"
+    ],
+    "320": [
+      "320 I"
+    ],
+    "330E": [
+      "330E"
+    ],
+    "428": [
+      "428 I"
+    ],
+    "430": [
+      "430 I"
+    ],
+    "Gran Coupe": [
+      "Gran Coupe"
+    ],
+    "435": [
+      "435 I"
+    ],
+    "440": [
+      "440 I"
+    ],
+    "Cabrio": [
+      "Cabrio"
+    ],
+    "530": [
+      "530 I"
+    ],
+    "535": [
+      "535 I"
+    ],
+    "540": [
+      "540 I"
+    ],
+    "550E": [
+      "550E"
+    ],
+    "640": [
+      "640 I"
+    ],
+    "650": [
+      "650 I"
+    ],
+    "Coupe Gran": [
+      "Coupe Gran"
+    ],
+    "750": [
+      "750 I"
+    ],
+    "760": [
+      "760 I"
+    ]
+  },
+  "M2": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "M3": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "M4": {
+    "Coupe": [
+      "Coupe"
+    ],
+    "Coupe Competition": [
+      "Coupe Competition Mrace Track 510Cv 199677"
+    ]
+  },
+  "M6": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Coupe Gran 127990 115679": {
+    "Coupe Gran": [
+      "Coupe Gran"
+    ]
+  },
+  "M135": {
+    "M140I": [
+      "M140I"
+    ],
+    "M235I": [
+      "M235I"
+    ],
+    "M240I": [
+      "M240I"
+    ],
+    "Coupe": [
+      "Coupe"
+    ],
+    "Conv": [
+      "Conv"
+    ],
+    "M340I": [
+      "M340I"
+    ],
+    "M440I": [
+      "M440I"
+    ],
+    "M850I": [
+      "M850I"
+    ]
+  },
+  "Z4": {
+    "Roadster": [
+      "Roadster"
+    ]
+  },
+  "Camaro Ss": {
+    "Coupe": [
+      "Coupe"
+    ],
+    "Conv": [
+      "Conv"
+    ]
+  },
+  "Classic": {
+    "Wagon": [
+      "Wagon"
+    ]
+  },
+  "Montana Pick - Up": {
+    "C/S": [
+      "C/S"
+    ],
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "S-10 Pick - Up": {
+    "C/S": [
+      "C/S"
+    ],
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Silverado": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Zafira": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "Pt Cruiser": {
+    "Town &": [
+      "Town & Country"
+    ],
+    "Van": [
+      "Van"
+    ]
+  },
+  "Berlingo": {
+    "Furgon": [
+      "Furgon"
+    ],
+    "Multispace": [
+      "Multispace"
+    ]
+  },
+  "C 4 Picasso": {
+    "Van": [
+      "Van"
+    ],
+    "Vav": [
+      "Vav"
+    ]
+  },
+  "C 4 Grand Picasso": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "C 4 Spacetourer": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "C 4 Grand Spacetourer": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "Jumper": {
+    "Furgon": [
+      "Furgon",
+      "Furgon 435 L2H1",
+      "Furgon 435 L2H2",
+      "Furgon 435 L3H2"
+    ],
+    "Furgon 33M": [
+      "Furgon 33M"
+    ],
+    "Furgon 35Mh": [
+      "Furgon 35Mh"
+    ],
+    "Furgon 35Lh": [
+      "Furgon 35Lh"
+    ],
+    "Chasis": [
+      "Chasis 435 Ch L3",
+      "Chasis 440 Ch L3",
+      "Chasis 440 L3"
+    ],
+    "Minibus": [
+      "Minibus 440 L4H2"
+    ]
+  },
+  "Jumpy": {
+    "Furgon": [
+      "Furgon"
+    ],
+    "Van": [
+      "Van"
+    ]
+  },
+  "Spacetourer": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "Serie C": {
+    "C31": [
+      "C31"
+    ],
+    "C32": [
+      "C32"
+    ],
+    "C35": [
+      "C35"
+    ]
+  },
+  "Serie K": {
+    "Pick Up": [
+      "Pick Up"
+    ]
+  },
+  "Van 312": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "U-Van 414": {
+    "U-Van": [
+      "U-Van"
+    ]
+  },
+  "Ds 3": {
+    "Cabrio": [
+      "Cabrio"
+    ]
+  },
+  "Actis": {
+    "C/S": [
+      "C/S"
+    ]
+  },
+  "Fiat": {
+    "Cabrio": [
+      "Cabrio"
+    ],
+    "500 L": [
+      "500 L"
+    ],
+    "500": [
+      "500 X"
+    ]
+  },
+  "Ducato": {
+    "Combinato": [
+      "Combinato"
+    ],
+    "Furgon": [
+      "Furgon"
+    ],
+    "Chasis": [
+      "Chasis"
+    ]
+  },
+  "Fiorino": {
+    "Furgon": [
+      "Furgon"
+    ]
+  },
+  "Fiorino Qubo": {
+    "Furgon": [
+      "Furgon"
+    ]
+  },
+  "Mobi": {
+    "Palio 21407,0": [
+      "Palio 21407,0"
+    ],
+    "Weekend": [
+      "Weekend"
+    ]
+  },
+  "Strada Pick - Up": {
+    "C/Exten.": [
+      "C/Exten."
+    ],
+    "D/C": [
+      "D/C"
+    ],
+    "C/S": [
+      "C/S"
+    ],
+    "C/Plus": [
+      "C/Plus"
+    ],
+    "D/C T200": [
+      "D/C T200 Ranch",
+      "D/C T200 Ultra"
+    ]
+  },
+  "Titano Pick Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Toro Pick Up": {
+    "D/C": [
+      "D/C"
+    ],
+    "D/C T270": [
+      "D/C T270 6At 4X2 Freedom 43917,0 28319",
+      "D/C T270 6At 4X2 Volcano 49073,0 32171"
+    ],
+    "D/C Td350": [
+      "D/C Td350 9At"
+    ]
+  },
+  "Courier": {
+    "Pick Up": [
+      "Pick Up C/S"
+    ]
+  },
+  "Ecosport": {
+    "Ecosport Kinetic": [
+      "Ecosport Kinetic Design Attraction"
+    ]
+  },
+  "F-100 Pick - Up": {
+    "C/S": [
+      "C/S"
+    ],
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "F-150 Pick - Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Fiesta": {
+    "Fiesta Kinetic": [
+      "Fiesta Kinetic Design Attraction"
+    ]
+  },
+  "Focus": {
+    "Focus Kinetic": [
+      "Focus Kinetic Design Attraction"
+    ]
+  },
+  "Ka": {
+    "Ka +": [
+      "Ka +"
+    ]
+  },
+  "Maverick Pick - Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Mustang": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Ranger Pick - Up": {
+    "C/S": [
+      "C/S"
+    ],
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "S-Max": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "Transit": {
+    "Chasis": [
+      "Chasis"
+    ],
+    "Furgon": [
+      "Furgon"
+    ],
+    "Minibus": [
+      "Minibus"
+    ],
+    "Van": [
+      "Van"
+    ]
+  },
+  "Gratour T3": {
+    "C/S": [
+      "C/S"
+    ],
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Tunland Pick-Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "View Cs2": {
+    "Minibus": [
+      "Minibus"
+    ]
+  },
+  "Poer Pick -Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Wingle 5 Pick -Up": {
+    "C/S": [
+      "C/S"
+    ],
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Wingle 6 Pick -Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Wingle 7 Pick -Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Cr-V": {
+    "F": [
+      "F I T"
+    ]
+  },
+  "Elantra": {
+    "Grand": [
+      "Grand I 10"
+    ]
+  },
+  "H 1": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "H 100": {
+    "Truck": [
+      "Truck"
+    ]
+  },
+  "H 350": {
+    "Furgon": [
+      "Furgon"
+    ],
+    "I": [
+      "I 10",
+      "I 30"
+    ]
+  },
+  "Pick Up Cabina Doble": {
+    "E30X (Ev3)": [
+      "E30X (Ev3)"
+    ]
+  },
+  "T6 Pick Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "T8 Pick Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "F Type": {
+    "Conv": [
+      "Conv"
+    ],
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Xk": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Gladiator Pick-Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Grand Avenue": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Carnival": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "Carnival Grand": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "Cerato": {
+    "Koup": [
+      "Koup"
+    ]
+  },
+  "Rondo": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "Mamut": {
+    "C/S": [
+      "C/S"
+    ],
+    "C/D": [
+      "C/D"
+    ],
+    "Box": [
+      "Box"
+    ]
+  },
+  "Defender": {
+    "110 Sw": [
+      "110 Sw"
+    ]
+  },
+  "Evoque": {
+    "Coupe": [
+      "Coupe"
+    ],
+    "Conv": [
+      "Conv"
+    ]
+  },
+  "Lc": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Rc": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Foison": {
+    "C/S Truck": [
+      "C/S Truck"
+    ],
+    "Furgon Cargo": [
+      "Furgon Cargo"
+    ],
+    "Box": [
+      "Box"
+    ]
+  },
+  "Elise": {
+    "Conv": [
+      "Conv"
+    ]
+  },
+  "Emira": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Evora": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Exige": {
+    "Coupe/Roadster": [
+      "Coupe/Roadster"
+    ]
+  },
+  "Artura": {
+    "Coupe": [
+      "Coupe"
+    ],
+    "750S": [
+      "750S"
+    ]
+  },
+  "Coupe": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Gran Turismo": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "D90": {
+    "Edeliver": [
+      "Edeliver 9"
+    ],
+    "Chasis-Cabina L3": [
+      "Chasis-Cabina L3 81,000"
+    ],
+    "Furgon L3H2": [
+      "Furgon L3H2 86,000"
+    ],
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "T90": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "T90 Ev": {
+    "D/C 4X2": [
+      "D/C 4X2"
+    ]
+  },
+  "A 45": {
+    "A-Coupe": [
+      "A-Coupe"
+    ]
+  },
+  "C 43": {
+    "Coupe Amg": [
+      "Coupe Amg 4Matic 126325 120008 111119 105828 96406 87423"
+    ]
+  },
+  "C 63": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "C 250": {
+    "Coupe Blueefficiency": [
+      "Coupe Blueefficiency",
+      "Coupe Blueefficiency City",
+      "Coupe Blueefficiency Sport"
+    ]
+  },
+  "C 300": {
+    "Coupe Amg-Line": [
+      "Coupe Amg-Line"
+    ]
+  },
+  "Coupe City At 77954 72140": {
+    "Cabrio": [
+      "Cabrio"
+    ]
+  },
+  "C 400": {
+    "Coupe 4Matic": [
+      "Coupe 4Matic Amg-Line"
+    ]
+  },
+  "Cla 45": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Cla 200": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Cla 250": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Clc 250": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Cle 53": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "E 53": {
+    "Coupe 435Cv": [
+      "Coupe 435Cv 4Matic + 208137 197730 183083 174365"
+    ]
+  },
+  "E 63": {
+    "E 220D": [
+      "E 220D"
+    ]
+  },
+  "E 350": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "E 400": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "E 450": {
+    "Coupe 4Matic": [
+      "Coupe 4Matic Amg-Line"
+    ]
+  },
+  "E 500": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Glc 43": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Glc 63": {
+    "Coupe S": [
+      "Coupe S 4Matic Amg 510Cv 284635 270403 250373 238450 217222",
+      "Coupe S E Performance 310,000"
+    ]
+  },
+  "Glc 300": {
+    "Glc 350E": [
+      "Glc 350E"
+    ]
+  },
+  "Gle 53": {
+    "Coupe 435Cv": [
+      "Coupe 435Cv 4Matic + 239437 227465 210616 200587"
+    ],
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Gle 63 S": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Gle 400": {
+    "Coupe 4Matic": [
+      "Coupe 4Matic"
+    ]
+  },
+  "Gt 63": {
+    "S E": [
+      "S E Performance Amg 415,000 183849 167481 151875 136607 122881"
+    ],
+    "Mercedes-Amg": [
+      "Mercedes-Amg Gt C"
+    ],
+    "Gt-Roadster 557Cv": [
+      "Gt-Roadster 557Cv 534928 508182 470539 448132 408236 350712"
+    ]
+  },
+  "Mercedes-Amg Gt 4": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Mercedes-Amg Gt R": {
+    "Gt-Coupe": [
+      "Gt-Coupe"
+    ],
+    "Mercedes-Amg": [
+      "Mercedes-Amg Gt S"
+    ]
+  },
+  "Sl 63": {
+    "Sl-Roadster 571Cv": [
+      "Sl-Roadster 571Cv Amg 302247 275339 249683 224582"
+    ],
+    "Sl-Roadster 816Cv": [
+      "Sl-Roadster 816Cv Amg Performance Cromo 410,000 446160"
+    ],
+    "Sl S": [
+      "Sl S Performance Amg Cromo 430,000"
+    ]
+  },
+  "Sl 65": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Sl 500": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Slc 43": {
+    "Roadster": [
+      "Roadster"
+    ]
+  },
+  "Slk": {
+    "Conv": [
+      "Conv",
+      "Conv 200 Kompressor Sport 49674"
+    ]
+  },
+  "Conv 350 At Amg Edition 72385": {
+    "C-Roadster": [
+      "C-Roadster 200 Blueefficiency",
+      "C-Roadster 250 Blueefficiency",
+      "C-Roadster 250 Blueefficiency City",
+      "C-Roadster 350 Blueefficiency",
+      "C-Roadster 55 Amg 155976 145839 139023 130035"
+    ]
+  },
+  "Sls": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Sprinter": {
+    "308 Furgon": [
+      "308 Furgon"
+    ],
+    "311 Furgon": [
+      "311 Furgon Cdi 3250 Mixto 4+1 Tn 50622 48091 44529 42409 40389",
+      "311 Furgon Cdi Street 3250 Tn",
+      "311 Furgon Cdi Street L 3665 Tn"
+    ],
+    "313 Chasis": [
+      "313 Chasis"
+    ],
+    "313 Combi": [
+      "313 Combi"
+    ],
+    "313 Furgon": [
+      "313 Furgon"
+    ],
+    "314 Cdi": [
+      "314 Cdi Chasis 3665 + 63094,2 48832",
+      "314 Cdi Furgon 3250 Tn",
+      "314 Cdi Furgon 3665 Te",
+      "314 Cdi Furgon 3665 Te Mixto 4+1 + 69297,5 61041",
+      "314 Cdi Furgon 3665 Te Mixto Plus 4+1 + 70519,0",
+      "314 Cdi Furgon 3665 Tn",
+      "314 Cdi Furgon 4325 Te"
+    ],
+    "316 Chasis": [
+      "316 Chasis Cdi 3665 47769 45380 42019 40018 38112"
+    ],
+    "316 Furgon": [
+      "316 Furgon Cdi 3250 Tn",
+      "316 Furgon Cdi 3665 Te",
+      "316 Furgon Cdi 3665 Te Mixto 4+1 25 Años 68800 65360 60519",
+      "316 Furgon Cdi 3665 Te Mixto 4+1 53044 50392 46659 44438 42322"
+    ],
+    "411 Cdi": [
+      "411 Cdi Street Furgon 3250 Tn"
+    ],
+    "413 Cdi": [
+      "413 Cdi 4025 4,6T Chasis 24224 23081 22191",
+      "413 Cdi 4025 4,6T Chasis Abg 24752 23584 22675",
+      "413 Cdi 4025 4,6T Minibus C/Alargue 39062 37219 35784",
+      "413 Cdi 4025 4,6T Minibus C/Alargue Abg 39776 37899 36438",
+      "413 Cdi 4025 4,6T Te"
+    ],
+    "414 Cdi": [
+      "414 Cdi Chasis 3665 + 64153,3 51303",
+      "414 Cdi Chasis 4325 + 64705,8",
+      "414 Cdi Combi 3665 Te 15+1 + 85619,0 67835",
+      "414 Cdi Combi 3665 Te 9+1 + 87689,1 69515",
+      "414 Cdi Furgon 3665 Te",
+      "414 Cdi Furgon 3665 Te Mixto 4+1 + 74875,0 62349",
+      "414 Cdi Furgon 4325 Te",
+      "414 Cdi Furgon 4325 Te Mixto 4+1 + 75055,8"
+    ],
+    "415 Cdi": [
+      "415 Cdi Chasis 3665 34817 31426 29122 26961 26093 24856 23552",
+      "415 Cdi Chasis 3665 A/C 37719 36268 32994 30575 28311",
+      "415 Cdi Combi 3665 Te 15+1 59896 58378 52182 48356 46952 45201 43228 40955",
+      "415 Cdi Combi 3665 Tn 9+1 60798 59257 52968 49085 48141",
+      "415 Cdi Furgon 3250 Tn",
+      "415 Cdi Furgon 3250 Tn Mixto 4+1 39567 35368 32775 30966 28276 26448 25086",
+      "415 Cdi Furgon 3250 Tn Mixto 4+1 A/C 42400 41325 36939 34231 32342",
+      "415 Cdi Furgon 3250 Tn Mixto 4+1 Silver Edition 44006 39336 36452 34440 32968",
+      "415 Cdi Furgon 3665 Te",
+      "415 Cdi Furgon 3665 Te Mixto 4+1 20 Años 52728 47132 43676",
+      "415 Cdi Furgon 3665 Te Mixto 4+1 47644 42587 39465 37600 35364 33078 31354",
+      "415 Cdi Furgon 3665 Te Mixto 4+1 A/C 50770 49483 44232 40989 39052",
+      "415 Cdi Furgon 3665 Te Mixto 4+1 Black Edition 52318 46766 43337 41290",
+      "415 Cdi Furgon 3665 Te Mixto 4+1 Fest 41333 38064",
+      "415 Cdi Furgon 3665 Te Mixto 4+1 Silver Edition 62459 59484 53649 51478 46740 43313 41267 37841",
+      "415 Cdi Furgon 3665 Tn",
+      "415 Cdi Furgon 3665 Tn Mixto 4+1 42891 38339 35528 33850 31627 29583 28031",
+      "415 Cdi Furgon 3665 Tn Mixto 4+1 A/C 55294 52661 45744 44584 39853 36931 35186",
+      "415 Cdi Furgon 4325 Te"
+    ],
+    "416 Cdi": [
+      "416 Cdi Chasis 3665 49700 47215 43717 41636 39653 38010",
+      "416 Cdi Combi 3665 Te 15+1 54091",
+      "416 Cdi Combi 3665 Te 15+1 C/Camara 72413 68793 63697 60664 57775 55553",
+      "416 Cdi Combi 3665 Te 9+1 57014",
+      "416 Cdi Combi 3665 Te 9+1 C/Camara 74201 70491 65269 62161 59201",
+      "416 Cdi Furgon 3665 Mixto 4+1 60453 57431 53177 50644 48233",
+      "416 Cdi Furgon 3665 Te",
+      "416 Cdi Furgon 4325 Te"
+    ],
+    "417 Cdi": [
+      "417 Cdi Chasis 3665 Motor Home + 73203,2",
+      "417 Cdi Combi 3665 Te 15+1 Plus + 91828,9 72876",
+      "417 Cdi Furgon 4325 Te"
+    ],
+    "515 Cdi": [
+      "515 Cdi Chasis 4325 40618 36307 33645 31154 29401 27355 25499",
+      "515 Cdi Chasis 4325 A/C 43569 42465 37958 35175 32576",
+      "515 Cdi Furgon 4325 Te",
+      "515 Cdi Furgon 4325 Te Xl",
+      "515 Cdi Minibus 4325 19+1 74168 72289 64617 59879 58728 55247 51675 49021"
+    ],
+    "516 Cdi": [
+      "516 Cdi Chasis 4325 55367 52599 48703 46383 44175 39356",
+      "516 Cdi Furgon 4325 Te",
+      "516 Cdi Minibus 4325 19+1 72382",
+      "516 Cdi Minibus 4325 19+1 C/Camara 92536 87909 81398 77522 73830"
+    ],
+    "517 Cdi": [
+      "517 Cdi Chasis 4325 + 69632,8 57117",
+      "517 Cdi Chasis 4325 Motor Home + 77389,9 65337",
+      "517 Cdi Furgon 4325 Te",
+      "517 Cdi Furgon 4325 Te Vidriado Xl + 87916,3",
+      "517 Cdi Minibus 4325 Te 19+1 + 113164,6 92150"
+    ]
+  },
+  "Viano": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "Vito 111": {
+    "Furgon": [
+      "Furgon"
+    ]
+  },
+  "Furgon Cdi Plus 58128": {
+    "Furgon Cdi": [
+      "Furgon Cdi Mixto"
+    ]
+  },
+  "Vito 119": {
+    "Combi": [
+      "Combi"
+    ],
+    "Tourer": [
+      "Tourer"
+    ],
+    "Tourer Cdi": [
+      "Tourer Cdi"
+    ]
+  },
+  "Vito 121": {
+    "Tourer": [
+      "Tourer"
+    ]
+  },
+  "Cyberster": {
+    "Roadster": [
+      "Roadster"
+    ],
+    "3": [
+      "3 Hybrid"
+    ]
+  },
+  "Mini Cooper": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Coupe S 2016 39192 37605": {
+    "Coupe": [
+      "Coupe"
+    ],
+    "Roadster": [
+      "Roadster"
+    ]
+  },
+  "Roadster S 2016 41639 39952": {
+    "Conv": [
+      "Conv"
+    ]
+  },
+  "Conv S 2016 52043 49935": {
+    "Conv S": [
+      "Conv S Chili 2017 51361 47556 43633"
+    ],
+    "Conv": [
+      "Conv"
+    ]
+  },
+  "Conv Classic Conf Plus 80639": {
+    "Conv": [
+      "Conv"
+    ]
+  },
+  "L 200 Pick - Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Frontier Pick - Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Np 300 Pick Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Np 300 Pick Up Frontier": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Peugeot": {
+    "Cabrio": [
+      "Cabrio"
+    ],
+    "Sw": [
+      "Sw"
+    ],
+    "Coupe": [
+      "Coupe"
+    ],
+    "Cc": [
+      "Cc"
+    ],
+    "Van": [
+      "Van"
+    ]
+  },
+  "Boxer": {
+    "Chasis": [
+      "Chasis"
+    ],
+    "Furgon": [
+      "Furgon"
+    ],
+    "Minibus": [
+      "Minibus"
+    ]
+  },
+  "Expert": {
+    "Furgon": [
+      "Furgon"
+    ],
+    "Van": [
+      "Van"
+    ]
+  },
+  "Hoggar Pick Up": {
+    "C/S": [
+      "C/S"
+    ]
+  },
+  "Partner": {
+    "Furgon": [
+      "Furgon"
+    ],
+    "Patagonica": [
+      "Patagonica"
+    ]
+  },
+  "Coupe Tipt 31256 30638": {
+    "Coupe Carbon": [
+      "Coupe Carbon Concept 31474 30852"
+    ],
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Traveller": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "Conv Carrera S 108 99": {
+    "Conv Carrera": [
+      "Conv Carrera 2012 152 141 128 118",
+      "Conv Carrera S 2012 166 154 140 129"
+    ]
+  },
+  "Conv Carrera 4 S 113 104": {
+    "Conv Carrera": [
+      "Conv Carrera 4 S 2013 169 151 136"
+    ]
+  },
+  "Conv Turbo 2017 326 302 279": {
+    "Conv": [
+      "Conv"
+    ],
+    "911 (992)": [
+      "911 (992)"
+    ],
+    "Coupe Carrera": [
+      "Coupe Carrera 237 225 209 197 187"
+    ]
+  },
+  "Coupe Carrera T 264 251 234": {
+    "Coupe Carrera": [
+      "Coupe Carrera 4 255 242 225 213 202",
+      "Coupe Carrera 4 Gts 349 331 308 292",
+      "Coupe Carrera 4S",
+      "Coupe Carrera Gts 332 315 293 278",
+      "Coupe Carrera S"
+    ],
+    "Coupe Gt3": [
+      "Coupe Gt3 539,500 442 419 390 372",
+      "Coupe Gt3 Touring 539,500 442 419"
+    ]
+  },
+  "Coupe Gt3 Rs 536 509 473": {
+    "Coupe Sport": [
+      "Coupe Sport Classic 607 577 536"
+    ],
+    "Coupe S/T": [
+      "Coupe S/T 607 577"
+    ],
+    "Cabriolet Carrera": [
+      "Cabriolet Carrera 269 256 238 225 214",
+      "Cabriolet Carrera 4 288 274 255 241 229",
+      "Cabriolet Carrera 4 Gts 379 360 334 318",
+      "Cabriolet Carrera 4S",
+      "Cabriolet Carrera Gts 361 343 319 303",
+      "Cabriolet Carrera S"
+    ],
+    "Cabriolet Targa": [
+      "Cabriolet Targa 4 289 275 255 242 230",
+      "Cabriolet Targa 4 Gts 349 331 308 292",
+      "Cabriolet Targa 4 S 329 312 290 275 262"
+    ],
+    "Cabriolet Edition": [
+      "Cabriolet Edition 50 Years 581 552"
+    ],
+    "Coupe Carrera": [
+      "Coupe Carrera 2024 327,700 270",
+      "Coupe Carrera 4 Gts 2024 480,200 402",
+      "Coupe Carrera Gts 2024 458,300 384",
+      "Coupe Carrera S 2025 387,600",
+      "Coupe Carrera T 2024 353,400 299"
+    ]
+  },
+  "Coupe Turbo 50 Years 607": {
+    "Coupe Carrera": [
+      "Coupe Carrera 4 S 2025 412,300"
+    ],
+    "Coupe Targa": [
+      "Coupe Targa 4 S 2025 454,000"
+    ],
+    "Coupe Turbo": [
+      "Coupe Turbo S T Hybrid 682,400"
+    ]
+  },
+  "Cabriolet Carrera 2024 301": {
+    "Cabriolet Carrera": [
+      "Cabriolet Carrera 4 Gts 2024 431",
+      "Cabriolet Carrera Gts 2024 513,600 413"
+    ],
+    "Cabriolet Targa": [
+      "Cabriolet Targa 4 Gts 2024 513,600 431"
+    ],
+    "Cabriolet Spirit": [
+      "Cabriolet Spirit 70 638,000"
+    ],
+    "Cabriolet": [
+      "Cabriolet 4 S 2025 450,000"
+    ],
+    "Cabriolet Turbo": [
+      "Cabriolet Turbo S T Hybrid 720,700"
+    ],
+    "911 Turbo": [
+      "911 Turbo Pdk"
+    ]
+  },
+  "Coupe 474 451 419 398 379": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Cabriolet 510 485 451 429 408": {
+    "Cabriolet": [
+      "Cabriolet"
+    ]
+  },
+  "Conv S 62 55": {
+    "Spyder": [
+      "Spyder"
+    ]
+  },
+  "Conv S 2013 87 80 73": {
+    "Conv 2017": [
+      "Conv 2017 184,500 147 139 129 123 117 111 103 95"
+    ],
+    "Conv S": [
+      "Conv S 2017 210,800 170 161 150 145 137 127 117 109"
+    ],
+    "Conv Gts": [
+      "Conv Gts 4.0 239,500 206 196 182 162 153"
+    ],
+    "Conv Spyder": [
+      "Conv Spyder 224 213 198 188 179"
+    ],
+    "Conv": [
+      "Conv Style Edition 196,300 168 159"
+    ]
+  },
+  "Spyder 718": {
+    "Conv Rs": [
+      "Conv Rs 381,800 315 299"
+    ],
+    "Taycan (": [
+      "Taycan ("
+    ]
+  },
+  "Ram": {
+    "1500 Pick": [
+      "1500 Pick - Up"
+    ],
+    "D/C": [
+      "D/C"
+    ],
+    "2500 Pick": [
+      "2500 Pick - Up"
+    ]
+  },
+  "Rampage Pick -Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Alaskan Pick - Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Duster Oroch Pick - Up": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Kangoo": {
+    "Break": [
+      "Break"
+    ],
+    "Furgon": [
+      "Furgon"
+    ]
+  },
+  "Kangoo Ii Express": {
+    "Furgon": [
+      "Furgon"
+    ],
+    "Furgon Ze": [
+      "Furgon Ze 2A 36541 34801 32524 29280 27886 26491",
+      "Furgon Ze Maxi 2A 37045 35280 32972 30044 28613 27183"
+    ]
+  },
+  "Furgon E-Tech 38897": {
+    "Furgon E-Tech": [
+      "Furgon E-Tech 2025 49810,0"
+    ]
+  },
+  "Master": {
+    "Chasis": [
+      "Chasis"
+    ],
+    "Furgon": [
+      "Furgon"
+    ],
+    "Minibus": [
+      "Minibus"
+    ]
+  },
+  "Megane Ii": {
+    "Gr. Tour": [
+      "Gr. Tour",
+      "Gr. Tour 1,6L Conf Plus 7925",
+      "Gr. Tour 1,6L Luxe 8345",
+      "Gr. Tour 2,0L Privilege 9862"
+    ]
+  },
+  "Coupe Rs 250 Cv 23930 23208": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "T 30": {
+    "C/S": [
+      "C/S"
+    ]
+  },
+  "T 32": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "X 30": {
+    "Furgon": [
+      "Furgon"
+    ],
+    "Van": [
+      "Van"
+    ]
+  },
+  "Fortwo": {
+    "Coupe": [
+      "Coupe"
+    ],
+    "Conv": [
+      "Conv"
+    ]
+  },
+  "Legacy": {
+    "Sw": [
+      "Sw"
+    ]
+  },
+  "Toyota": {
+    "Coupe": [
+      "Coupe"
+    ]
+  },
+  "Hiace": {
+    "Furgon": [
+      "Furgon"
+    ],
+    "Commuter": [
+      "Commuter"
+    ],
+    "Wagon": [
+      "Wagon"
+    ]
+  },
+  "Hilux Pick - Up": {
+    "C/S": [
+      "C/S"
+    ],
+    "D/C": [
+      "D/C"
+    ],
+    "C/C": [
+      "C/C"
+    ]
+  },
+  "Hilux Pick - Up Cover": {
+    "C/S": [
+      "C/S"
+    ]
+  },
+  "Amarok Pick - Up": {
+    "C/S": [
+      "C/S"
+    ],
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Saveiro Pick - Up": {
+    "C/S": [
+      "C/S"
+    ],
+    "C/Ext.": [
+      "C/Ext."
+    ],
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Saveiro Pick - Up Cross": {
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Sharan": {
+    "Van": [
+      "Van"
+    ]
+  },
+  "The Beetle": {
+    "Conv": [
+      "Conv"
+    ]
+  },
+  "Transporter": {
+    "Furgon": [
+      "Furgon"
+    ],
+    "Up!": [
+      "Up!"
+    ]
+  },
+  "V 50": {
+    "Rural": [
+      "Rural"
+    ]
+  },
+  "V 60": {
+    "Rural T6": [
+      "Rural T6"
+    ]
+  },
+  "Force Truck": {
+    "Chasis": [
+      "Chasis"
+    ],
+    "C/S": [
+      "C/S"
+    ],
+    "D/C": [
+      "D/C"
+    ]
+  },
+  "Z Truck": {
+    "C/S": [
+      "C/S"
+    ]
+  }
+}
