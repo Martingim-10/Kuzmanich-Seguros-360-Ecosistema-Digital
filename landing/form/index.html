@@ -1,325 +1,583 @@
 
-       <!doctype html>
+      <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Kuzmanich Seguros 360 — Solicitud de Cotización</title>
-  <meta name="description" content="Cotizá seguros personales y empresariales con Kuzmanich Seguros 360. Respuesta rápida y asesoramiento profesional.">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Retiro Seguro — Simulá tu retiro sin dejar datos</title>
+  <meta name="description" content="Simulá tu plan en segundos, sin dejar datos personales. Resultados estimados con dos escenarios." />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta property="og:title" content="Retiro Seguro — Cotizá tu plan" />
+  <meta property="og:description" content="Simulá tu plan en segundos, sin dejar datos personales." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="../assets/hero-playa.jpg" />
+
+  <!-- GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NZMB5FW489"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-NZMB5FW489');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg:#0f172a; --panel:#111827; --panel-2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
-      --brand:#3b82f6; --brand-2:#60a5fa; --ok:#22c55e; --err:#ef4444;
-      --input:#0b1220; --stroke:#233046; --radius:18px;
+      --indigo:#4f46e5; --indigo-700:#4338ca; --bg:#f7fafc; --card:#ffffff;
+      --muted:#475569; --text:#0f172a; --border:#e2e8f0;
+      --gradient: linear-gradient(45deg, var(--indigo-700), #ff7e5f);
+      --radius:16px;
+      /* agregado */
+      --magenta:#d61f69;
+      --magenta-dark:#b5175a;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0; min-height:100vh; display:block;
-      background: radial-gradient(1200px 600px at 20% -10%, #1e293b 0%, transparent 60%),
-                  radial-gradient(1000px 600px at 120% 20%, #0b1220 0%, transparent 60%),
-                  var(--bg);
-      color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
-      padding:24px;
+    html,body{margin:0;padding:0;font-family:'Montserrat',system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%;height:auto}
+    .container{max-width:1100px;margin:0 auto;padding:0 16px}
+    /* Solo los beneficios clickeables muestran cursor y hover */
+.card { transition: transform .3s ease, box-shadow .3s ease; }
+.card:hover { transform:none; box-shadow:none; }              /* desactiva hover global */
+
+.card.beneficio { cursor:pointer; }                            /* solo clickeables */
+.card.beneficio:hover{
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);
+}
+
+/* Insignia “+ info” */
+.badge-info{
+  display:inline-block; margin-top:10px; font-size:12px; font-weight:700;
+  background:#eef2ff; border:1px solid #c7d2fe; color:#4338ca;
+  padding:4px 8px; border-radius:9999px;
+}
+
+
+    /* Header */
+    header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.9);backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid var(--border)}
+    .bar{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand img{width:64px;height:64px;object-fit:contain}
+    /* cambiado a magenta */
+    .brand strong{color:var(--magenta);font-weight:900;letter-spacing:.2px}
+    /* Logo en magenta usando el PNG como máscara */
+.brand .logo-mask {
+  width:64px;
+  height:64px;
+  display:inline-block;
+  background: var(--magenta); /* usamos la variable definida arriba */
+  -webkit-mask: url('../assets/logo.png') no-repeat center / contain;
+  mask: url('../assets/logo.png') no-repeat center / contain;
+}
+
+    nav{display:none;gap:20px}
+        @media(min-width:820px){nav{display:flex}}
+    nav a{color:#374151;transition:color .3s ease}
+    nav a:hover{color:var(--indigo)}
+
+    /* Hero */
+    .hero{padding:80px 0 40px}
+    .hero-grid{display:grid;gap:40px;grid-template-columns:1fr}
+    @media(min-width:960px){.hero-grid{grid-template-columns:1.05fr .95fr}}
+    h1{font-size:clamp(28px,5vw,48px);line-height:1.08;margin:0 0 8px;font-weight:900;letter-spacing:.2px}
+    h2,h3{font-weight:700}
+    .lead{color:#334155;font-size:18px;margin:10px 0 0}
+    .note{margin-top:16px;font-size:15px;color:#1f2937;display:flex;gap:10px;align-items:flex-start;background:#eef2ff;border:1px solid #c7d2fe;border-radius:12px;padding:10px 12px}
+
+    .hero-media{
+      position: relative; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1); background:#fff; aspect-ratio: 3/2;
     }
-    /* Layout de 2 columnas */
-    .wrap{max-width:980px; margin:0 auto}
-    .grid{display:grid; grid-template-columns:2fr 1fr; gap:18px; align-items:start}
-    @media (max-width:880px){ .grid{grid-template-columns:1fr} }
+    .hero-media img{width:100%;height:100%;object-fit:cover}
+    .hero-caption{
+      position:absolute;left:0;right:0;bottom:0;padding:16px 18px;color:#fff;font-weight:800;line-height:1.2;
+      background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.55) 90%);text-shadow:0 2px 14px rgba(0,0,0,.45);
+      font-size:clamp(18px,2.6vw,28px)
+    }
+    @media (max-width:640px){.hero-caption{text-align:center;padding:14px}}
 
-    /* Card base */
-    .card{ background:linear-gradient(180deg,var(--panel),var(--panel-2)); border:1px solid var(--stroke);
-      border-radius:var(--radius); box-shadow:0 20px 50px rgba(0,0,0,.45); }
+    /* Secciones */
+    section{padding:60px 0}
+    h2{font-size:26px;margin:0 0 12px}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:0 4px 6px -1px rgba(0,0,0,.05),0 2px 4px -2px rgba(0,0,0,.05)}
+    .grid{display:grid;gap:24px}
+    @media(min-width:900px){.grid-3{grid-template-columns:repeat(3,1fr)} .grid-2{grid-template-columns:repeat(2,1fr)}}
+    .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px;transition:transform .3s ease,box-shadow .3s ease;box-shadow:0 1px 3px 0 rgba(0,0,0,.05),0 1px 2px 0 rgba(0,0,0,.05)}
+    .card:hover{transform:translateY(-5px);box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1)}
+    .muted{color:var(--muted)}
+    .icon{width:24px;height:24px;color:var(--indigo);margin-bottom:6px}
 
-    /* Form card */
-    .card.form{ padding:28px 24px 24px; }
-    .header{display:flex; gap:14px; align-items:center; margin-bottom:12px;}
-    .header img{ width:54px; height:54px; border-radius:12px; background:#0b1220; object-fit:contain; border:1px solid var(--stroke); }
-    h1{font-size:1.35rem; margin:0; color:var(--brand-2)}
-    .sub{color:var(--muted); font-size:.95rem; margin:6px 0 18px}
-    .row{display:flex; gap:12px}
-    .row>.field{flex:1}
-    label{display:block; font-size:.9rem; color:#cbd5e1; margin:14px 0 6px}
-    input,select,textarea{ width:100%; padding:12px 12px; border-radius:12px; border:1px solid var(--stroke); background:var(--input); color:var(--text); font-size:1rem; outline:none; }
-    input:focus,select:focus,textarea:focus{border-color:var(--brand)}
-    .hint{font-size:.82rem; color:var(--muted); margin-top:6px}
-    .consent{display:flex; gap:10px; align-items:flex-start; margin-top:14px; font-size:.9rem; color:#cbd5e1}
-    .consent input{margin-top:3px}
-    button{ width:100%; margin-top:18px; padding:12px 14px; border:none; border-radius:12px; background:linear-gradient(180deg,var(--brand),var(--brand-2)); color:white; font-weight:700; cursor:pointer; transition:transform .05s ease; }
-    button:disabled{opacity:.55; cursor:not-allowed}
-    button:active{transform:translateY(1px)}
-    .msg{margin-top:12px; font-weight:600; display:none}
-    .msg.ok{color:var(--ok)}
-    .msg.err{color:var(--err)}
-    .foot{margin-top:12px; font-size:.8rem; color:var(--muted); text-align:center}
-    @media (max-width:520px){ .row{flex-direction:column} }
+    /* Cotizador */
+    .calc-wrap{display:grid;gap:20px;grid-template-columns:1fr}
+    @media(min-width:960px){.calc-wrap{grid-template-columns:1.1fr .9fr}}
+    .form-row{display:grid;gap:12px;grid-template-columns:1fr}
+    @media(min-width:680px){.form-row{grid-template-columns:1fr 1fr}}
+    .input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#fff;color:#0f172a;font:inherit}
 
-    /* Aside Por qué con nosotros */
-    .card.aside{ padding:20px 18px }
-    .aside h3{ margin:6px 0 12px; font-size:1.05rem; color:#cfe0ff }
-    .benefits{ list-style:none; padding:0; margin:0; display:grid; gap:10px }
-    .benefits li{ display:flex; gap:10px; align-items:flex-start; color:var(--muted) }
-    .dot{ width:8px; height:8px; border-radius:50%; background:var(--brand); margin-top:9px }
+    /* cambiado: CTA magenta */
+    .cta{
+      display:inline-block;
+      background:var(--magenta);
+      color:#fff;
+      font-weight:800;
+      border:none;
+      padding:12px 18px;
+      border-radius:12px;
+      cursor:pointer;
+      text-decoration:none;
+      transition:background .3s ease;
+    }
+    .cta:hover{ background:var(--magenta-dark); }
+    .cta.ghost{ background:#fff; color:#374151; border:1px solid var(--border) }
+
+    .result-grid{display:grid;gap:12px;grid-template-columns:1fr}
+    @media(min-width:680px){.result-grid{grid-template-columns:1fr 1fr}}
+    .error{color:#dc2626;font-weight:700}
+
+    /* Footer */
+    footer{border-top:1px solid var(--border);text-align:center;color:#64748b;padding:24px 0;font-size:14px}
+    .link{color:#4f46e5;text-decoration:underline}.link:hover{color:#4338ca}
+
+    /* Chat nativo */
+    #chatFab{position:fixed; right:24px; bottom:24px; z-index:9999; padding:12px 16px; border-radius:9999px; border:1px solid var(--border); background:var(--card); color:#111827; font-weight:800; cursor:pointer; box-shadow:0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);}
+    #chatPanel{position:fixed; right:24px; bottom:92px; width:min(360px,calc(100% - 48px)); background:#fff; border:1px solid var(--border); border-radius:16px; z-index:9998; box-shadow:0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04); display:none; overflow:hidden;}
+    .chat-header{padding:12px 14px; background:var(--indigo); color:#fff; font-weight:800; display:flex; justify-content:space-between; align-items:center;}
+    .chat-body{ padding:12px; display:grid; gap:10px; }
+    .chat-msg{width:100%; min-height:80px; padding:10px 12px; font:inherit; border:1px solid var(--border); border-radius:12px; resize:vertical;}
+    .chat-actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .chat-input{ display:grid; gap:8px; }
+    .chat-note{ font-size:12px; color:#64748b; }
+    .chat-close{ background:transparent; color:#fff; border:none; font-size:18px; cursor:pointer; }
+
+    .chat-msg-user{ justify-self:end; background:#e5e7eb; color:#111827; border:1px solid #d1d5db; padding:10px 12px; border-radius:12px; max-width:85% }
+    .chat-msg-bot{ justify-self:start; background:#eef2ff; border:1px solid #c7d2fe; color:#111827; padding:10px 12px; border-radius:12px; max-width:85% }
+    .typing{ justify-self:start; background:#f1f5f9; border:1px solid #e2e8f0; color:#334155; padding:10px 12px; border-radius:12px; font-style:italic; }
+    .chips{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px }
+    .chips .cta.ghost{ padding:8px 12px; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="grid">
-      <!-- Columna izquierda: FORMULARIO -->
-      <main class="card form">
-        <div class="header">
-          <img src="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png" alt="Logo Kuzmanich Seguros 360" onerror="this.style.display='none'">
-          <div>
-            <h1>Solicitud de cotización</h1>
-            <div class="sub">Atención profesional en seguros personales y empresariales.</div>
+  <header>
+    <div class="container bar">
+      <a href="/retiro-seguro-landing/v2/" class="brand">
+  <span class="logo-mask" aria-label="Retiro Seguro"></span>
+  <strong>Retiro Seguro</strong>
+</a>
+
+      <nav aria-label="Principal">
+        <a href="#que-es">Qué es</a>
+        <a href="#beneficios">Beneficios</a>
+        <a href="#planes">Planes</a>
+        <a href="#cotizador">Cotizador</a>
+        <a href="#quienes-somos">Quiénes somos</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <h1>Planificá hoy tu retiro.<br>Disfrutá tranquilo mañana.</h1>
+        <p class="lead">
+          Simulá tu plan en <strong>segundos</strong>, <strong>sin dejar datos personales</strong>. Resultados estimados claros con dos escenarios.
+        </p>
+        <div class="note">🔒
+          <span><strong>No pedimos datos personales para usar el cotizador.</strong> Si te gusta el resultado, después podés continuar por WhatsApp o email.</span>
+        </div>
+        <p style="margin-top:16px">
+          <!-- cambiado: logo chico dentro del botón -->
+          <a id="cta-hero" class="cta" href="#cotizador" style="display:flex;align-items:center;gap:8px;justify-content:center">
+            <img src="../assets/Prevenci%C3%B3n%20Retiro.png" alt="Prevención Retiro" style="height:22px;width:auto">
+            Cotizá ahora
+          </a>
+        </p>
+      </div>
+
+      <figure class="hero-media">
+        <img
+          id="heroImg"
+          src="../assets/hero-playa.jpg?v=1"
+          alt="Personas retiradas disfrutando en una playa paradisíaca"
+          width="1200" height="800"
+          onerror="this.onerror=null; this.src='../assets/hero.png?v=1'; this.alt='Personas mayores disfrutando de su retiro';"
+        >
+        <figcaption class="hero-caption">
+          Pasarla bien en el futuro es una decisión.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- QUÉ ES -->
+  <section id="que-es">
+  <div class="container">
+    <div class="panel">
+      <h2>¿Qué es un seguro de retiro?</h2>
+      <p class="muted">
+        Es una herramienta de <strong>ahorro e inversión a largo plazo</strong> que te permite
+        construir un capital con aportes periódicos y/o extraordinarios. Ese capital se <strong>invierte</strong>
+        y se <strong>capitaliza mes a mes</strong> hasta la edad de retiro que elijas.
+      </p>
+      <div class="grid grid-3" style="margin-top:14px">
+        <div class="card">
+          <strong>Cómo funciona</strong>
+          <p class="muted" style="margin-top:6px">
+            Definís <em>edad actual</em>, <em>edad de retiro</em> y <em>aporte mensual</em>.
+            El capital crece por los rendimientos de la inversión.
+          </p>
+        </div>
+        <div class="card">
+          <strong>Tipos de aportes</strong>
+          <p class="muted" style="margin-top:6px">
+            Podés hacer aportes <em>mensuales</em> y sumar <em>refuerzos</em> cuando quieras.
+          </p>
+        </div>
+        <div class="card">
+          <strong>Disponibilidad</strong>
+          <p class="muted" style="margin-top:6px">
+            Contempla <em>rescates parciales o totales</em> según condiciones del plan.
+          </p>
+        </div>
+      </div>
+      <div class="note" style="margin-top:14px">
+        💡 <span>Usá la calculadora para ver tu proyección en segundos y sin datos personales.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- BENEFICIOS -->
+ <section id="beneficios">
+  <div class="container">
+    <h2>Beneficios clave</h2>
+   <div class="grid grid-3" style="margin-top:12px">
+  <div class="card beneficio" data-img="../assets/deduccion ganancias.jpg" aria-label="Ver imagen: Deducción de Ganancias">
+    <span class="icon">💸</span>
+    <strong>Deducción de Ganancias</strong>
+    <p class="muted" style="margin-top:6px">Aprovechá el beneficio impositivo vigente.</p>
+    <span class="badge-info">+ info</span>
+  </div>
+
+  <div class="card beneficio" data-img="../assets/capitalizacion.png" aria-label="Ver imagen: Crecimiento en el tiempo">
+    <span class="icon">📈</span>
+    <strong>Crecimiento en el tiempo</strong>
+    <p class="muted" style="margin-top:6px">Capitalizá tus aportes con visión de largo plazo.</p>
+    <span class="badge-info">+ info</span>
+  </div>
+
+  <div class="card beneficio" data-img="../assets/flexibilidad.png" aria-label="Ver imagen: Flexibilidad real">
+    <span class="icon">✅</span>
+    <strong>Flexibilidad real</strong>
+    <p class="muted" style="margin-top:6px">Ajustá aportes y elegí cómo avanzar.</p>
+    <span class="badge-info">+ info</span>
+  </div>
+</div>
+
+      <div class="card">
+        <span class="icon">🛡️</span>
+        <strong>Respaldo</strong>
+        <p class="muted" style="margin-top:6px">
+          Comercializamos <strong>Prevención Retiro</strong> del Grupo Sancor Seguros.
+        </p>
+      </div>
+      <div class="card">
+        <span class="icon">🤝</span>
+        <strong>Asesoramiento</strong>
+        <p class="muted" style="margin-top:6px">
+          Acompañamiento de nuestro equipo para tomar decisiones informadas.
+        </p>
+      </div>
+      <div class="card">
+        <span class="icon">🔓</span>
+        <strong>Disponibilidad</strong>
+        <p class="muted" style="margin-top:6px">
+          Opciones de rescate (parcial/total) según condiciones del plan.
+        </p>
+      </div>
+    </div>
+    <p class="muted" style="font-size:12px; margin-top:10px">
+
+    </p>
+  </div>
+</section>
+
+
+  <!-- PLANES -->
+  <section id="planes">
+    <div class="container">
+      <h2>Nuestros planes</h2>
+      <div class="grid grid-2" style="margin-top:12px">
+        <div class="panel">
+          <h3 style="margin:0 0 6px">Plan Individual</h3>
+          <p class="muted">Para quienes desean complementar su jubilación con un ahorro a medida.</p>
+          <ul class="muted" style="padding-left:18px;line-height:1.7">
+            <li>Aportes mensuales + refuerzos</li>
+            <li>Proyección de capital y objetivos</li>
+            <li>Flexibilidad para modificar aportes</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3 style="margin:0 0 6px">Plan Colectivo (Empresas)</h3>
+          <p class="muted">Una solución para organizaciones que ofrecen un beneficio diferencial a su equipo.</p>
+          <ul class="muted" style="padding-left:18px;line-height:1.7">
+            <li>Aportes corporativos y/o del empleado</li>
+            <li>Retención y motivación del talento</li>
+            <li>Gestión simple y transparente</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIÉNES SOMOS -->
+  <section id="quienes-somos">
+    <div class="container">
+      <h2>Quiénes somos</h2>
+
+      <div class="panel">
+        <h3 style="margin:0 0 8px">Organización Kuzmanich</h3>
+        <p class="muted">
+          Emplazados frente al <strong>monumento de la Libertad y el Trabajo</strong>, emblema de la Ciudad de Trelew, somos un grupo
+          comprometido desde el lugar del <strong>Servicio</strong>, la <strong>Idoneidad</strong> y la <strong>Capacidad profesional</strong>.
+          Enmarcados en el <strong>Grupo Sancor Seguros</strong>, acompañamos las necesidades cotidianas de personas, empresas e
+          instituciones.
+        </p>
+        <p class="muted" style="margin-top:8px">
+          Nuestra <strong>antigüedad y experiencia</strong>, sumadas al aporte de <strong>jóvenes emprendedores</strong>, imprimen a la
+          organización un sello propio: transformar cada producto en la <strong>seguridad que necesitás</strong>, generar la
+          <strong>confianza</strong> que sostiene tu decisión y brindarte el <strong>asesoramiento</strong> que tu inversión requiere.
+        </p>
+
+        <div class="grid grid-3" style="margin-top:14px">
+          <div class="card">
+            <strong>Antigüedad & experiencia</strong>
+            <p class="muted" style="margin-top:6px">
+              Trayectoria consolidada con enfoque profesional y actualización constante.
+            </p>
+          </div>
+          <div class="card">
+            <strong>Asesoramiento cercano</strong>
+            <p class="muted" style="margin-top:6px">
+              Acompañamiento real para elegir y ajustar tu plan, según tus objetivos.
+            </p>
+          </div>
+          <div class="card">
+            <strong>Valores</strong>
+            <ul class="muted" style="padding-left:18px;line-height:1.7;margin-top:6px">
+              <li>Solvencia y seriedad</li>
+              <li>Respeto y honestidad</li>
+              <li>Profesionalismo y compromiso</li>
+            </ul>
           </div>
         </div>
+      </div>
 
-        <form id="leadForm" novalidate>
-          <div class="row">
-            <div class="field">
-              <label>Nombre completo</label>
-              <input id="nombre" name="nombre" required placeholder="Ej: Martín Kuzmanich" autocomplete="name">
+      <div class="panel" style="margin-top:14px">
+        <strong>Qué comercializamos</strong>
+        <p class="muted" style="margin-top:6px">
+          Comercializamos específicamente los <strong>seguros de Prevención Retiro</strong> (Grupo Sancor Seguros).
+          Estamos <strong>autorizados a utilizar su marca e imagen</strong> en nuestra comunicación.
+        </p>
+
+        <!-- Logo centrado y clickeable -->
+        <div style="margin-top:16px; text-align:center">
+          <a href="https://prevencionretiro.com.ar/" target="_blank" rel="noopener">
+            <img src="../assets/Prevenci%C3%B3n%20Retiro.png"
+                 alt="Prevención Retiro - Grupo Sancor Seguros"
+                 style="max-width:280px; height:auto; display:inline-block;">
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COTIZADOR -->
+  <section id="cotizador">
+    <div class="container">
+      <h2>Calculadora de retiro</h2>
+      <p class="muted">Proyección instantánea en menos de 10 segundos. <strong>No pedimos datos personales</strong> para usarla.</p>
+
+      <div class="calc-wrap" style="margin-top:12px">
+        <div class="panel">
+          <form id="calc-form" onsubmit="return false;">
+            <div class="form-row">
+              <label class="muted">Edad actual
+                <input id="edad-actual" class="input" type="number" min="18" max="70" value="35" required>
+              </label>
+              <label class="muted">Edad de retiro deseada
+                <input id="edad-retiro" class="input" type="number" min="40" max="75" value="65" required>
+              </label>
             </div>
-            <div class="field">
-              <label>Teléfono (con código de área)</label>
-              <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9\\s()+.-]{7,}$">
+           <label class="muted" style="display:block;margin-top:12px">
+  Aporte mensual (ARS) — <strong>mínimo $30.000</strong>
+  <input id="aporte" class="input" type="number" min="30000" step="1000" value="50000" required>
+</label>
+<p class="muted" style="font-size:12px;margin-top:6px">Mínimo permitido: $30.000 por mes.</p>
+
+
+            <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+              <button id="btn-calcular" class="cta" type="button">Calcular</button>
+              <button id="btn-limpiar" class="cta ghost" type="reset">Limpiar</button>
+            </div>
+
+            <p id="calc-error" class="error" style="display:none;margin-top:10px"></p>
+            <p class="muted" style="font-size:12px;margin-top:8px">Cálculo estimativo. Los rendimientos pueden variar.</p>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div id="resultado" style="display:grid;gap:12px">
+            <div id="intro" class="muted">Ingresá los datos y presioná “Calcular”.</div>
+
+            <div class="result-grid">
+              <div class="card">
+                <div class="muted" style="font-size:12px">Escenario 1 (aprox. 15.9% anual)</div>
+                <div id="esc1" style="font-weight:800;font-size:20px">—</div>
+              </div>
+              <div class="card">
+                <div class="muted" style="font-size:12px">Escenario 2 (aprox. 30% anual)</div>
+                <div id="esc2" style="font-weight:800;font-size:20px">—</div>
+              </div>
+            </div>
+
+            <div id="nota" class="muted" style="font-size:12px">Proyección en ARS. Aporte al inicio de cada mes.</div>
+
+            <!-- CTA post-cálculo -->
+            <div id="post-cta" style="display:none; margin-top:6px; gap:10px; flex-wrap:wrap">
+              <a id="cta-wpp" class="cta" href="#" target="_blank" rel="noopener">Continuar por WhatsApp</a>
+              <a id="cta-mail" class="cta ghost" href="#">Recibir por Email</a>
+              <div class="muted" style="font-size:12px">Enviamos tus resultados en el mensaje, sin pedir datos.</div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <label>Email</label>
-          <input id="email" name="email" type="email" placeholder="tu@email.com" autocomplete="email">
-          <div class="hint">Usaremos tu email solo para enviarte tu propuesta. No hacemos spam.</div>
+    </div>
+  </section>
 
-          <label>Ramo</label>
-          <select id="ramo" name="ramo" required>
-            <option value="">Seleccioná…</option>
-            <option value="retiro">Seguro de Retiro</option>
-            <option value="vida">Vida</option>
-            <option value="automotor">Automotor</option>
-            <option value="hogar">Hogar</option>
-            <option value="salud">Salud</option>
-            <option value="empresas">Empresas</option>
-          </select>
+  <footer>
+    © <span id="y"></span> Retiro Seguro — <a class="link" href="../privacidad.html">Privacidad</a> · <a class="link" href="../terminos.html">Términos</a>
+  </footer>
 
-          <!-- Campos AUTOMOTOR -->
-          <div id="autoFields" style="display:none; margin-top:8px">
-            <label>Marca, Modelo y Versión</label>
-            <input id="auto_mm" placeholder="Ej: Toyota Etios XLS">
+  <!-- Chat nativo -->
+  <button id="chatFab" aria-label="Abrir chat">¿Dudas? Chateá</button>
+  <div id="chatPanel" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
+    <div class="chat-header">
+      <div id="chatTitle">Asesor en línea</div>
+      <button class="chat-close" aria-label="Cerrar" id="chatClose">×</button>
+    </div>
+    <div class="chat-body">
+      <!-- Historial -->
+      <div id="chatLog" style="display:grid; gap:8px; max-height:40vh; overflow:auto;">
+        <div class="chat-msg-bot">
+          ¡Hola! Soy el asistente de Retiro Seguro. Puedo ayudarte a <strong>cotizar</strong> o responder dudas sobre <strong>beneficios</strong>, <strong>impuestos</strong>, <strong>rescates</strong> y más.
+        </div>
+      </div>
 
-            <label>Año de producción</label>
-            <input id="auto_anio" inputmode="numeric" placeholder="Ej: 2022">
+      <!-- Chips -->
+      <div id="chatChips" class="chips">
+        <button class="cta ghost" data-key="cotizar">Cotizar ahora</button>
+        <button class="cta ghost" data-key="beneficios">Beneficios</button>
+        <button class="cta ghost" data-key="impuestos">Impuestos / Ganancias</button>
+        <button class="cta ghost" data-key="rescates">Rescates</button>
+      </div>
 
-            <label>DNI del tomador</label>
-            <input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
-            <div class="hint">Estos datos son necesarios para la IA de SanCor.</div>
-          </div>
-
-          <!-- Tracking -->
-          <input id="canal" type="hidden" value="instagram">
-          <input id="estado" type="hidden" value="nuevo">
-          <input id="asesor" type="hidden" value="auto">
-          <input id="origen" type="hidden" value="form">
-
-          <label>Comentarios (opcional)</label>
-          <textarea id="comentarios" name="comentarios" rows="3" placeholder="Contanos algo que debamos tener en cuenta"></textarea>
-
-          <label class="consent">
-            <input id="consent" type="checkbox" required>
-            <span>Acepto el uso de mis datos para recibir mi cotización y asesoramiento (Ley 25.326). <a href="#" style="color:#93c5fd;text-decoration:underline">Política de privacidad</a>.</span>
-          </label>
-
-          <button id="submitBtn" type="submit" disabled>Enviar solicitud</button>
-          <div id="msg" class="msg"></div>
-
-          <!-- Acciones post-envío Automotor -->
-          <div id="autoActions" style="display:none; margin-top:10px">
-            <button type="button" id="btnWa" style="margin-top:8px">📲 Chatear ahora por WhatsApp</button>
-            <button type="button" id="btnCopy" style="margin-top:8px">📋 Copiar mensaje</button>
-          </div>
-        </form>
-
-        <div class="foot">Kuzmanich Seguros 360 · Atención personalizada</div>
-      </main>
-
-      <!-- Columna derecha: ¿Por qué con nosotros? -->
-      <aside class="card aside">
-        <h3>¿Por qué con nosotros?</h3>
-        <ul class="benefits">
-          <li><span class="dot"></span> Productores oficiales. Cotizamos con la compañía número 1 del mercado.</li>
-          <li><span class="dot"></span> Respuesta ágil por WhatsApp. Sin vueltas.</li>
-          <li><span class="dot"></span> Tus datos quedan protegidos. Uso exclusivo para tu cotización.</li>
-        </ul>
-      </aside>
+      <!-- Entrada -->
+      <div class="chat-input" style="margin-top:8px">
+        <textarea id="chatMsg" class="chat-msg" placeholder="Escribí tu consulta… (ej.: 'aporte 50000 edad 40 retiro 60')"></textarea>
+        <div class="chat-actions">
+          <button id="chatSendWpp" class="cta">Enviar por WhatsApp</button>
+          <button id="chatSendEmail" class="cta ghost">Enviar por Email</button>
+          <button id="chatSendMsg" class="cta ghost" type="button">Enviar al bot</button>
+        </div>
+        <div class="chat-note">No pedimos datos personales para escribirnos.</div>
+      </div>
     </div>
   </div>
 
+  <!-- ===== JS ÚNICO AL FINAL ===== -->
   <script>
-    const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
+  document.addEventListener('DOMContentLoaded', () => {
+    // Año
+    const y = document.getElementById('y'); if (y) y.textContent = new Date().getFullYear();
 
-    // 🔢 TU WhatsApp puente (solo dígitos, con país). Ej: 5493511234567
-    const TU_WA_NUMBER = "5942804641495";
-
-    const form   = document.getElementById('leadForm');
-    const msg    = document.getElementById('msg');
-    const btn    = document.getElementById('submitBtn');
-    const okTel  = document.getElementById('telefono');
-    const okCons = document.getElementById('consent');
-
-    const ramoSel     = document.getElementById('ramo');
-    const autoFields  = document.getElementById('autoFields');
-    const autoActions = document.getElementById('autoActions');
-    const btnWa       = document.getElementById('btnWa');
-    const btnCopy     = document.getElementById('btnCopy');
-
-    function updateAutoFields(){
-      const isAuto = ramoSel.value === 'automotor';
-      autoFields.style.display  = isAuto ? 'block' : 'none';
-    }
-    ramoSel.addEventListener('change', updateAutoFields);
-
-    function toggleSubmit(){ btn.disabled = !okCons.checked; }
-    okCons.addEventListener('change', toggleSubmit);
-    toggleSubmit();
-    updateAutoFields();
-
-    function buildSanCorText() {
-      const mmv  = (document.getElementById('auto_mm')?.value || '').trim();
-      const anio = (document.getElementById('auto_anio')?.value || '').trim();
-      const dni  = (document.getElementById('auto_dni')?.value || '').trim();
-      return `Quiero cotizar un ${mmv} del año ${anio}, para el DNI ${dni}.`;
-    }
-    function waLink(toNumber, text) { return `https://wa.me/${toNumber}?text=${encodeURIComponent(text)}`; }
-
-    async function logLead(payload) {
-      const res = await fetch(URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-    }
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      msg.style.display='none'; msg.className='msg';
-
-      if (!form.checkValidity()) {
-        msg.textContent = "Revisá los campos requeridos.";
-        msg.classList.add('err'); msg.style.display='block';
-        return;
-      }
-      if (!(/\\d{7,}/.test(okTel.value))) {
-        msg.textContent = "Ingresá un teléfono válido (mínimo 7 dígitos).";
-        msg.classList.add('err'); msg.style.display='block';
-        return;
-      }
-
-      let auto_mmv = "", auto_anio = "", auto_dni = "";
-      const isAuto = ramoSel.value === 'automotor';
-      if (isAuto) {
-        auto_mmv  = (document.getElementById('auto_mm')?.value || '').trim();
-        auto_anio = (document.getElementById('auto_anio')?.value || '').trim();
-        auto_dni  = (document.getElementById('auto_dni')?.value || '').trim();
-        if (!auto_mmv || !auto_anio || !auto_dni) {
-          msg.textContent = "Para Automotor completá Marca/Modelo/Versión, Año y DNI.";
-          msg.classList.add('err'); msg.style.display='block';
-          return;
-        }
-      }
-
-      const payload = {
-        nombre: document.getElementById('nombre').value.trim(),
-        telefono: okTel.value.trim(),
-        email: document.getElementById('email').value.trim(),
-        ramo: ramoSel.value,
-        canal: document.getElementById('canal').value,
-        estado: document.getElementById('estado').value,
-        asesor: document.getElementById('asesor').value,
-        origen: document.getElementById('origen').value,
-        comentarios: document.getElementById('comentarios').value.trim(),
-        auto_mmv, auto_anio, auto_dni
-      };
-
-      btn.disabled = true; btn.textContent = "Enviando…";
-      try {
-        await logLead(payload);
-
-        msg.textContent = "✅ ¡Gracias! Recibimos tu solicitud.";
-        msg.classList.add('ok'); msg.style.display='block';
-
-        if (isAuto) {
-          autoActions.style.display = 'block';
-          btnWa.onclick = () => {
-            if (!/^\\d+$/.test(TU_WA_NUMBER)) { alert("Configurá TU_WA_NUMBER (tu WhatsApp) en el código."); return; }
-            const nombre = document.getElementById('nombre').value.trim();
-            const tel    = document.getElementById('telefono').value.trim();
-            const email  = document.getElementById('email').value.trim();
-            const textoParaAsesor = `Hola, soy *${nombre}*.\nQuiero cotizar *Automotor*.\n\n• Teléfono: ${tel}\n• Email: ${email}\n• Vehículo: ${auto_mmv}\n• Año: ${auto_anio}\n• DNI tomador: ${auto_dni}\n\n(Enviá este formato a la IA de SanCor:)\n"${buildSanCorText()}"`;
-            window.open(waLink(TU_WA_NUMBER, textoParaAsesor), "_blank");
-          };
-          btnCopy.onclick = async () => {
-            const text = buildSanCorText();
-            try { await navigator.clipboard.writeText(text); alert("Mensaje copiado. Pegalo en WhatsApp (chat con SanCor) y enviá."); }
-            catch { alert("No se pudo copiar automáticamente. Texto:\n\n" + text); }
-          };
-        } else {
-          form.reset(); toggleSubmit(); updateAutoFields();
-        }
-
-        btn.textContent = "Enviar solicitud"; btn.disabled = !okCons.checked;
-      } catch (err) {
-        console.error(err);
-        msg.textContent = "No pudimos enviar tu solicitud. Verificá conexión o que el flujo esté activo.";
-        msg.classList.add('err'); msg.style.display='block';
-        btn.textContent = "Enviar solicitud"; btn.disabled = false;
-      }
+    // Smooth scroll
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href^="#"]'); if (!a) return;
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     });
-  </script>
 
-  <!-- === AÑADIDOS: Dialogflow Messenger + disparador Retiro === -->
-  <!-- 1) Bootstrap de Dialogflow Messenger (CX) -->
-  <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
-
-  <!-- 2) Componente del chat (ajusta chat-icon si querés) -->
-  <df-messenger
-    project-id="chatbotprevencionretiro"
-    agent-id="27aae0fd-56e8-43e5-9f7c-5ffc6f132462"
-    language-code="es"
-    chat-title="Retiro Seguro"
-    chat-icon="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png"
-  ></df-messenger>
-
-  <!-- 3) Gatillo: si eligen RETIRO en #ramo, abrir chat y enviar mensaje -->
-  <script>
-    (function () {
-      const onDfReady = (cb) => {
-        if (window.customElements?.get('df-messenger')) return cb();
-        window.addEventListener('dfMessengerLoaded', cb, { once: true });
-      };
-
-      const triggerRetiro = () => {
-        const df = document.querySelector('df-messenger');
-        if (!df) return;
-        df.setAttribute('chat-open', 'true');
-        // Opción por texto (debe matchear tu intent de Retiro)
-        df.renderCustomText('Quiero cotizar retiro');
-        // Opción por evento (si creás handler "start_retiro" en CX):
-        // df.renderCustomText('/event:start_retiro');
-      };
-
-      onDfReady(() => {
-        const select = document.getElementById('ramo');
-        if (!select) return;
-
-        select.addEventListener('change', (e) => {
-          if (String(e.target.value).toLowerCase() === 'retiro') {
-            setTimeout(triggerRetiro, 200);
-          }
-        });
-
-        // Por si la página carga con Retiro ya seleccionado
-        if (String(select.value).toLowerCase() === 'retiro') {
-          setTimeout(triggerRetiro, 200);
-        }
-      });
+    // Auto-scroll campañas
+    (function(){
+      const p = new URLSearchParams(location.search);
+      if (p.has('calc') || p.has('utm_source') || p.has('utm_campaign')) {
+        const el = document.getElementById('cotizador');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     })();
-  </script>
-  <!-- === FIN AÑADIDOS === -->
-</body>
-</html>
+
+    // ===== Calculadora =====
+    const fmtARS = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    function calcularValorAcumulado(aporte, meses, rendimientoAnual){
+      const r = rendimientoAnual / 12; let valor = 0;
+      for (let i = 0; i < meses; i++) valor = (valor + aporte) * (1 + r);
+      return valor;
+    }
+    function track(eventName, params){ try { if (window.gtag) gtag('event', eventName, params); } catch {} }
+    function buildResumenFromInputs(aporte, edad, retiro, v1, v2){
+      return `Resumen de simulación:
+- Edad actual: ${edad}
+- Edad retiro: ${retiro}
+- Aporte mensual: ${fmtARS.format(aporte)}
+- Escenario 1 (15,9%): ${fmtARS.format(v1)}
+- Escenario 2 (30%): ${fmtARS.format(v2)}`;
+    }
+    function lastSimSummary(){
+      try {
+        const raw = localStorage.getItem('rs_calc'); if (!raw) return '';
+        const d = JSON.parse(raw); if (!d) return '';
+        const T1 = 0.159, T2 = 0.30;
+        const anios = (d.retiro - d.edad); if (isNaN(anios) || anios <= 0 || isNaN(d.aporte)) return '';
+        const meses = anios * 12;
+        const v1 = calcularValorAcumulado(d.aporte, meses, T1);
+        const v2 = calcularValorAcumulado(d.aporte, meses, T2);
+        return buildResumenFromInputs(d.aporte, d.edad, d.retiro, v1, v2);
+      } catch { return ''; }
+    }
+    function calc(){
+      const e = document.getElementById('calc-error');
+      e.style.display = 'none'; e.textContent = '';
+      const aporte = parseFloat(document.getElementById('aporte').value);
+      const edad = parseFloat(document.getElementById('edad-actual').value);
+      const retiro = parseFloat(document.getElementById('edad-retiro').value);
+      track('CalcStart', { aporte_mensual: aporte, edad_actual: edad, edad_retiro: retiro });
+      if (isNaN(aporte) || isNaN(edad) || isNaN(retiro)) { e.textContent = "Valores inválidos."; e.style.display = 'block'; return; }
+      const anios = retiro - edad; const meses = anios * 12;
+      if (anios <= 0) {
+  e.textContent = "La edad de retiro debe ser mayor a la actual.";
+  e.style.display = 'block'; return;
+}
+if (aporte < 30000) {
+  e.textContent = "El aporte mínimo es $30.000 por mes.";
+  e.style.display = 'block'; return;
+}
+
+      const T1 = 0.159, T2 = 0.30;
+      const v1 = calcularValorAcumulado(aporte, meses, T1);
+      const v2 = calcularValorAcumulado(aporte, meses, T2);
+      document.getElementById('intro').textContent = `¡Excelente! Con un aporte de ${fmtARS.format(aporte)} por mes, y proyectando tu retiro a los ${retiro} años, aquí tenés dos escenarios:`;
+      document.getElementById('esc1').textContent = `≈ ${fmtARS.format(v1)}`;
+      document.getElementById('esc2').textContent = `≈ ${fmtARS.format(v2)}`;
+      const resumen = buildResumenFromInputs(aporte, edad, retiro, v1, v2);
+      const tel = '5492804641495';
+      const mailto = 'retiroseguro.plan@gmail.com';
+      document.getElementById('cta-wpp').href = `https://wa.me/${tel}?text=${encodeURIComponent(resumen + '\n\nQuiero asesoramiento.' )}`;
+      document
