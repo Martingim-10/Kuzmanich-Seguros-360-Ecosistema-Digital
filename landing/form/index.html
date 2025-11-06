@@ -4,229 +4,453 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Kuzmanich Seguros 360 — Solicitud de Cotización</title>
+  <meta name="description" content="Cotizá seguros personales y empresariales con Kuzmanich Seguros 360. Respuesta rápida y asesoramiento profesional.">
   <style>
     :root{
-      --bg:#0f172a;--panel:#111827;--panel-2:#1f2937;--text:#e5e7eb;--muted:#94a3b8;
-      --brand:#3b82f6;--brand-2:#60a5fa;--ok:#22c55e;--err:#ef4444;
-      --input:#0b1220;--stroke:#233046;--radius:18px;
+      --bg:#0f172a; --panel:#111827; --panel-2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
+      --brand:#3b82f6; --brand-2:#60a5fa; --ok:#22c55e; --err:#ef4444;
+      --input:#0b1220; --stroke:#233046; --radius:18px;
+      --card:#0b1220;
     }
     *{box-sizing:border-box}
     body{
-      margin:0;min-height:100vh;background:var(--bg);color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;padding:24px;
+      margin:0; min-height:100vh; display:block;
+      background: radial-gradient(1200px 600px at 20% -10%, #1e293b 0%, transparent 60%),
+                  radial-gradient(1000px 600px at 120% 20%, #0b1220 0%, transparent 60%),
+                  var(--bg);
+      color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+      padding:24px;
     }
-    .wrap{max-width:980px;margin:0 auto}
-    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start}
-    @media(max-width:880px){.grid{grid-template-columns:1fr}}
-    .card{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--stroke);
-      border-radius:var(--radius);box-shadow:0 20px 50px rgba(0,0,0,.45);}
-    .card.form{padding:28px 24px 24px;}
-    .header{display:flex;gap:14px;align-items:center;margin-bottom:12px;}
-    .header img{width:54px;height:54px;border-radius:12px;object-fit:contain;border:1px solid var(--stroke);}
-    h1{font-size:1.35rem;margin:0;color:var(--brand-2)}
-    .sub{color:var(--muted);font-size:.95rem;margin:6px 0 18px}
-    label{display:block;font-size:.9rem;color:#cbd5e1;margin:14px 0 6px}
-    input,select,textarea{width:100%;padding:12px;border-radius:12px;border:1px solid var(--stroke);
-      background:var(--input);color:var(--text);font-size:1rem;outline:none;}
+    .wrap{max-width:980px; margin:0 auto}
+    .grid{display:grid; grid-template-columns:2fr 1fr; gap:18px; align-items:start}
+    @media (max-width:880px){ .grid{grid-template-columns:1fr} }
+
+    .card{ background:linear-gradient(180deg,var(--panel),var(--panel-2)); border:1px solid var(--stroke);
+      border-radius:var(--radius); box-shadow:0 20px 50px rgba(0,0,0,.45); }
+
+    .card.form{ padding:28px 24px 24px; }
+    .header{display:flex; gap:14px; align-items:center; margin-bottom:12px;}
+    .header img{ width:54px; height:54px; border-radius:12px; background:#0b1220; object-fit:contain; border:1px solid var(--stroke); }
+    h1{font-size:1.35rem; margin:0; color:var(--brand-2)}
+    .sub{color:var(--muted); font-size:.95rem; margin:6px 0 18px}
+    label{display:block; font-size:.9rem; color:#cbd5e1; margin:14px 0 6px}
+    input,select,textarea{ width:100%; padding:12px 12px; border-radius:12px; border:1px solid var(--stroke); background:var(--input); color:var(--text); font-size:1rem; outline:none; }
     input:focus,select:focus,textarea:focus{border-color:var(--brand)}
-    button{width:100%;margin-top:18px;padding:12px 14px;border:none;border-radius:12px;
-      background:linear-gradient(180deg,var(--brand),var(--brand-2));color:white;font-weight:700;cursor:pointer;}
-    button:disabled{opacity:.55;cursor:not-allowed}
-    .msg{margin-top:12px;font-weight:600;display:none}
-    .msg.ok{color:var(--ok)}.msg.err{color:var(--err)}
-    .foot{margin-top:12px;font-size:.8rem;color:var(--muted);text-align:center}
+    .consent{display:flex; gap:10px; align-items:flex-start; margin-top:14px; font-size:.9rem; color:#cbd5e1}
+    .consent input{margin-top:3px}
+    button{ width:100%; margin-top:18px; padding:12px 14px; border:none; border-radius:12px; background:linear-gradient(180deg,var(--brand),var(--brand-2)); color:white; font-weight:700; cursor:pointer; transition:transform .05s ease; }
+    button:disabled{opacity:.55; cursor:not-allowed}
+    button:active{transform:translateY(1px)}
+    .msg{margin-top:12px; font-weight:600; display:none}
+    .msg.ok{color:var(--ok)}
+    .msg.err{color:var(--err)}
+    .foot{margin-top:12px; font-size:.8rem; color:var(--muted); text-align:center}
+
+    /* Aside */
+    .card.aside{ padding:20px 18px }
+    .aside h3{ margin:6px 0 12px; font-size:1.05rem; color:#cfe0ff }
+    .benefits{ list-style:none; padding:0; margin:0; display:grid; gap:10px }
+    .benefits li{ display:flex; gap:10px; align-items:flex-start; color:var(--muted) }
+    .dot{ width:8px; height:8px; border-radius:50%; background:var(--brand); margin-top:9px }
+
+    /* Tarjetas de escenarios (Retiro) */
+    .scenarios{display:none; margin-top:12px; display:grid; gap:12px; grid-template-columns:1fr 1fr}
+    .scenario-card{ background:var(--card); border:1px solid var(--stroke); border-radius:12px; padding:14px; }
+    .scenario-title{ color:#93c5fd; font-size:12px; }
+    .scenario-value{ font-size:22px; font-weight:800; margin-top:4px; }
+    .scenario-note{ display:none; margin-top:6px; color:#94a3b8; font-size:12px; }
+
+    @media (max-width:520px){ .grid{gap:12px} .scenarios{grid-template-columns:1fr} }
   </style>
 </head>
 <body>
-<div class="wrap"><div class="grid">
-<main class="card form">
-<div class="header">
-  <img src="../assets/logo.png" alt="Logo Kuzmanich Seguros 360">
-  <div><h1>Solicitud de cotización</h1><div class="sub">Atención profesional en seguros personales y empresariales.</div></div>
-</div>
+  <div class="wrap">
+    <div class="grid">
+      <!-- Columna izquierda: FORMULARIO -->
+      <main class="card form">
+        <div class="header">
+          <img src="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png" alt="Logo Kuzmanich Seguros 360" onerror="this.style.display='none'">
+          <div>
+            <h1>Solicitud de cotización</h1>
+            <div class="sub">Atención profesional en seguros personales y empresariales.</div>
+          </div>
+        </div>
 
-<form id="leadForm" novalidate>
-  <label>Nombre completo</label>
-  <input id="nombre" required placeholder="Ej: Martín Kuzmanich">
-  <label>Teléfono (con código de área)</label>
-  <input id="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel">
+        <form id="leadForm" novalidate>
+          <label>Nombre completo</label>
+          <input id="nombre" name="nombre" required placeholder="Ej: Martín Kuzmanich" autocomplete="name">
 
-  <label>Email</label>
-  <input id="email" type="email" placeholder="tu@email.com">
+          <label>Teléfono (con código de área)</label>
+          <input id="telefono" name="telefono" required placeholder="+54 9 351 000 0000" inputmode="tel" pattern="^[0-9\s()+.-]{7,}$">
 
-  <label>Ramo</label>
-  <select id="ramo" required>
-    <option value="">Seleccioná…</option>
-    <option value="retiro">Seguro de Retiro</option>
-    <option value="automotor">Automotor</option>
-    <option value="vida">Vida</option>
-    <option value="hogar">Hogar</option>
-    <option value="salud">Salud</option>
-    <option value="empresas">Empresas</option>
-  </select>
+          <label>Email</label>
+          <input id="email" name="email" type="email" placeholder="tu@email.com" autocomplete="email">
+          <div class="hint" style="font-size:.82rem; color:var(--muted); margin-top:6px">Usaremos tu email solo para enviarte tu propuesta. No hacemos spam.</div>
 
-  <!-- Bloque Retiro -->
-  <div id="retiroFields" style="display:none;margin-top:10px">
-    <label>Edad actual</label><input id="retiro_edad" inputmode="numeric" placeholder="Ej: 35">
-    <label>Edad de retiro deseada</label><input id="retiro_meta" inputmode="numeric" placeholder="Ej: 65">
-    <label>Aporte mensual (ARS)</label><input id="retiro_aporte" inputmode="numeric" placeholder="Ej: 40000">
-    <button type="button" id="btnCalc">Calcular proyección</button>
+          <label>Ramo</label>
+          <select id="ramo" name="ramo" required>
+            <option value="">Seleccioná…</option>
+            <option value="retiro">Seguro de Retiro</option>
+            <option value="automotor">Automotor</option>
+            <option value="vida">Vida</option>
+            <option value="hogar">Hogar</option>
+            <option value="salud">Salud</option>
+            <option value="empresas">Empresas</option>
+          </select>
 
-    <div id="retiroResult" style="display:none;margin-top:12px;display:grid;gap:12px;grid-template-columns:1fr 1fr;">
-      <div style="background:#0b1220;border:1px solid var(--stroke);border-radius:12px;padding:14px;">
-        <div style="color:#93c5fd;font-size:12px;">Escenario 1 (40% anual)</div>
-        <div id="rEsc1" style="font-size:22px;font-weight:800;margin-top:4px;">—</div>
-      </div>
-      <div style="background:#0b1220;border:1px solid var(--stroke);border-radius:12px;padding:14px;">
-        <div style="color:#93c5fd;font-size:12px;">Escenario 2 (30% anual)</div>
-        <div id="rEsc2" style="font-size:22px;font-weight:800;margin-top:4px;">—</div>
-      </div>
+          <!-- ===== AUTOMOTOR ===== -->
+          <div id="autoFields" style="display:none; margin-top:8px">
+            <label>Marca</label>
+            <select id="auto_marca" aria-label="Marca"></select>
+
+            <label>Modelo</label>
+            <select id="auto_modelo" aria-label="Modelo" disabled></select>
+
+            <label>Versión</label>
+            <select id="auto_version" aria-label="Versión" disabled></select>
+
+            <label>Año de fabricación</label>
+            <select id="auto_anio_sel" aria-label="Año" disabled></select>
+
+            <label style="margin-top:12px">DNI del tomador</label>
+            <input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
+            <div class="hint">Estos datos son necesarios para la IA de SanCor.</div>
+          </div>
+
+          <!-- ===== RETIRO ===== -->
+          <div id="retiroFields" style="display:none; margin-top:10px">
+            <label>Edad actual</label>
+            <input id="retiro_edad" inputmode="numeric" placeholder="Ej: 35">
+
+            <label>Edad de retiro deseada</label>
+            <input id="retiro_meta" inputmode="numeric" placeholder="Ej: 65">
+
+            <label>Aporte mensual (ARS)</label>
+            <input id="retiro_aporte" inputmode="numeric" placeholder="Ej: 50000">
+
+            <button type="button" id="btnCalc">Calcular proyección</button>
+
+            <div id="retiroResult" class="scenarios">
+              <div class="scenario-card">
+                <div class="scenario-title">Escenario 1 (15,9% anual)</div>
+                <div id="rEsc1" class="scenario-value">—</div>
+              </div>
+              <div class="scenario-card">
+                <div class="scenario-title">Escenario 2 (30% anual)</div>
+                <div id="rEsc2" class="scenario-value">—</div>
+              </div>
+            </div>
+            <div id="calcNote" class="scenario-note">
+              Proyección estimativa en ARS. Si mantenés el aporte, podrías alcanzar estos montos al llegar a tu edad objetivo.
+            </div>
+          </div>
+
+          <!-- Tracking -->
+          <input id="canal" type="hidden" value="web">
+          <input id="estado" type="hidden" value="nuevo">
+          <input id="asesor" type="hidden" value="auto">
+          <input id="origen" type="hidden" value="form">
+
+          <label>Comentarios (opcional)</label>
+          <textarea id="comentarios" name="comentarios" rows="3" placeholder="Contanos algo que debamos tener en cuenta"></textarea>
+
+          <label class="consent">
+            <input id="consent" type="checkbox" required>
+            <span>Acepto el uso de mis datos para recibir mi cotización y asesoramiento (Ley 25.326). <a href="#" style="color:#93c5fd;text-decoration:underline">Política de privacidad</a>.</span>
+          </label>
+
+          <button id="submitBtn" type="submit" disabled>Enviar solicitud</button>
+          <div id="msg" class="msg"></div>
+
+          <!-- Acciones post-envío -->
+          <div id="postActions" style="display:none; margin-top:10px">
+            <button type="button" id="btnWa" style="margin-top:8px">📲 Chatear ahora por WhatsApp</button>
+          </div>
+        </form>
+
+        <div class="foot">Kuzmanich Seguros 360 · Atención personalizada</div>
+      </main>
+
+      <!-- Columna derecha: ¿Por qué con nosotros? -->
+      <aside class="card aside">
+        <h3>¿Por qué con nosotros?</h3>
+        <ul class="benefits">
+          <li><span class="dot"></span> Productores oficiales. Cotizamos con la compañía número 1 del mercado.</li>
+          <li><span class="dot"></span> Respuesta ágil por WhatsApp. Sin vueltas.</li>
+          <li><span class="dot"></span> Tus datos quedan protegidos. Uso exclusivo para tu cotización.</li>
+        </ul>
+      </aside>
     </div>
-    <div id="calcNote" style="display:none;margin-top:6px;color:#94a3b8;font-size:12px;">
-      Si mantenés este aporte, podrías alcanzar estos montos al llegar a tu edad objetivo.
-    </div>
   </div>
 
-  <!-- Bloque Automotor -->
-  <div id="autoFields" style="display:none;margin-top:10px">
-    <label>Marca</label><select id="auto_marca"></select>
-    <label>Modelo</label><select id="auto_modelo" disabled></select>
-    <label>Versión</label><select id="auto_version" disabled></select>
-    <label>Año</label><select id="auto_anio_sel" disabled></select>
-    <label>DNI tomador</label><input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
-  </div>
+  <script>
+    const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
+    const WA_NUMBER = "5942804641495";
 
-  <label class="consent"><input id="consent" type="checkbox" required> Acepto el uso de mis datos (Ley 25.326)</label>
-  <button id="submitBtn" type="submit" disabled>Enviar solicitud</button>
-  <div id="msg" class="msg"></div>
-  <div id="postActions" style="display:none;margin-top:12px">
-    <button type="button" id="btnWa">📲 Chatear ahora por WhatsApp</button>
-  </div>
-</form>
+    const form   = document.getElementById('leadForm');
+    const msg    = document.getElementById('msg');
+    const btn    = document.getElementById('submitBtn');
+    const okCons = document.getElementById('consent');
 
-<div class="foot">Kuzmanich Seguros 360 · Atención personalizada</div>
-</main>
-<aside class="card aside"><h3>¿Por qué con nosotros?</h3><ul>
-<li>Productores oficiales.</li><li>Respuesta ágil por WhatsApp.</li><li>Tus datos quedan protegidos.</li></ul></aside>
-</div></div>
+    const ramoSel     = document.getElementById('ramo');
+    const autoFields  = document.getElementById('autoFields');
+    const retiroFields= document.getElementById('retiroFields');
+    const postActions = document.getElementById('postActions');
+    const btnWa       = document.getElementById('btnWa');
 
-<script>
-const URL="https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
-const WA_NUMBER="5942804641495";
-const form=document.getElementById("leadForm"),msg=document.getElementById("msg"),
-btn=document.getElementById("submitBtn"),cons=document.getElementById("consent"),
-ramo=document.getElementById("ramo"),post=document.getElementById("postActions"),
-btnWa=document.getElementById("btnWa");
-const fRetiro=document.getElementById("retiroFields"),
-rEdad=document.getElementById("retiro_edad"),
-rMeta=document.getElementById("retiro_meta"),
-rAporte=document.getElementById("retiro_aporte"),
-btnCalc=document.getElementById("btnCalc"),
-rEsc1=document.getElementById("rEsc1"),rEsc2=document.getElementById("rEsc2"),
-calcDiv=document.getElementById("retiroResult"),calcNote=document.getElementById("calcNote");
-const fAuto=document.getElementById("autoFields"),
-sMarca=document.getElementById("auto_marca"),sModelo=document.getElementById("auto_modelo"),
-sVersion=document.getElementById("auto_version"),sAnio=document.getElementById("auto_anio_sel"),
-aDni=document.getElementById("auto_dni");
-let AUTO_TREE=null;
+    // Automotor selects
+    const selMarca   = document.getElementById('auto_marca');
+    const selModelo  = document.getElementById('auto_modelo');
+    const selVersion = document.getElementById('auto_version');
+    const selAnioSel = document.getElementById('auto_anio_sel');
+    const inDni      = document.getElementById('auto_dni');
 
-cons.addEventListener("change",()=>btn.disabled=!cons.checked);
-ramo.addEventListener("change",async()=>{
-  fRetiro.style.display=ramo.value==="retiro"?"block":"none";
-  fAuto.style.display=ramo.value==="automotor"?"block":"none";
-  post.style.display="none";msg.style.display="none";
-  if(ramo.value==="automotor"&&!AUTO_TREE)await loadAutoTree();
-});
+    // Retiro inputs
+    const rEdad = document.getElementById('retiro_edad');
+    const rMeta = document.getElementById('retiro_meta');
+    const rAporte = document.getElementById('retiro_aporte');
+    const btnCalc = document.getElementById('btnCalc');
+    const rEsc1 = document.getElementById('rEsc1');
+    const rEsc2 = document.getElementById('rEsc2');
+    const retiroResult = document.getElementById('retiroResult');
+    const calcNote = document.getElementById('calcNote');
 
-async function loadAutoTree(){
-  try{
-    const r=await fetch("./Autos_arbol.json",{cache:"no-store"});
-    AUTO_TREE=await r.json();
-    fillSel(sMarca,Object.keys(AUTO_TREE).sort(),"Seleccioná marca");
-  }catch(e){console.error(e);}
-}
-function fillSel(sel,arr,ph){
-  sel.innerHTML=`<option value="">${ph}</option>`;
-  (arr||[]).forEach(v=>{const o=document.createElement("option");o.textContent=v;o.value=v;sel.appendChild(o);});
-  sel.disabled=!(arr&&arr.length);
-}
-sMarca.addEventListener("change",()=>{
-  const M=sMarca.value;
-  if(!M||!AUTO_TREE[M]){fillSel(sModelo,[],"Seleccioná modelo");return;}
-  fillSel(sModelo,Object.keys(AUTO_TREE[M]).sort(),"Seleccioná modelo");
-});
-sModelo.addEventListener("change",()=>{
-  const M=sMarca.value,mo=sModelo.value;
-  const node=AUTO_TREE?.[M]?.[mo];
-  let versiones=[];
-  if(Array.isArray(node)) versiones=node;
-  else if(node&&typeof node==="object") versiones=Object.keys(node);
-  versiones=versiones.sort((a,b)=>a.localeCompare(b,"es"));
-  fillSel(sVersion,versiones,"Seleccioná versión");
-});
-sVersion.addEventListener("change",()=>{
-  const M=sMarca.value,mo=sModelo.value,v=sVersion.value;
-  const node=AUTO_TREE?.[M]?.[mo];
-  let years=[];
-  if(node&&!Array.isArray(node)) years=node[v]||[];
-  if(!years.length){
-    const now=new Date().getFullYear();
-    years=Array.from({length:15},(_,i)=>String(now-i));
-  }
-  years=years.map(String).sort((a,b)=>Number(b)-Number(a));
-  fillSel(sAnio,years,"Seleccioná año");
-});
+    let AUTOS = null; // {Marca: {Modelo: {Version: [years?]}}}
 
-// cálculo retiro
-btnCalc.addEventListener("click",()=>{
-  const edad=+rEdad.value,meta=+rMeta.value,aporte=+rAporte.value;
-  if(!edad||!meta||!aporte||meta<=edad){alert("Completá datos válidos.");return;}
-  const años=meta-edad,t1=0.40,t2=0.30;
-  const acum=tasa=>Math.round(aporte*(((1+tasa)**años-1)/tasa));
-  const esc1=acum(t1),esc2=acum(t2);
-  const fmt=new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0});
-  calcDiv.style.display="grid";calcNote.style.display="block";
-  rEsc1.textContent=fmt.format(esc1);rEsc2.textContent=fmt.format(esc2);
-  rEdad.dataset.esc1=esc1;rEdad.dataset.esc2=esc2;
-});
+    function toggleSubmit(){ btn.disabled = !okCons.checked; }
+    okCons.addEventListener('change', toggleSubmit); toggleSubmit();
 
-// envío
-form.addEventListener("submit",async e=>{
-  e.preventDefault();msg.style.display="none";msg.className="msg";
-  if(!form.checkValidity()){msg.textContent="Revisá los campos.";msg.classList.add("err");msg.style.display="block";return;}
-  btn.disabled=true;btn.textContent="Enviando…";
-  const data={
-    nombre:document.getElementById("nombre").value.trim(),
-    telefono:document.getElementById("telefono").value.trim(),
-    email:document.getElementById("email").value.trim(),
-    ramo:ramo.value,canal:"web",estado:"nuevo",asesor:"auto",origen:"form",comentarios:"",
-    auto_mmv:`${sMarca.value} ${sModelo.value} ${sVersion.value}`.trim(),
-    auto_anio:sAnio.value||"",auto_dni:aDni.value||"",
-    retiro_edad:rEdad.value||"",retiro_meta:rMeta.value||"",retiro_aporte:rAporte.value||"",
-    retiro_esc1:rEdad.dataset.esc1||"",retiro_esc2:rEdad.dataset.esc2||""
-  };
-  try{
-    await fetch(URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
-    msg.textContent="✅ ¡Solicitud enviada correctamente!";
-    msg.classList.add("ok");msg.style.display="block";
-    post.style.display="block";
-    btnWa.onclick=()=>{
-      const base=`Hola, soy ${data.nombre}. Quiero cotizar *${data.ramo.toUpperCase()}*.\n\n`;
-      let detalle="";
-      if(data.ramo==="retiro"){
-        detalle=`Edad actual: ${data.retiro_edad}\nEdad retiro: ${data.retiro_meta}\nAporte: $${data.retiro_aporte}\nEscenario 1 (40%): $${Number(data.retiro_esc1).toLocaleString("es-AR")}\nEscenario 2 (30%): $${Number(data.retiro_esc2).toLocaleString("es-AR")}`;
-      }else if(data.ramo==="automotor"){
-        detalle=`Vehículo: ${data.auto_mmv}\nAño: ${data.auto_anio}\nDNI: ${data.auto_dni}`;
+    function showByRamo(){
+      const v = ramoSel.value;
+      autoFields.style.display   = v==='automotor' ? 'block' : 'none';
+      retiroFields.style.display = v==='retiro'    ? 'block' : 'none';
+      postActions.style.display  = 'none';
+      msg.style.display = 'none';
+      if (v==='automotor' && !AUTOS) loadAutos();
+    }
+    ramoSel.addEventListener('change', showByRamo);
+    showByRamo();
+
+    function fillSelect(selectEl, items, placeholder){
+      selectEl.innerHTML = '';
+      const opt0 = document.createElement('option');
+      opt0.value = ''; opt0.textContent = placeholder || 'Seleccioná…';
+      selectEl.appendChild(opt0);
+      (items || []).forEach(v=>{
+        const o = document.createElement('option');
+        o.value = v; o.textContent = v;
+        selectEl.appendChild(o);
+      });
+      selectEl.disabled = !(items && items.length);
+    }
+
+    async function loadAutos(){
+      try{
+        const r = await fetch('Autos_arbol.json', {cache:'no-store'});
+        AUTOS = await r.json();
+        const marcas = Object.keys(AUTOS||{}).sort((a,b)=>a.localeCompare(b,'es'));
+        fillSelect(selMarca, marcas, 'Seleccioná la marca');
+        fillSelect(selModelo, [], 'Seleccioná el modelo');
+        fillSelect(selVersion, [], 'Seleccioná la versión');
+        fillSelect(selAnioSel, [], 'Seleccioná el año');
+      }catch(e){
+        console.error('Error cargando Autos_arbol.json', e);
+        AUTOS = {};
       }
-      window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(base+detalle)}`,"_blank");
-    };
-  }catch(err){
-    console.error(err);
-    msg.textContent="❌ No pudimos enviar tu solicitud.";
-    msg.classList.add("err");msg.style.display="block";
-  }
-  btn.disabled=false;btn.textContent="Enviar solicitud";
-});
-</script>
+    }
+
+    selMarca.addEventListener('change', ()=>{
+      const marca = selMarca.value;
+      if (!marca || !AUTOS[marca]) {
+        fillSelect(selModelo, [], 'Seleccioná el modelo');
+        fillSelect(selVersion, [], 'Seleccioná la versión');
+        fillSelect(selAnioSel, [], 'Seleccioná el año');
+        return;
+      }
+      const modelos = Object.keys(AUTOS[marca]||{}).sort((a,b)=>a.localeCompare(b,'es'));
+      fillSelect(selModelo, modelos, 'Seleccioná el modelo');
+      fillSelect(selVersion, [], 'Seleccioná la versión');
+      fillSelect(selAnioSel, [], 'Seleccioná el año');
+    });
+
+    selModelo.addEventListener('change', ()=>{
+      const marca = selMarca.value, modelo = selModelo.value;
+      const node = AUTOS?.[marca]?.[modelo];
+      let versiones = [];
+      if (Array.isArray(node)) {
+        // poco probable en este JSON, pero soportado
+        versiones = node;
+      } else if (node && typeof node === 'object') {
+        versiones = Object.keys(node);
+      }
+      versiones = versiones.slice().sort((a,b)=>a.localeCompare(b,'es'));
+      fillSelect(selVersion, versiones, 'Seleccioná la versión');
+      fillSelect(selAnioSel, [], 'Seleccioná el año');
+    });
+
+    selVersion.addEventListener('change', ()=>{
+      const marca = selMarca.value, modelo = selModelo.value, version = selVersion.value;
+      const node = AUTOS?.[marca]?.[modelo];
+      let years = [];
+      if (node && !Array.isArray(node)) {
+        years = (node?.[version] || []);
+      }
+      if (!years || !years.length) {
+        // fallback: últimos 15 años
+        const y = new Date().getFullYear();
+        years = Array.from({length:15}, (_,i)=>String(y-i));
+      }
+      years = years.map(String).sort((a,b)=>Number(b)-Number(a));
+      fillSelect(selAnioSel, years, 'Seleccioná el año');
+    });
+
+    // ====== RETIRO: cálculo con 15.9% y 30% anual (capitalización mensual) ======
+    function calcularValorAcumulado(aporteMensual, meses, tasaAnual){
+      const r = tasaAnual / 12; // tasa mensual aprox.
+      let valor = 0;
+      for (let i=0;i<meses;i++){ valor = (valor + aporteMensual) * (1 + r); }
+      return Math.round(valor);
+    }
+
+    btnCalc.addEventListener('click', ()=>{
+      const edad  = parseFloat(rEdad.value);
+      const meta  = parseFloat(rMeta.value);
+      const aporte= parseFloat(rAporte.value);
+      if (isNaN(edad) || isNaN(meta) || isNaN(aporte) || meta <= edad) {
+        alert('Completá datos válidos (edad actual, edad de retiro mayor y aporte mensual).');
+        return;
+      }
+      const meses = (meta - edad) * 12;
+      const esc1 = calcularValorAcumulado(aporte, meses, 0.159);
+      const esc2 = calcularValorAcumulado(aporte, meses, 0.30);
+
+      const fmt = new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0});
+      rEsc1.textContent = fmt.format(esc1);
+      rEsc2.textContent = fmt.format(esc2);
+
+      // guardamos crudo para enviar a Sheets
+      rEdad.dataset.esc1 = String(esc1);
+      rEdad.dataset.esc2 = String(esc2);
+
+      retiroResult.style.display = 'grid';
+      calcNote.style.display = 'block';
+    });
+
+    function waLink(toNumber, text) { return `https://wa.me/${toNumber}?text=${encodeURIComponent(text)}`; }
+
+    async function logLead(payload) {
+      const res = await fetch(URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.style.display='none'; msg.className='msg';
+
+      if (!form.checkValidity()) {
+        msg.textContent = "Revisá los campos requeridos.";
+        msg.classList.add('err'); msg.style.display='block';
+        return;
+      }
+
+      // Validación mínima teléfono
+      const tel = document.getElementById('telefono').value.trim();
+      if (!(/\d{7,}/.test(tel))) {
+        msg.textContent = "Ingresá un teléfono válido (mínimo 7 dígitos).";
+        msg.classList.add('err'); msg.style.display='block';
+        return;
+      }
+
+      const ramo = ramoSel.value;
+
+      // Mapear Automotor → auto_mmv/auto_anio/auto_dni
+      let auto_mmv = "", auto_anio = "", auto_dni = "";
+      if (ramo === 'automotor') {
+        auto_mmv = [selMarca.value, selModelo.value, selVersion.value].filter(Boolean).join(' ').trim();
+        auto_anio= selAnioSel.value || "";
+        auto_dni = inDni.value.trim();
+        if (!auto_mmv || !auto_anio || !auto_dni) {
+          msg.textContent = "Para Automotor completá Marca/Modelo/Versión, Año y DNI.";
+          msg.classList.add('err'); msg.style.display='block';
+          return;
+        }
+      }
+
+      // Mapear Retiro → retiro_*
+      let retiro_edad="", retiro_meta="", retiro_aporte="", retiro_esc1="", retiro_esc2="";
+      if (ramo === 'retiro') {
+        retiro_edad   = rEdad.value.trim();
+        retiro_meta   = rMeta.value.trim();
+        retiro_aporte = rAporte.value.trim();
+        retiro_esc1   = rEdad.dataset.esc1 || "";
+        retiro_esc2   = rEdad.dataset.esc2 || "";
+        if (!retiro_edad || !retiro_meta || !retiro_aporte) {
+          msg.textContent = "Para Retiro completá Edad actual, Edad de retiro y Aporte mensual. Luego tocá “Calcular proyección”.";
+          msg.classList.add('err'); msg.style.display='block';
+          return;
+        }
+        if (!retiro_esc1 || !retiro_esc2) {
+          msg.textContent = "Tocá “Calcular proyección” para generar los escenarios.";
+          msg.classList.add('err'); msg.style.display='block';
+          return;
+        }
+      }
+
+      const payload = {
+        nombre: document.getElementById('nombre').value.trim(),
+        telefono: tel,
+        email: document.getElementById('email').value.trim(),
+        ramo: ramo,
+        canal: document.getElementById('canal').value,
+        estado: document.getElementById('estado').value,
+        asesor: document.getElementById('asesor').value,
+        origen: document.getElementById('origen').value,
+        comentarios: document.getElementById('comentarios').value.trim(),
+        auto_mmv, auto_anio, auto_dni,
+        retiro_edad, retiro_meta, retiro_aporte, retiro_esc1, retiro_esc2
+      };
+
+      btn.disabled = true; btn.textContent = "Enviando…";
+      try {
+        await logLead(payload);
+
+        msg.textContent = "✅ ¡Gracias! Recibimos tu solicitud.";
+        msg.classList.add('ok'); msg.style.display='block';
+        postActions.style.display = 'block';
+
+        btnWa.onclick = () => {
+          const nombre = payload.nombre || 'Cliente';
+          let detalle = "";
+          if (ramo === 'automotor') {
+            detalle = `Vehículo: ${auto_mmv}\nAño: ${auto_anio}\nDNI tomador: ${auto_dni}`;
+          } else if (ramo === 'retiro') {
+            const fmt = (n)=>Number(n).toLocaleString("es-AR");
+            detalle = `Edad actual: ${retiro_edad}\nEdad retiro: ${retiro_meta}\nAporte mensual: $${fmt(retiro_aporte)}\nEscenario 1 (15,9%): $${fmt(retiro_esc1)}\nEscenario 2 (30%): $${fmt(retiro_esc2)}`;
+          } else {
+            detalle = `Ramo: ${ramo}\nTel: ${payload.telefono}\nEmail: ${payload.email}`;
+          }
+          const texto = `Hola, soy ${nombre}. Quiero cotizar *${ramo.toUpperCase()}*.\n\n${detalle}`;
+          window.open(waLink(WA_NUMBER, texto), "_blank");
+        };
+
+        // reset parcial para no perder la opción seleccionada
+        // (si no es automotor, oculto árbol; si no es retiro, oculto escenarios)
+        if (ramo !== 'automotor') {
+          selMarca.selectedIndex = 0; selModelo.innerHTML=""; selVersion.innerHTML=""; selAnioSel.innerHTML="";
+        }
+        if (ramo !== 'retiro') {
+          rEdad.value=""; rMeta.value=""; rAporte.value=""; retiroResult.style.display='none'; calcNote.style.display='none';
+          delete rEdad.dataset.esc1; delete rEdad.dataset.esc2;
+        }
+
+        btn.textContent = "Enviar solicitud"; btn.disabled = !okCons.checked;
+      } catch (err) {
+        console.error(err);
+        msg.textContent = "❌ No pudimos enviar tu solicitud. Verificá conexión o que el flujo esté activo.";
+        msg.classList.add('err'); msg.style.display='block';
+        btn.textContent = "Enviar solicitud"; btn.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
