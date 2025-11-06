@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Kuzmanich Seguros 360 — Solicitud de Cotización</title>
-  <meta name="description" content="Cotizá seguros personales y empresariales con Kuzmanich Seguros 360. Respuesta rápida y asesoramiento profesional.">
+  <meta name="description" content="Cotizá seguros personales y empresariales con Kuzmanich Seguros 360.">
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel-2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -13,12 +13,8 @@
     }
     *{box-sizing:border-box}
     body{
-      margin:0;min-height:100vh;display:block;
-      background:radial-gradient(1200px 600px at 20% -10%,#1e293b 0%,transparent 60%),
-                 radial-gradient(1000px 600px at 120% 20%,#0b1220 0%,transparent 60%),
-                 var(--bg);
-      color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
-      padding:24px;
+      margin:0;min-height:100vh;background:var(--bg);color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;padding:24px;
     }
     .wrap{max-width:980px;margin:0 auto}
     .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start}
@@ -33,22 +29,18 @@
     .row{display:flex;gap:12px}
     .row>.field{flex:1}
     label{display:block;font-size:.9rem;color:#cbd5e1;margin:14px 0 6px}
-    input,select,textarea{width:100%;padding:12px 12px;border-radius:12px;border:1px solid var(--stroke);
+    input,select,textarea{width:100%;padding:12px;border-radius:12px;border:1px solid var(--stroke);
       background:var(--input);color:var(--text);font-size:1rem;outline:none;}
     input:focus,select:focus,textarea:focus{border-color:var(--brand)}
     .hint{font-size:.82rem;color:var(--muted);margin-top:6px}
     .consent{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:.9rem;color:#cbd5e1}
     .consent input{margin-top:3px}
     button{width:100%;margin-top:18px;padding:12px 14px;border:none;border-radius:12px;
-      background:linear-gradient(180deg,var(--brand),var(--brand-2));color:white;font-weight:700;cursor:pointer;
-      transition:transform .05s ease;}
+      background:linear-gradient(180deg,var(--brand),var(--brand-2));color:white;font-weight:700;cursor:pointer;}
     button:disabled{opacity:.55;cursor:not-allowed}
-    button:active{transform:translateY(1px)}
     .msg{margin-top:12px;font-weight:600;display:none}
-    .msg.ok{color:var(--ok)}
-    .msg.err{color:var(--err)}
+    .msg.ok{color:var(--ok)} .msg.err{color:var(--err)}
     .foot{margin-top:12px;font-size:.8rem;color:var(--muted);text-align:center}
-    @media(max-width:520px){.row{flex-direction:column}}
     .card.aside{padding:20px 18px}
     .aside h3{margin:6px 0 12px;font-size:1.05rem;color:#cfe0ff}
     .benefits{list-style:none;padding:0;margin:0;display:grid;gap:10px}
@@ -61,7 +53,7 @@
     <div class="grid">
       <main class="card form">
         <div class="header">
-          <img src="https://martingim-10.github.io/Kuzmanich-Seguros-360-Ecosistema-Digital/branding/logo-rs.png" alt="Logo Kuzmanich Seguros 360">
+          <img src="../assets/logo.png" alt="Logo Kuzmanich Seguros 360">
           <div>
             <h1>Solicitud de cotización</h1>
             <div class="sub">Atención profesional en seguros personales y empresariales.</div>
@@ -95,7 +87,7 @@
             <option value="empresas">Empresas</option>
           </select>
 
-          <!-- Campos AUTOMOTOR -->
+          <!-- Campos Automotor -->
           <div id="autoFields" style="display:none; margin-top:8px">
             <label>Marca</label>
             <select id="auto_marca"><option value="">Seleccioná marca…</option></select>
@@ -124,7 +116,7 @@
 
           <label class="consent">
             <input id="consent" type="checkbox" required>
-            <span>Acepto el uso de mis datos según la Ley 25.326. <a href="#">Política de privacidad</a></span>
+            <span>Acepto el uso de mis datos según la Ley 25.326. <a href="../privacidad.html">Privacidad</a></span>
           </label>
 
           <button id="submitBtn" type="submit" disabled>Enviar solicitud</button>
@@ -147,82 +139,91 @@
 
   <script>
     const URL = "https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
+    const form = document.getElementById("leadForm");
+    const ramoSel = document.getElementById("ramo");
+    const autoFields = document.getElementById("autoFields");
+    const consent = document.getElementById("consent");
+    const submitBtn = document.getElementById("submitBtn");
+    const msg = document.getElementById("msg");
 
-    const form = document.getElementById('leadForm');
-    const ramoSel = document.getElementById('ramo');
-    const autoFields = document.getElementById('autoFields');
-    const marcaSel = document.getElementById('auto_marca');
-    const modeloSel = document.getElementById('auto_modelo');
-    const versionSel = document.getElementById('auto_version');
-    const inputMMV = document.getElementById('auto_mm');
-
+    // Automotor
+    const marcaSel = document.getElementById("auto_marca");
+    const modeloSel = document.getElementById("auto_modelo");
+    const versionSel = document.getElementById("auto_version");
+    const inputMMV = document.getElementById("auto_mm");
     const AUTO_TREE_URL = "./Autos_arbol.json";
     let AUTO_TREE = null;
 
-    // Mostrar campos automotor y cargar árbol
-    ramoSel.addEventListener('change', () => {
-      const isAuto = ramoSel.value === 'automotor';
-      autoFields.style.display = isAuto ? 'block' : 'none';
-      if (isAuto && !AUTO_TREE) cargarArbol();
+    // Habilita envío al aceptar consentimiento
+    consent.addEventListener("change", () => { submitBtn.disabled = !consent.checked; });
+
+    // Cambio de ramo
+    ramoSel.addEventListener("change", () => {
+      const ramo = ramoSel.value;
+      autoFields.style.display = ramo === "automotor" ? "block" : "none";
+      if (ramo === "automotor" && !AUTO_TREE) cargarArbol();
+
+      // Disparo de flujo Retiro (abre chat o cotizador)
+      if (ramo === "retiro") {
+        const chatFab = document.getElementById("chatFab");
+        if (chatFab) chatFab.click();
+        else if (document.getElementById("cotizador")) {
+          document.getElementById("cotizador").scrollIntoView({ behavior: "smooth" });
+        }
+      }
     });
 
     async function cargarArbol() {
       try {
-        const res = await fetch(AUTO_TREE_URL, { cache: 'no-store' });
+        const res = await fetch(AUTO_TREE_URL, { cache: "no-store" });
         AUTO_TREE = await res.json();
         poblarMarcas();
-      } catch (e) {
-        console.error("Error al cargar Autos_arbol.json", e);
-      }
+      } catch (e) { console.error("Error al cargar Autos_arbol.json", e); }
     }
 
     function poblarMarcas() {
       const marcas = Object.keys(AUTO_TREE).sort();
-      marcaSel.innerHTML = "<option value=''>Seleccioná marca…</option>" +
-        marcas.map(m => `<option value="${m}">${m}</option>`).join("");
+      marcaSel.innerHTML = "<option value=''>Seleccioná marca…</option>" + marcas.map(m => `<option>${m}</option>`).join("");
       marcaSel.disabled = false;
     }
 
-    marcaSel.addEventListener('change', () => {
+    marcaSel.addEventListener("change", () => {
       const marca = marcaSel.value;
       if (!marca || !AUTO_TREE[marca]) return;
       const modelos = Object.keys(AUTO_TREE[marca]).sort();
-      modeloSel.innerHTML = "<option value=''>Seleccioná modelo…</option>" +
-        modelos.map(m => `<option value='${m}'>${m}</option>`).join("");
-      modeloSel.disabled = false;
-      versionSel.disabled = true;
-      inputMMV.value = "";
+      modeloSel.innerHTML = "<option value=''>Seleccioná modelo…</option>" + modelos.map(m => `<option>${m}</option>`).join("");
+      modeloSel.disabled = false; versionSel.disabled = true; inputMMV.value = "";
     });
 
-    modeloSel.addEventListener('change', () => {
-      const marca = marcaSel.value;
-      const modelo = modeloSel.value;
+    modeloSel.addEventListener("change", () => {
+      const marca = marcaSel.value, modelo = modeloSel.value;
       if (!modelo || !AUTO_TREE[marca][modelo]) return;
       const versiones = AUTO_TREE[marca][modelo];
-      versionSel.innerHTML = "<option value=''>Seleccioná versión…</option>" +
-        versiones.map(v => `<option value='${v}'>${v}</option>`).join("");
-      versionSel.disabled = false;
-      inputMMV.value = "";
+      versionSel.innerHTML = "<option value=''>Seleccioná versión…</option>" + versiones.map(v => `<option>${v}</option>`).join("");
+      versionSel.disabled = false; inputMMV.value = "";
     });
 
-    versionSel.addEventListener('change', () => {
+    versionSel.addEventListener("change", () => {
       const parts = [marcaSel.value, modeloSel.value, versionSel.value].filter(Boolean);
       inputMMV.value = parts.join(" ");
     });
 
-    form.addEventListener('submit', async e => {
+    // Envío a n8n
+    form.addEventListener("submit", async e => {
       e.preventDefault();
+      submitBtn.disabled = true; msg.style.display = "none";
       const payload = Object.fromEntries(new FormData(form).entries());
       try {
         const res = await fetch(URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: "POST", headers: {"Content-Type": "application/json"},
           body: JSON.stringify(payload)
         });
-        alert(res.ok ? "✅ Solicitud enviada" : "❌ Error al enviar");
+        msg.textContent = res.ok ? "✅ Solicitud enviada correctamente." : "❌ Error al enviar.";
+        msg.className = res.ok ? "msg ok" : "msg err";
       } catch {
-        alert("❌ Error de conexión");
+        msg.textContent = "❌ Error de conexión."; msg.className = "msg err";
       }
+      msg.style.display = "block"; submitBtn.disabled = false;
     });
   </script>
 </body>
