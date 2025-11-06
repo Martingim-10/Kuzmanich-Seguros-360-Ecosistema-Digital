@@ -48,6 +48,9 @@
     .escenario p{margin:6px 0 0;font-size:.9rem;color:#e2e8f0}
     .escenario1{background:#3b82f6;} /* celeste */
     .escenario2{background:#7c3aed;} /* violeta */
+
+    /* Loader Excel */
+    .excel-loader{font-size:.9rem;color:#cbd5e1;margin-top:6px}
   </style>
 </head>
 <body>
@@ -74,6 +77,8 @@
 
           <!-- AUTOMOTOR -->
           <div id="autoFields" style="display:none;margin-top:8px">
+            <div class="excel-loader" id="excelLoader" style="display:none">Cargando base de automotores…</div>
+
             <label>Marca</label>
             <input id="auto_marca" list="listMarcas" placeholder="Ej: Ford">
             <datalist id="listMarcas"></datalist>
@@ -83,7 +88,7 @@
             <datalist id="listModelos"></datalist>
 
             <label>Versión (Sub-modelo)</label>
-            <!-- ahora es input con datalist (sugerencias + libre) -->
+            <!-- input con datalist: sugiere pero deja escribir libre -->
             <input id="auto_version" list="listVersiones" placeholder="Ej: Titanium 2.0 AT">
             <datalist id="listVersiones"></datalist>
 
@@ -162,6 +167,9 @@
     </div>
   </div>
 
+  <!-- SheetJS para leer Excel en el navegador -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <script>
     const URL="https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
     const TU_WA_NUMBER="5942804641495";
@@ -175,6 +183,7 @@
     const msg=document.getElementById("msg");
     const btn=document.getElementById("submitBtn");
     const consent=document.getElementById("consent");
+    const excelLoader=document.getElementById("excelLoader");
 
     const listMarcas=document.getElementById("listMarcas");
     const listModelos=document.getElementById("listModelos");
@@ -197,85 +206,114 @@
       retiroActions.style.display="none";
       msg.style.display="none";
       refreshSubmitDisabled();
+      if(v==="automotor") ensureExcelLoaded();
     });
 
-    // ===== Carga de base Automotor =====
-    let AUTOS_DB={};
-    async function cargarAutos(){
+    // ===============================
+    //     CARGA EXCEL (SheetJS)
+    // ===============================
+    let EXCEL_READY=false;
+    let INDEX = { // Estructura: Marca -> Modelo -> Set(Sub-modelo)
+      brands: new Set(),
+      byBrand: {} // { [marca]: { models:Set, byModel:{ [modelo]: Set(submodelos) } } }
+    };
+
+    async function ensureExcelLoaded(){
+      if(EXCEL_READY) return;
       try{
-        const r=await fetch("Autos_arbol.json",{cache:"no-store"});
-        AUTOS_DB=await r.json();
-        // Marcas
-        listMarcas.innerHTML=Object.keys(AUTOS_DB)
+        excelLoader.style.display="block";
+        const res = await fetch("Autos_consolidado.xlsx", {cache:"no-store"});
+        if(!res.ok) throw new Error("No se pudo descargar Autos_consolidado.xlsx");
+        const ab = await res.arrayBuffer();
+        const wb = XLSX.read(ab, { type: "array" });
+
+        // Toma la primera hoja
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval:"" });
+
+        // Nombres de columnas tolerantes (Marca, Modelo, Sub-modelo)
+        const keyOf = (row, candidates) => {
+          const keys = Object.keys(row);
+          for(const cand of candidates){
+            const found = keys.find(k => normalizeKey(k) === normalizeKey(cand));
+            if(found) return found;
+          }
+          return null;
+        };
+
+        // detectar nombres reales en el archivo
+        let brandKey=null, modelKey=null, subKey=null;
+        for(const r of rows){
+          if(!brandKey) brandKey = keyOf(r, ["Marca","marca","Brand"]);
+          if(!modelKey) modelKey = keyOf(r, ["Modelo","modelo","Model"]);
+          if(!subKey)   subKey   = keyOf(r, ["Sub-modelo","Submodelo","Sub modelo","Version","Versión","Variante"]);
+          if(brandKey && modelKey && subKey) break;
+        }
+        if(!brandKey || !modelKey){ throw new Error("No se detectaron columnas de Marca/Modelo en el Excel."); }
+
+        // construir índice
+        for(const r of rows){
+          const marca = String(r[brandKey]||"").trim();
+          const modelo= String(r[modelKey]||"").trim();
+          const sub   = String(subKey ? (r[subKey]||"") : "").trim(); // puede estar vacío
+
+          if(!marca || !modelo) continue;
+
+          if(!INDEX.byBrand[marca]){
+            INDEX.byBrand[marca] = { models: new Set(), byModel:{} };
+            INDEX.brands.add(marca);
+          }
+          INDEX.byBrand[marca].models.add(modelo);
+          if(!INDEX.byBrand[marca].byModel[modelo]){
+            INDEX.byBrand[marca].byModel[modelo] = new Set();
+          }
+          if(sub) INDEX.byBrand[marca].byModel[modelo].add(sub);
+        }
+
+        // Render marcas
+        listMarcas.innerHTML = Array.from(INDEX.brands)
           .sort((a,b)=>a.localeCompare(b,'es'))
           .map(m=>`<option value="${m}">`).join("");
-      }catch(e){console.error("Error cargando Autos_arbol.json",e);}
+
+        EXCEL_READY=true;
+      }catch(err){
+        console.error(err);
+        alert("No pudimos cargar la base de automotores desde el Excel. Verificá que 'Autos_consolidado.xlsx' esté en la misma carpeta.");
+      }finally{
+        excelLoader.style.display="none";
+      }
     }
-    cargarAutos();
+
+    function normalizeKey(s){
+      return (s||"").toString()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+        .toLowerCase().replace(/[\s\-_]+/g,"");
+    }
 
     // Autocompletado: modelos por marca
-    document.getElementById("auto_marca").addEventListener("input",e=>{
+    document.getElementById("auto_marca").addEventListener("input", async (e)=>{
+      if(ramoSel.value==="automotor" && !EXCEL_READY) await ensureExcelLoaded();
       const marca=e.target.value.trim();
-      if(AUTOS_DB[marca]){
-        const modelos=Object.keys(AUTOS_DB[marca]).sort((a,b)=>a.localeCompare(b,'es'));
-        listModelos.innerHTML=modelos.map(m=>`<option value="${m}">`).join("");
-      }else{
-        listModelos.innerHTML="";
-      }
-      // reset sugerencias de versiones
+      listModelos.innerHTML="";
       listVersiones.innerHTML="";
+      if(INDEX.byBrand[marca]){
+        const modelos = Array.from(INDEX.byBrand[marca].models)
+          .sort((a,b)=>a.localeCompare(b,'es'));
+        listModelos.innerHTML = modelos.map(m=>`<option value="${m}">`).join("");
+      }
     });
 
-    // -------- Normalización de claves para encontrar "sub-modelo" / "submodelo" / "versión" --------
-    function normalizeKey(k){
-      if(!k) return "";
-      return k
-        .toString()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g,"")  // saca acentos
-        .toLowerCase()
-        .replace(/[\s\-_]+/g,"");                         // quita espacios, guiones y guiones bajos
-    }
-    const VERSION_KEYS = new Set([
-      "submodelo","submodelo(s)","submodelos",
-      "submodelo", "submodelo", "submodelo", // redundantes a propósito (tolerancia)
-      "version","versiones","variante","variantes"
-    ]);
-
-    // Devuelve string "versión" a partir de un item (string u objeto)
-    function pickVersion(item){
-      if(!item) return "";
-      if(typeof item==="string") return item.trim();
-      // objeto: buscar la clave que parezca "sub-modelo" o "versión"
-      for(const k of Object.keys(item)){
-        const nk = normalizeKey(k);
-        if(nk.includes("submodelo") || VERSION_KEYS.has(nk)) {
-          const v = (item[k]??"").toString().trim();
-          if(v) return v;
-        }
-      }
-      // fallback: primer valor string no vacío
-      for(const k of Object.keys(item)){
-        const v=item[k];
-        if(typeof v==="string" && v.trim()) return v.trim();
-      }
-      return "";
-    }
-
-    // Al escribir modelo, cargamos sugerencias de versiones (datalist)
-    document.getElementById("auto_modelo").addEventListener("input",e=>{
+    // Sugerencias de sub-modelos (versiones)
+    document.getElementById("auto_modelo").addEventListener("input",(e)=>{
       const marca=(document.getElementById("auto_marca").value||"").trim();
       const modelo=e.target.value.trim();
       listVersiones.innerHTML="";
-      if(AUTOS_DB[marca]?.[modelo]){
-        const arr = AUTOS_DB[marca][modelo];
-        const versiones = (Array.isArray(arr)?arr:[])
-          .map(pickVersion)
-          .filter(Boolean);
-        const uniq = Array.from(new Set(versiones.map(v=>v.trim())))
-          .sort((a,b)=>a.localeCompare(b,'es'));
-        listVersiones.innerHTML = uniq.map(v=>`<option value="${v}">`).join("");
+      const set = INDEX.byBrand[marca]?.byModel[modelo];
+      if(set && set.size){
+        const versiones = Array.from(set).sort((a,b)=>a.localeCompare(b,'es'));
+        listVersiones.innerHTML = versiones.map(v=>`<option value="${v}">`).join("");
       }
-      // si no hay, el usuario igual puede escribir libremente en auto_version
+      // si no hay, igual puede escribir libremente
     });
 
     // ===== Utilidades generales =====
@@ -284,6 +322,13 @@
       const res = await fetch(URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});
       if(!res.ok) throw new Error("HTTP "+res.status);
     }
+
+    // ===== Submit habilitado según ramo =====
+    function initState(){
+      refreshSubmitDisabled();
+      // si se entra por defecto en retiro, cargar nada; si eligen automotor, se carga Excel on-demand
+    }
+    initState();
 
     // ===== SUBMIT =====
     document.getElementById("leadForm").addEventListener("submit",async e=>{
@@ -333,7 +378,7 @@
         payload.retiro_meta   = +document.getElementById("retiro_meta").value;
         payload.retiro_aporte = +document.getElementById("retiro_aporte").value;
 
-        const {cap1,cap2} = calcularRetiroEnMemoria(payload);
+        const {cap1,cap2} = calcularRetiro(payload.retiro_edad,payload.retiro_meta,payload.retiro_aporte);
         payload.retiro_esc1 = Math.round(cap1);
         payload.retiro_esc2 = Math.round(cap2);
       }
@@ -357,6 +402,7 @@
         if(ramo==="retiro"){
           const reDiv=document.getElementById("retiroEscenarios");
           if(reDiv && reDiv.style.display!=="flex"){
+            // Mostrar última proyección por si no se apretó el botón antes
             renderRetiro(payload.retiro_edad,payload.retiro_meta,payload.retiro_aporte);
           }
         }
@@ -368,7 +414,7 @@
       }
     });
 
-    // ===== RETIRO: Calcular Proyección =====
+    // ===== RETIRO =====
     document.getElementById("btnCalcularRetiro").addEventListener("click", ()=>{
       const edad = +document.getElementById("retiro_edad").value;
       const meta = +document.getElementById("retiro_meta").value;
@@ -376,13 +422,11 @@
       renderRetiro(edad,meta,aporte);
     });
 
-    function calcularRetiroEnMemoria(p){
-      const edad=+p.retiro_edad, meta=+p.retiro_meta, aporte=+p.retiro_aporte;
+    function calcularRetiro(edad,meta,aporte){
       const años = meta - edad;
       const esc1=0.159, esc2=0.30;
-      const cap1 = (años>0 && aporte>0) ? aporte*((Math.pow(1+esc1/12,12*años)-1)/(esc1/12)) : 0;
-      const cap2 = (años>0 && aporte>0) ? aporte*((Math.pow(1+esc2/12,12*años)-1)/(esc2/12)) : 0;
-      return {cap1, cap2};
+      const cap = (tasa) => (años>0 && aporte>0) ? aporte*((Math.pow(1+tasa/12,12*años)-1)/(tasa/12)) : 0;
+      return {cap1:cap(esc1), cap2:cap(esc2)};
     }
 
     function renderRetiro(edad,meta,aporte){
@@ -396,9 +440,7 @@
         return;
       }
 
-      const esc1=0.159, esc2=0.30;
-      const cap1=aporte*((Math.pow(1+esc1/12,12*años)-1)/(esc1/12));
-      const cap2=aporte*((Math.pow(1+esc2/12,12*años)-1)/(esc2/12));
+      const {cap1,cap2} = calcularRetiro(edad,meta,aporte);
       const f=x=>x.toLocaleString("es-AR",{maximumFractionDigits:0});
 
       reDiv.innerHTML=`
@@ -418,9 +460,6 @@ Escenario 2 (30%): $${f(cap2)}`;
         "_blank"
       );
     }
-
-    // Estado inicial
-    refreshSubmitDisabled();
   </script>
 </body>
 </html>
