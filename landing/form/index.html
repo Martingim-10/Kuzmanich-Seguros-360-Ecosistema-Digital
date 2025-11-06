@@ -41,11 +41,13 @@
     .msg{margin-top:12px;font-weight:600;display:none}
     .msg.ok{color:var(--ok)}.msg.err{color:var(--err)}
     .foot{margin-top:12px;font-size:.8rem;color:var(--muted);text-align:center}
+
+    /* Escenarios Retiro */
     .escenarios{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
-    .escenario{flex:1;min-width:140px;padding:16px;border-radius:14px;color:#fff;font-weight:600;text-align:center}
+    .escenario{flex:1;min-width:160px;padding:16px;border-radius:14px;color:#fff;font-weight:700;text-align:center}
     .escenario p{margin:6px 0 0;font-size:.9rem;color:#e2e8f0}
-    .escenario1{background:#3b82f6;}
-    .escenario2{background:#7c3aed;}
+    .escenario1{background:#3b82f6;} /* celeste */
+    .escenario2{background:#7c3aed;} /* violeta */
   </style>
 </head>
 <body>
@@ -60,7 +62,7 @@
           </div>
         </div>
 
-        <form id="leadForm">
+        <form id="leadForm" novalidate>
           <label>Ramo</label>
           <select id="ramo" required>
             <option value="">Seleccioná…</option>
@@ -86,7 +88,7 @@
             </select>
 
             <label>Año</label>
-            <input id="auto_anio" type="number" placeholder="Ej: 2022">
+            <input id="auto_anio" type="number" placeholder="Ej: 2022" inputmode="numeric">
 
             <label>DNI del tomador</label>
             <input id="auto_dni" inputmode="numeric" placeholder="Ej: 30111222">
@@ -100,13 +102,15 @@
             <input id="retiro_meta" type="number" min="40" max="75" placeholder="Ej: 65">
             <label>Aporte mensual (ARS)</label>
             <input id="retiro_aporte" type="number" placeholder="Ej: 30000">
-            <div id="retiroEscenarios" class="escenarios"></div>
+            <button id="btnCalcularRetiro" type="button">Calcular Proyección</button>
+
+            <div id="retiroEscenarios" class="escenarios" style="display:none"></div>
             <div id="retiroActions" style="display:none;margin-top:10px">
               <button type="button" id="btnWaRetiro">📲 Contactar un asesor por WhatsApp</button>
             </div>
           </div>
 
-          <!-- Datos comunes -->
+          <!-- Datos personales SOLO para Automotor (se piden de entrada) -->
           <div id="datosPersonales" style="display:none;">
             <div class="row">
               <div class="field">
@@ -125,17 +129,19 @@
             </label>
           </div>
 
+          <!-- Tracking -->
           <input type="hidden" id="canal" value="instagram">
           <input type="hidden" id="estado" value="nuevo">
           <input type="hidden" id="asesor" value="auto">
           <input type="hidden" id="origen" value="form">
 
           <label>Comentarios</label>
-          <textarea id="comentarios" rows="3"></textarea>
+          <textarea id="comentarios" rows="3" placeholder="Contanos algo que debamos tener en cuenta"></textarea>
 
           <button id="submitBtn" type="submit" disabled>Enviar solicitud</button>
           <div id="msg" class="msg"></div>
 
+          <!-- Acciones post-envío Automotor -->
           <div id="autoActions" style="display:none;margin-top:10px">
             <button type="button" id="btnWa">📲 Chatear ahora por WhatsApp</button>
             <button type="button" id="btnCopy">📋 Copiar mensaje</button>
@@ -159,119 +165,240 @@
   <script>
     const URL="https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
     const TU_WA_NUMBER="5942804641495";
-    const ramoSel=document.getElementById("ramo"),
-          autoFields=document.getElementById("autoFields"),
-          retiroFields=document.getElementById("retiroFields"),
-          autoActions=document.getElementById("autoActions"),
-          retiroActions=document.getElementById("retiroActions"),
-          msg=document.getElementById("msg"),
-          btn=document.getElementById("submitBtn"),
-          consent=document.getElementById("consent"),
-          datos=document.getElementById("datosPersonales");
 
+    const ramoSel=document.getElementById("ramo");
+    const autoFields=document.getElementById("autoFields");
+    const retiroFields=document.getElementById("retiroFields");
+    const datos=document.getElementById("datosPersonales");
+    const autoActions=document.getElementById("autoActions");
+    const retiroActions=document.getElementById("retiroActions");
+    const msg=document.getElementById("msg");
+    const btn=document.getElementById("submitBtn");
+    const consent=document.getElementById("consent");
+
+    const listMarcas=document.getElementById("listMarcas");
+    const listModelos=document.getElementById("listModelos");
+    const selVersion=document.getElementById("auto_version");
+
+    // ===== Estado inicial del botón de envío (solo exige consentimiento cuando se piden datos) =====
+    function refreshSubmitDisabled(){
+      const necesitaConsent = (ramoSel.value==="automotor");
+      btn.disabled = necesitaConsent ? !consent.checked : false;
+    }
+    consent.addEventListener("change", refreshSubmitDisabled);
+
+    // ===== Mostrar/ocultar secciones por ramo =====
+    ramoSel.addEventListener("change",()=>{
+      const v=ramoSel.value;
+      autoFields.style.display = v==="automotor" ? "block" : "none";
+      datos.style.display      = v==="automotor" ? "block" : "none";
+      retiroFields.style.display = v==="retiro" ? "block" : "none";
+      autoActions.style.display="none";
+      retiroActions.style.display="none";
+      msg.style.display="none";
+      refreshSubmitDisabled();
+    });
+
+    // ===== Carga de base Automotor =====
     let AUTOS_DB={};
     async function cargarAutos(){
       try{
         const r=await fetch("Autos_arbol.json",{cache:"no-store"});
         AUTOS_DB=await r.json();
-        document.getElementById("listMarcas").innerHTML=Object.keys(AUTOS_DB).sort().map(m=>`<option value="${m}">`).join("");
-      }catch(e){console.error("Error cargando JSON",e);}
+        listMarcas.innerHTML=Object.keys(AUTOS_DB).sort((a,b)=>a.localeCompare(b,'es')).map(m=>`<option value="${m}">`).join("");
+      }catch(e){console.error("Error cargando Autos_arbol.json",e);}
     }
     cargarAutos();
 
+    // Autocompletado: modelos por marca
     document.getElementById("auto_marca").addEventListener("input",e=>{
       const marca=e.target.value.trim();
       if(AUTOS_DB[marca]){
-        const modelos=Object.keys(AUTOS_DB[marca]).sort();
-        document.getElementById("listModelos").innerHTML=modelos.map(m=>`<option value="${m}">`).join("");
+        const modelos=Object.keys(AUTOS_DB[marca]).sort((a,b)=>a.localeCompare(b,'es'));
+        listModelos.innerHTML=modelos.map(m=>`<option value="${m}">`).join("");
       }
+      // reset versiones
+      selVersion.innerHTML = `<option value="">Seleccioná versión</option>`;
+      selVersion.disabled = true;
     });
-    document.getElementById("auto_modelo").addEventListener("input",e=>{
-      const marca=document.getElementById("auto_marca").value.trim(),
-            modelo=e.target.value.trim(),
-            selVersion=document.getElementById("auto_version");
-      if(AUTOS_DB[marca]?.[modelo]){
-        const vers=AUTOS_DB[marca][modelo].map(v=>v["Sub-modelo"]||v["Submodelo"]||v["Versión"]).filter(Boolean);
-        selVersion.innerHTML=`<option value="">Seleccioná versión</option>`+vers.map(v=>`<option value="${v}">${v}</option>`).join("");
-        selVersion.disabled=false;
+
+    // Llenado de versiones (lectura flexible de claves)
+    function pickVersionValue(obj){
+      const keys = Object.keys(obj || {});
+      const preferidas = [
+        "Sub-modelo","Submodelo","Versión","Version","Variante",
+        "sub-modelo","submodelo","versión","version","variante"
+      ];
+      for(const k of preferidas){
+        if(keys.includes(k)) return obj[k];
       }
-    });
-
-    function toggleSubmit(){btn.disabled=!consent.checked;}
-    consent.addEventListener("change",toggleSubmit);
-    toggleSubmit();
-
-    ramoSel.addEventListener("change",()=>{
-      const v=ramoSel.value;
-      autoFields.style.display=v==="automotor"?"block":"none";
-      retiroFields.style.display=v==="retiro"?"block":"none";
-      autoActions.style.display="none";
-      retiroActions.style.display="none";
-      datos.style.display=v==="automotor"?"block":"none";
-      msg.style.display="none";
-    });
-
-    async function logLead(d){
-      await fetch(URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});
+      // fallback: primer string no vacío
+      for(const k of keys){
+        const v=obj[k];
+        if(typeof v==="string" && v.trim()) return v;
+      }
+      return "";
     }
-    function waLink(num,txt){return`https://wa.me/${num}?text=${encodeURIComponent(txt)}`;}
 
+    document.getElementById("auto_modelo").addEventListener("input",e=>{
+      const marca=document.getElementById("auto_marca").value.trim();
+      const modelo=e.target.value.trim();
+      if(AUTOS_DB[marca]?.[modelo]){
+        const arr = AUTOS_DB[marca][modelo];
+        const versiones = Array.isArray(arr) ? arr.map(pickVersionValue).filter(Boolean) : [];
+        const uniq = Array.from(new Set(versiones.map(v=>v.trim()))).sort((a,b)=>a.localeCompare(b,'es'));
+        selVersion.innerHTML = `<option value="">Seleccioná versión</option>` + uniq.map(v=>`<option value="${v}">${v}</option>`).join("");
+        selVersion.disabled = uniq.length===0;
+      }else{
+        selVersion.innerHTML = `<option value="">Seleccioná versión</option>`;
+        selVersion.disabled = true;
+      }
+    });
+
+    // ===== Utilidades generales =====
+    function waLink(num,txt){return`https://wa.me/${num}?text=${encodeURIComponent(txt)}`;}
+    async function logLead(d){
+      const res = await fetch(URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});
+      if(!res.ok) throw new Error("HTTP "+res.status);
+    }
+
+    // ===== SUBMIT =====
     document.getElementById("leadForm").addEventListener("submit",async e=>{
       e.preventDefault();
       msg.style.display="none";msg.className="msg";
-      const ramo=ramoSel.value;
-      if(!ramo){msg.textContent="Seleccioná un ramo.";msg.classList.add("err");msg.style.display="block";return;}
 
-      let payload={ramo,canal:"instagram",estado:"nuevo",asesor:"auto",origen:"form"};
+      const ramo=ramoSel.value;
+      if(!ramo){ msg.textContent="Seleccioná un ramo."; msg.classList.add("err"); msg.style.display="block"; return; }
+
+      let payload={
+        ramo,
+        canal:"instagram",
+        estado:"nuevo",
+        asesor:"auto",
+        origen:"form",
+        comentarios: (document.getElementById("comentarios").value||"").trim()
+      };
 
       if(ramo==="automotor"){
-        payload.auto_mmv=[document.getElementById("auto_marca").value,
-                          document.getElementById("auto_modelo").value,
-                          document.getElementById("auto_version").value].join(" ").trim();
-        payload.auto_anio=document.getElementById("auto_anio").value.trim();
-        payload.auto_dni=document.getElementById("auto_dni").value.trim();
-        payload.nombre=document.getElementById("nombre").value.trim();
-        payload.telefono=document.getElementById("telefono").value.trim();
-        payload.email=document.getElementById("email").value.trim();
-      }
-      if(ramo==="retiro"){
-        payload.retiro_edad=+document.getElementById("retiro_edad").value;
-        payload.retiro_meta=+document.getElementById("retiro_meta").value;
-        payload.retiro_aporte=+document.getElementById("retiro_aporte").value;
-        calcularRetiro(payload);
+        const nombre=(document.getElementById("nombre").value||"").trim();
+        const tel=(document.getElementById("telefono").value||"").trim();
+        if(!tel || !/\d{7,}/.test(tel)){
+          msg.textContent="Teléfono inválido (mínimo 7 dígitos).";
+          msg.classList.add("err"); msg.style.display="block"; return;
+        }
+        payload.nombre = nombre;
+        payload.telefono = tel;
+        payload.email = (document.getElementById("email").value||"").trim();
+        payload.auto_mmv = [
+          (document.getElementById("auto_marca").value||"").trim(),
+          (document.getElementById("auto_modelo").value||"").trim(),
+          (document.getElementById("auto_version").value||"").trim()
+        ].join(" ").replace(/\s+/g," ").trim();
+        payload.auto_anio = (document.getElementById("auto_anio").value||"").trim();
+        payload.auto_dni  = (document.getElementById("auto_dni").value||"").trim();
+
+        // Validación básica de Automotor
+        if(!payload.auto_mmv || !payload.auto_anio || !payload.auto_dni){
+          msg.textContent="Para Automotor completá Marca/Modelo/Versión, Año y DNI.";
+          msg.classList.add("err"); msg.style.display="block"; return;
+        }
       }
 
-      btn.disabled=true;btn.textContent="Enviando…";
+      if(ramo==="retiro"){
+        payload.retiro_edad   = +document.getElementById("retiro_edad").value;
+        payload.retiro_meta   = +document.getElementById("retiro_meta").value;
+        payload.retiro_aporte = +document.getElementById("retiro_aporte").value;
+
+        // Si el usuario no calculó antes, igual calculamos para enviar a Sheets
+        const {cap1,cap2} = calcularRetiroEnMemoria(payload);
+        payload.retiro_esc1 = Math.round(cap1);
+        payload.retiro_esc2 = Math.round(cap2);
+      }
+
+      btn.disabled=true; btn.textContent="Enviando…";
       try{
         await logLead(payload);
-        msg.textContent="✅ Solicitud registrada.";msg.classList.add("ok");msg.style.display="block";
-        btn.textContent="Enviar solicitud";btn.disabled=false;
+        msg.textContent="✅ Solicitud registrada.";
+        msg.classList.add("ok"); msg.style.display="block";
+        btn.textContent="Enviar solicitud"; btn.disabled=false;
 
         if(ramo==="automotor"){
           autoActions.style.display="block";
           const texto=`Quiero cotizar un ${payload.auto_mmv} del año ${payload.auto_anio}, para el DNI ${payload.auto_dni}.`;
           document.getElementById("btnWa").onclick=()=>window.open(waLink(TU_WA_NUMBER,texto),"_blank");
-          document.getElementById("btnCopy").onclick=async()=>{await navigator.clipboard.writeText(texto);alert("Mensaje copiado. Pegalo en WhatsApp.");};
+          document.getElementById("btnCopy").onclick=async()=>{
+            try{ await navigator.clipboard.writeText(texto); alert("Mensaje copiado. Pegalo en WhatsApp."); }
+            catch{ alert("Texto:\n\n"+texto); }
+          };
         }
-      }catch(err){msg.textContent="Error al enviar.";msg.classList.add("err");msg.style.display="block";}
+        if(ramo==="retiro"){
+          // ya habrá botón de WA si el usuario calculó; si no, lo mostramos ahora con última proyección
+          const reDiv=document.getElementById("retiroEscenarios");
+          if(reDiv && reDiv.style.display!=="flex"){
+            renderRetiro(payload.retiro_edad,payload.retiro_meta,payload.retiro_aporte);
+          }
+        }
+      }catch(err){
+        console.error(err);
+        msg.textContent="Error al enviar.";
+        msg.classList.add("err"); msg.style.display="block";
+        btn.textContent="Enviar solicitud"; btn.disabled=false;
+      }
     });
 
-    function calcularRetiro(p){
-      const edad=p.retiro_edad,meta=p.retiro_meta,aporte=p.retiro_aporte;
-      if(!edad||!meta||!aporte)return;
-      const años=meta-edad,esc1=15.9/100,esc2=30/100;
+    // ===== RETIRO: Calcular Proyección (botón dedicado) =====
+    document.getElementById("btnCalcularRetiro").addEventListener("click", ()=>{
+      const edad = +document.getElementById("retiro_edad").value;
+      const meta = +document.getElementById("retiro_meta").value;
+      const aporte = +document.getElementById("retiro_aporte").value;
+      renderRetiro(edad,meta,aporte);
+    });
+
+    function calcularRetiroEnMemoria(p){
+      const edad=+p.retiro_edad, meta=+p.retiro_meta, aporte=+p.retiro_aporte;
+      const años = meta - edad;
+      const esc1=0.159, esc2=0.30;
+      const cap1 = (años>0 && aporte>0) ? aporte*((Math.pow(1+esc1/12,12*años)-1)/(esc1/12)) : 0;
+      const cap2 = (años>0 && aporte>0) ? aporte*((Math.pow(1+esc2/12,12*años)-1)/(esc2/12)) : 0;
+      return {cap1, cap2};
+    }
+
+    function renderRetiro(edad,meta,aporte){
+      const reDiv=document.getElementById("retiroEscenarios");
+      const waBtn=document.getElementById("btnWaRetiro");
+      const acciones=document.getElementById("retiroActions");
+      const años=meta-edad;
+
+      if(!(edad>0 && meta>0 && aporte>0 && años>0)){
+        alert("Completá Edad actual, Edad de retiro y Aporte mensual para calcular.");
+        return;
+      }
+
+      const esc1=0.159, esc2=0.30;
       const cap1=aporte*((Math.pow(1+esc1/12,12*años)-1)/(esc1/12));
       const cap2=aporte*((Math.pow(1+esc2/12,12*años)-1)/(esc2/12));
       const f=x=>x.toLocaleString("es-AR",{maximumFractionDigits:0});
-      document.getElementById("retiroEscenarios").innerHTML=`
+
+      reDiv.innerHTML=`
         <div class="escenario escenario1">💡 Escenario 1<br><strong>$${f(cap1)}</strong><p>Tasa 15.9 %</p></div>
         <div class="escenario escenario2">🚀 Escenario 2<br><strong>$${f(cap2)}</strong><p>Tasa 30 %</p></div>`;
-      retiroActions.style.display="block";
-      document.getElementById("btnWaRetiro").onclick=()=>{
-        const texto=`Hola, quiero mi proyección de retiro:\nEdad actual: ${edad}\nMeta: ${meta}\nAporte: $${f(aporte)}\nEscenario 1: $${f(cap1)}\nEscenario 2: $${f(cap2)}`;
-        window.open(waLink(TU_WA_NUMBER,texto),"_blank");
-      };
+      reDiv.style.display="flex";
+      acciones.style.display="block";
+
+      const resumen = `Edad actual: ${edad}
+Edad retiro: ${meta}
+Aporte mensual: $${f(aporte)}
+Escenario 1 (15.9%): $${f(cap1)}
+Escenario 2 (30%): $${f(cap2)}`;
+
+      waBtn.onclick = ()=> window.open(
+        waLink(TU_WA_NUMBER, `Hola, quiero asesoramiento sobre mi proyección de retiro:\n${resumen}`),
+        "_blank"
+      );
     }
+
+    // Estado inicial
+    refreshSubmitDisabled();
   </script>
 </body>
 </html>
