@@ -6,9 +6,9 @@
   <title>Kuzmanich Seguros 360 — Solicitud de Cotización</title>
   <style>
     :root{
-      --bg:#0f172a; --panel:#111827; --panel-2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
-      --brand:#3b82f6; --brand-2:#60a5fa; --ok:#22c55e; --err:#ef4444;
-      --input:#0b1220; --stroke:#233046; --radius:18px;
+      --bg:#0f172a;--panel:#111827;--panel-2:#1f2937;--text:#e5e7eb;--muted:#94a3b8;
+      --brand:#3b82f6;--brand-2:#60a5fa;--ok:#22c55e;--err:#ef4444;
+      --input:#0b1220;--stroke:#233046;--radius:18px;
     }
     *{box-sizing:border-box}
     body{
@@ -71,7 +71,20 @@
     <label>Edad de retiro deseada</label><input id="retiro_meta" inputmode="numeric" placeholder="Ej: 65">
     <label>Aporte mensual (ARS)</label><input id="retiro_aporte" inputmode="numeric" placeholder="Ej: 40000">
     <button type="button" id="btnCalc">Calcular proyección</button>
-    <div id="calcResult" style="margin-top:8px;font-size:.9rem;color:#93c5fd;display:none"></div>
+
+    <div id="retiroResult" style="display:none;margin-top:12px;display:grid;gap:12px;grid-template-columns:1fr 1fr;">
+      <div style="background:#0b1220;border:1px solid var(--stroke);border-radius:12px;padding:14px;">
+        <div style="color:#93c5fd;font-size:12px;">Escenario 1 (40% anual)</div>
+        <div id="rEsc1" style="font-size:22px;font-weight:800;margin-top:4px;">—</div>
+      </div>
+      <div style="background:#0b1220;border:1px solid var(--stroke);border-radius:12px;padding:14px;">
+        <div style="color:#93c5fd;font-size:12px;">Escenario 2 (30% anual)</div>
+        <div id="rEsc2" style="font-size:22px;font-weight:800;margin-top:4px;">—</div>
+      </div>
+    </div>
+    <div id="calcNote" style="display:none;margin-top:6px;color:#94a3b8;font-size:12px;">
+      Si mantenés este aporte, podrías alcanzar estos montos al llegar a tu edad objetivo.
+    </div>
   </div>
 
   <!-- Bloque Automotor -->
@@ -83,13 +96,9 @@
     <label>DNI tomador</label><input id="auto_dni" inputmode="numeric" placeholder="Ej: 12555777">
   </div>
 
-  <label class="consent">
-    <input id="consent" type="checkbox" required> Acepto el uso de mis datos (Ley 25.326)
-  </label>
-
+  <label class="consent"><input id="consent" type="checkbox" required> Acepto el uso de mis datos (Ley 25.326)</label>
   <button id="submitBtn" type="submit" disabled>Enviar solicitud</button>
   <div id="msg" class="msg"></div>
-
   <div id="postActions" style="display:none;margin-top:12px">
     <button type="button" id="btnWa">📲 Chatear ahora por WhatsApp</button>
   </div>
@@ -104,45 +113,36 @@
 <script>
 const URL="https://orgkuzmanich.app.n8n.cloud/webhook/lead-ingest";
 const WA_NUMBER="5942804641495";
-
 const form=document.getElementById("leadForm"),msg=document.getElementById("msg"),
 btn=document.getElementById("submitBtn"),cons=document.getElementById("consent"),
 ramo=document.getElementById("ramo"),post=document.getElementById("postActions"),
 btnWa=document.getElementById("btnWa");
-
-// Retiro
 const fRetiro=document.getElementById("retiroFields"),
 rEdad=document.getElementById("retiro_edad"),
 rMeta=document.getElementById("retiro_meta"),
 rAporte=document.getElementById("retiro_aporte"),
 btnCalc=document.getElementById("btnCalc"),
-calcDiv=document.getElementById("calcResult");
-
-// Auto
+rEsc1=document.getElementById("rEsc1"),rEsc2=document.getElementById("rEsc2"),
+calcDiv=document.getElementById("retiroResult"),calcNote=document.getElementById("calcNote");
 const fAuto=document.getElementById("autoFields"),
-sMarca=document.getElementById("auto_marca"),
-sModelo=document.getElementById("auto_modelo"),
-sVersion=document.getElementById("auto_version"),
-sAnio=document.getElementById("auto_anio_sel"),
+sMarca=document.getElementById("auto_marca"),sModelo=document.getElementById("auto_modelo"),
+sVersion=document.getElementById("auto_version"),sAnio=document.getElementById("auto_anio_sel"),
 aDni=document.getElementById("auto_dni");
 let AUTO_TREE=null;
 
-// consent
 cons.addEventListener("change",()=>btn.disabled=!cons.checked);
-
 ramo.addEventListener("change",async()=>{
   fRetiro.style.display=ramo.value==="retiro"?"block":"none";
   fAuto.style.display=ramo.value==="automotor"?"block":"none";
-  post.style.display="none"; msg.style.display="none";
-  if(ramo.value==="automotor"&&!AUTO_TREE) await loadAutoTree();
+  post.style.display="none";msg.style.display="none";
+  if(ramo.value==="automotor"&&!AUTO_TREE)await loadAutoTree();
 });
 
 async function loadAutoTree(){
   try{
     const r=await fetch("./Autos_arbol.json",{cache:"no-store"});
     AUTO_TREE=await r.json();
-    const marcas=Object.keys(AUTO_TREE).sort();
-    fillSel(sMarca,marcas,"Seleccioná marca");
+    fillSel(sMarca,Object.keys(AUTO_TREE).sort(),"Seleccioná marca");
   }catch(e){console.error(e);}
 }
 function fillSel(sel,arr,ph){
@@ -151,27 +151,42 @@ function fillSel(sel,arr,ph){
   sel.disabled=!(arr&&arr.length);
 }
 sMarca.addEventListener("change",()=>{
-  const m=sMarca.value;
-  if(!m){fillSel(sModelo,[], "Seleccioná modelo");return;}
-  fillSel(sModelo,Object.keys(AUTO_TREE[m]).sort(),"Seleccioná modelo");
+  const M=sMarca.value;
+  if(!M||!AUTO_TREE[M]){fillSel(sModelo,[],"Seleccioná modelo");return;}
+  fillSel(sModelo,Object.keys(AUTO_TREE[M]).sort(),"Seleccioná modelo");
 });
 sModelo.addEventListener("change",()=>{
   const M=sMarca.value,mo=sModelo.value;
-  fillSel(sVersion,Object.keys(AUTO_TREE[M][mo]||{}),"Seleccioná versión");
+  const node=AUTO_TREE?.[M]?.[mo];
+  let versiones=[];
+  if(Array.isArray(node)) versiones=node;
+  else if(node&&typeof node==="object") versiones=Object.keys(node);
+  versiones=versiones.sort((a,b)=>a.localeCompare(b,"es"));
+  fillSel(sVersion,versiones,"Seleccioná versión");
 });
 sVersion.addEventListener("change",()=>{
   const M=sMarca.value,mo=sModelo.value,v=sVersion.value;
-  fillSel(sAnio,AUTO_TREE[M][mo][v]||[],"Seleccioná año");
+  const node=AUTO_TREE?.[M]?.[mo];
+  let years=[];
+  if(node&&!Array.isArray(node)) years=node[v]||[];
+  if(!years.length){
+    const now=new Date().getFullYear();
+    years=Array.from({length:15},(_,i)=>String(now-i));
+  }
+  years=years.map(String).sort((a,b)=>Number(b)-Number(a));
+  fillSel(sAnio,years,"Seleccioná año");
 });
 
 // cálculo retiro
 btnCalc.addEventListener("click",()=>{
   const edad=+rEdad.value,meta=+rMeta.value,aporte=+rAporte.value;
-  if(!edad||!meta||!aporte||meta<=edad){alert("Completá los datos válidos.");return;}
+  if(!edad||!meta||!aporte||meta<=edad){alert("Completá datos válidos.");return;}
   const años=meta-edad,t1=0.40,t2=0.30;
-  const acum=tasa=>aporte*(((1+tasa)**años-1)/tasa);
-  const esc1=Math.round(acum(t1)).toLocaleString("es-AR"),esc2=Math.round(acum(t2)).toLocaleString("es-AR");
-  calcDiv.style.display="block";calcDiv.innerHTML=`Escenario 1 (40 %): <b>$${esc1}</b><br>Escenario 2 (30 %): <b>$${esc2}</b>`;
+  const acum=tasa=>Math.round(aporte*(((1+tasa)**años-1)/tasa));
+  const esc1=acum(t1),esc2=acum(t2);
+  const fmt=new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0});
+  calcDiv.style.display="grid";calcNote.style.display="block";
+  rEsc1.textContent=fmt.format(esc1);rEsc2.textContent=fmt.format(esc2);
   rEdad.dataset.esc1=esc1;rEdad.dataset.esc2=esc2;
 });
 
@@ -180,13 +195,11 @@ form.addEventListener("submit",async e=>{
   e.preventDefault();msg.style.display="none";msg.className="msg";
   if(!form.checkValidity()){msg.textContent="Revisá los campos.";msg.classList.add("err");msg.style.display="block";return;}
   btn.disabled=true;btn.textContent="Enviando…";
-
   const data={
     nombre:document.getElementById("nombre").value.trim(),
     telefono:document.getElementById("telefono").value.trim(),
     email:document.getElementById("email").value.trim(),
-    ramo:ramo.value,
-    canal:"web",estado:"nuevo",asesor:"auto",origen:"form",comentarios:"",
+    ramo:ramo.value,canal:"web",estado:"nuevo",asesor:"auto",origen:"form",comentarios:"",
     auto_mmv:`${sMarca.value} ${sModelo.value} ${sVersion.value}`.trim(),
     auto_anio:sAnio.value||"",auto_dni:aDni.value||"",
     retiro_edad:rEdad.value||"",retiro_meta:rMeta.value||"",retiro_aporte:rAporte.value||"",
@@ -201,7 +214,7 @@ form.addEventListener("submit",async e=>{
       const base=`Hola, soy ${data.nombre}. Quiero cotizar *${data.ramo.toUpperCase()}*.\n\n`;
       let detalle="";
       if(data.ramo==="retiro"){
-        detalle=`Edad actual: ${data.retiro_edad}\nEdad retiro: ${data.retiro_meta}\nAporte mensual: ${data.retiro_aporte}\nProyección: ${data.retiro_esc1}`;
+        detalle=`Edad actual: ${data.retiro_edad}\nEdad retiro: ${data.retiro_meta}\nAporte: $${data.retiro_aporte}\nEscenario 1 (40%): $${Number(data.retiro_esc1).toLocaleString("es-AR")}\nEscenario 2 (30%): $${Number(data.retiro_esc2).toLocaleString("es-AR")}`;
       }else if(data.ramo==="automotor"){
         detalle=`Vehículo: ${data.auto_mmv}\nAño: ${data.auto_anio}\nDNI: ${data.auto_dni}`;
       }
